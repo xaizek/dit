@@ -1,0 +1,4 @@
+# build artefacts
+*.d
+*.o
+/scribe
