@@ -9,6 +9,9 @@
 #include <stdexcept>
 #include <string>
 
+#include "Command.hpp"
+#include "Commands.hpp"
+
 /**
  * @brief Default command name used when run without arguments.
  */
@@ -39,5 +42,14 @@ Scribe::run()
     std::cout << "Arguments:" << std::endl;
     std::copy(args.cbegin(), args.cend(),
               std::ostream_iterator<std::string>(std::cout, "\n"));
+
+    Command *const cmd = Commands::get(cmdName);
+    if (cmd == nullptr) {
+        std::cerr << "Unknown command name: " << cmdName << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    cmd->run(args);
+
     return EXIT_SUCCESS;
 }
