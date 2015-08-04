@@ -24,9 +24,9 @@ Scribe::Scribe(int argc, const char *const argv[])
     std::copy(argv + 1, argv + argc, std::back_inserter(args));
 
     if (args.empty()) {
-        cmd = DEFAULT_CMD;
+        cmdName = DEFAULT_CMD;
     } else {
-        cmd = args[0];
+        cmdName = args[0];
         args.erase(args.begin());
     }
 }
@@ -34,7 +34,7 @@ Scribe::Scribe(int argc, const char *const argv[])
 int
 Scribe::run()
 {
-    std::cout << "Command: " << cmd << std::endl;
+    std::cout << "Command: " << cmdName << std::endl;
 
     std::cout << "Arguments:" << std::endl;
     std::copy(args.cbegin(), args.cend(),

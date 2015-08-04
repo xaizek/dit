@@ -34,11 +34,11 @@ private:
      */
     std::string appName;
     /**
-     * @brief Command to execute.
+     * @brief Name of command to execute.
      */
-    std::string cmd;
+    std::string cmdName;
     /**
-     * @brief Arguments for the command specified by @c cmd.
+     * @brief Arguments for the command specified by @c cmdName.
      */
     std::vector<std::string> args;
 };
