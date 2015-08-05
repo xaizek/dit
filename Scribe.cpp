@@ -28,6 +28,8 @@
 
 #include "Command.hpp"
 #include "Commands.hpp"
+#include "Item.hpp"
+#include "Storage.hpp"
 
 /**
  * @brief Default command name used when run without arguments.
@@ -66,7 +68,8 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    cmd->run(args);
+    Storage storage;
+    cmd->run(storage, args);
 
     return EXIT_SUCCESS;
 }

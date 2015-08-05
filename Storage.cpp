@@ -15,51 +15,36 @@
 // You should have received a copy of the GNU General Public License
 // along with scribe.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <cstdlib>
-
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include "Command.hpp"
-#include "Commands.hpp"
-#include "Item.hpp"
 #include "Storage.hpp"
 
-namespace {
+#include <cassert>
 
-/**
- * @brief Implementation of "ls" command, which lists items.
- */
-class Ls : public Command
+#include <memory>
+#include <utility>
+
+#include "Item.hpp"
+
+Item &
+Storage::create()
 {
-public:
-    /**
-     * @brief Constructs the command implementation.
-     */
-    Ls();
+    decltype(items)::iterator it;
+    bool inserted;
+    std::tie(it, inserted) = items.emplace("fid", Item("fid"));
+    assert(inserted && "Duplicated item id");
 
-public:
-    virtual int run(Storage &storage,
-                    const std::vector<std::string> &args) override;
-};
-
-REGISTER_COMMAND(Ls);
-
+    return it->second;
 }
 
-Ls::Ls() : Command("ls", "lists items", "Usage: ls")
+std::vector<std::reference_wrapper<Item>>
+Storage::list()
 {
-}
+    // TODO: check if list wasn't loaded from physical storage and if so load it
+    //       now.
 
-int
-Ls::run(Storage &storage, const std::vector<std::string> &args)
-{
-    static_cast<void>(args);
-
-    for (Item &item : storage.list()) {
-        std::cout << item.getId() << std::endl;
+    std::vector<std::reference_wrapper<Item>> list;
+    list.reserve(items.size());
+    for (auto &e : items) {
+        list.emplace_back(e.second);
     }
-
-    return EXIT_SUCCESS;
+    return list;
 }

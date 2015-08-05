@@ -53,12 +53,10 @@ std::vector<Command *>
 Commands::list()
 {
     std::vector<Command *> list;
-
-    std::for_each(cmds.cbegin(), cmds.cend(),
-        [&list](const std::pair<const std::string,
-                                std::unique_ptr<Command>> &p) {
-            list.push_back(p.second.get());
-        });
+    list.reserve(cmds.size());
+    for (auto &e : cmds) {
+        list.emplace_back(e.second.get());
+    }
 
     return std::move(list);
 }

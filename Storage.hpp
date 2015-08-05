@@ -15,51 +15,40 @@
 // You should have received a copy of the GNU General Public License
 // along with scribe.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <cstdlib>
+#ifndef SCRIBE__STORAGE_HPP__
+#define SCRIBE__STORAGE_HPP__
 
-#include <iostream>
+#include <functional>
+#include <map>
 #include <string>
 #include <vector>
 
-#include "Command.hpp"
-#include "Commands.hpp"
-#include "Item.hpp"
-#include "Storage.hpp"
-
-namespace {
+class Item;
 
 /**
- * @brief Implementation of "ls" command, which lists items.
+ * @brief Storage for a set of items.
  */
-class Ls : public Command
+class Storage
 {
 public:
     /**
-     * @brief Constructs the command implementation.
+     * @brief Creates new item.
+     *
+     * @returns Reference to newly created item.
      */
-    Ls();
+    Item & create();
+    /**
+     * @brief Lists all available items.
+     *
+     * @returns Snapshot of current list of items.
+     */
+    std::vector<std::reference_wrapper<Item>> list();
 
-public:
-    virtual int run(Storage &storage,
-                    const std::vector<std::string> &args) override;
+private:
+    /**
+     * @brief Items known to the storage.
+     */
+    std::map<std::string, Item> items;
 };
 
-REGISTER_COMMAND(Ls);
-
-}
-
-Ls::Ls() : Command("ls", "lists items", "Usage: ls")
-{
-}
-
-int
-Ls::run(Storage &storage, const std::vector<std::string> &args)
-{
-    static_cast<void>(args);
-
-    for (Item &item : storage.list()) {
-        std::cout << item.getId() << std::endl;
-    }
-
-    return EXIT_SUCCESS;
-}
+#endif // SCRIBE__STORAGE_HPP__

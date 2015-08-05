@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+class Storage;
+
 /**
  * @brief Base class for sub-commands.
  */
@@ -66,11 +68,12 @@ public:
     /**
      * @brief Executes command with specified arguments.
      *
+     * @param storage Storage to perform operation on.
      * @param args List of arguments for the command.
      *
      * @returns Exit code suitable for returning it from @c main().
      */
-    virtual int run(const std::vector<std::string> &args) = 0;
+    virtual int run(Storage &storage, const std::vector<std::string> &args) = 0;
 
 private:
     /**
