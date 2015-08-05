@@ -47,6 +47,21 @@ public:
 
 private:
     /**
+     * @brief Initializes arguments.
+     *
+     * @param argc Number of application arguments.
+     * @param argv Application arguments.
+     *
+     * @throws std::runtime_error on broken argument list.
+     */
+    void initArgs(int argc, const char *const argv[]);
+    /**
+     * @brief Initializes configuration.
+     */
+    void initConfig();
+
+private:
+    /**
      * @brief Name used to run the application.
      */
     std::string appName;
@@ -58,6 +73,10 @@ private:
      * @brief Arguments for the command specified by @c cmdName.
      */
     std::vector<std::string> args;
+    /**
+     * @brief Root directory of all projects.
+     */
+    std::string projectsDir;
 };
 
 #endif // SCRIBE__SCRIBE_HPP__

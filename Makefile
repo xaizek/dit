@@ -1,4 +1,5 @@
 CXXFLAGS += -std=c++11 -Wall -Wextra -Werror -MMD -I$(abspath .)
+LDFLAGS += -lboost_filesystem -lboost_system
 
 ifneq ($(OS),Windows_NT)
     bin_suffix :=
@@ -19,7 +20,7 @@ bin_objects := $(bin_sources:.cpp=.o)
 bin_depends := $(bin_sources:.cpp=.d)
 
 $(bin): $(bin_objects)
-	$(CXX) -o $@ $^
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) -o $@ -c $(CXXFLAGS) $<

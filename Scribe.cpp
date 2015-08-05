@@ -26,10 +26,14 @@
 #include <stdexcept>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
-#include "Storage.hpp"
+#include "Project.hpp"
+
+namespace fs = boost::filesystem;
 
 /**
  * @brief Default command name used when run without arguments.
@@ -37,6 +41,13 @@
 static std::string DEFAULT_CMD = "ls";
 
 Scribe::Scribe(int argc, const char *const argv[])
+{
+    initArgs(argc, argv);
+    initConfig();
+}
+
+void
+Scribe::initArgs(int argc, const char *const argv[])
 {
     if (argc < 1) {
         throw std::runtime_error("Broken argument list.");
@@ -51,6 +62,26 @@ Scribe::Scribe(int argc, const char *const argv[])
         cmdName = args[0];
         args.erase(args.begin());
     }
+}
+
+void
+Scribe::initConfig()
+{
+    fs::path home;
+    if (const char *const home_env = std::getenv("HOME")) {
+        home = home_env;
+    } else {
+        throw std::runtime_error("HOME environment variable is not set.");
+    }
+
+    fs::path config_home;
+    if (const char *const config_home_env = std::getenv("XDG_CONFIG_HOME")) {
+        config_home = fs::path(config_home_env)/"scribe";
+    } else {
+        config_home = home/".config/scribe";
+    }
+
+    projectsDir = (config_home/"projects").string();
 }
 
 int
@@ -68,8 +99,8 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    Storage storage;
-    cmd->run(storage, args);
+    Project project((fs::path(projectsDir)/"app").string());
+    cmd->run(project.getStorage(), args);
 
     return EXIT_SUCCESS;
 }

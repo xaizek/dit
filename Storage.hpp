@@ -23,13 +23,27 @@
 #include <string>
 #include <vector>
 
+namespace boost { namespace filesystem {
+  class path;
+} }
+namespace fs = boost::filesystem;
+
 class Item;
+class Project;
 
 /**
  * @brief Storage for a set of items.
  */
 class Storage
 {
+public:
+    /**
+     * @brief Creates storage for the @p project.
+     *
+     * @param project Project, which is parent of the storage.
+     */
+    Storage(Project &project);
+
 public:
     /**
      * @brief Creates new item.
@@ -41,14 +55,49 @@ public:
      * @brief Lists all available items.
      *
      * @returns Snapshot of current list of items.
+     *
+     * @throws boost::filesystem::filesystem_error On broken storage.
      */
     std::vector<std::reference_wrapper<Item>> list();
 
 private:
     /**
+     * @brief Ensures that storage is loaded from physical source.
+     *
+     * @throws boost::filesystem::filesystem_error On broken storage.
+     */
+    void ensureLoaded();
+    /**
+     * @brief Actually loads storage from physical source, first level.
+     *
+     * @throws boost::filesystem::filesystem_error On broken storage.
+     */
+    void load();
+    /**
+     * @brief Loads items from a directory, second level.
+     *
+     * @param path Parent directories of items.
+     *
+     * @throws boost::filesystem::filesystem_error On broken storage.
+     */
+    void loadDir(const fs::path &path);
+
+private:
+    /**
+     * @brief Project this storage belongs to.
+     */
+    Project &project;
+    /**
      * @brief Items known to the storage.
      */
     std::map<std::string, Item> items;
+    /**
+     * @brief Whether storage is loaded from physical source.
+     *
+     * Otherwise it can contain newly created in-memory items, but be missing
+     * items that were created and stored before.
+     */
+    bool loaded;
 };
 
 #endif // SCRIBE__STORAGE_HPP__

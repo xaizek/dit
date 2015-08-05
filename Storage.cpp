@@ -19,10 +19,21 @@
 
 #include <cassert>
 
+#include <iostream>
 #include <memory>
+#include <string>
 #include <utility>
 
+#include <boost/filesystem.hpp>
+
 #include "Item.hpp"
+#include "Project.hpp"
+
+namespace fs = boost::filesystem;
+
+Storage::Storage(Project &project) : project(project), loaded(false)
+{
+}
 
 Item &
 Storage::create()
@@ -38,8 +49,7 @@ Storage::create()
 std::vector<std::reference_wrapper<Item>>
 Storage::list()
 {
-    // TODO: check if list wasn't loaded from physical storage and if so load it
-    //       now.
+    ensureLoaded();
 
     std::vector<std::reference_wrapper<Item>> list;
     list.reserve(items.size());
@@ -47,4 +57,35 @@ Storage::list()
         list.emplace_back(e.second);
     }
     return list;
+}
+
+void
+Storage::ensureLoaded()
+{
+    if (!loaded) {
+        load();
+        loaded = true;
+    }
+}
+
+void
+Storage::load()
+{
+    const std::string &dataDir = project.getDataDir();
+    for (fs::directory_entry &e : fs::directory_iterator(dataDir)) {
+        loadDir(e.path());
+    }
+}
+
+void
+Storage::loadDir(const fs::path &path)
+{
+    fs::path prefix = path.filename();
+    for (fs::directory_entry &e : fs::directory_iterator(path)) {
+        const std::string id = prefix.string() + e.path().filename().string();
+
+        bool inserted;
+        std::tie(std::ignore, inserted) = items.emplace(id, Item(id));
+        assert(inserted && "Duplicated item id");
+    }
 }
