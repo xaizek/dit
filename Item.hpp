@@ -18,7 +18,11 @@
 #ifndef SCRIBE__ITEM_HPP__
 #define SCRIBE__ITEM_HPP__
 
+#include <set>
 #include <string>
+#include <vector>
+
+#include "Change.hpp"
 
 class Storage;
 
@@ -34,9 +38,10 @@ private:
      * @brief Constructs new item.
      * @see Storage
      *
+     * @param storage Storage this item belongs to.
      * @param id Id of the item.
      */
-    Item(std::string id);
+    Item(Storage &storage, std::string id);
 
 public:
     /**
@@ -44,13 +49,56 @@ public:
      *
      * @returns The id.
      */
-    std::string getId() const;
+    const std::string & getId() const;
+    /**
+     * @brief Retrieves current (latest) value for the key.
+     *
+     * @param key Key of the value.
+     *
+     * @returns The value or empty string if it doesn't exist.
+     */
+    std::string getValue(const std::string &key);
+    /**
+     * @brief Retrieves names of actually existing keys for this item.
+     *
+     * @returns The names.
+     */
+    std::set<std::string> listRecordNames();
 
 private:
+    /**
+     * @brief Ensures that data is loaded from storage.
+     *
+     * @throws std::runtime_error On missing/broken storage cell.
+     */
+    void ensureLoaded();
+    /**
+     * @brief Actually loads data from storage.
+     *
+     * @throws std::runtime_error On missing/broken storage cell.
+     */
+    void load();
+
+private:
+    /**
+     * @brief Storage to which this item belongs.
+     */
+    Storage &storage;
     /**
      * @brief Id of this item.
      */
     const std::string id;
+    /**
+     * @brief Change set associated with the item.
+     */
+    std::vector<Change> changes;
+    /**
+     * @brief Whether item contains real data.
+     *
+     * Otherwise this instance represents an item and data will be loaded on
+     * demand.
+     */
+    bool loaded;
 };
 
 #endif // SCRIBE__ITEM_HPP__

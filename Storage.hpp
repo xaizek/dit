@@ -52,6 +52,16 @@ public:
      */
     Item & create();
     /**
+     * @brief Retrieves item by its id.
+     *
+     * @param id Id of item to retrieve.
+     *
+     * @returns Item.
+     *
+     * @throws std::runtime_error On unknown id.
+     */
+    Item & get(const std::string &id);
+    /**
      * @brief Lists all available items.
      *
      * @returns Snapshot of current list of items.
@@ -59,6 +69,14 @@ public:
      * @throws boost::filesystem::filesystem_error On broken storage.
      */
     std::vector<std::reference_wrapper<Item>> list();
+    /**
+     * @brief Fills empty item with actual content.
+     *
+     * @param item Item to load data for.
+     *
+     * @throws std::runtime_error On missing item data.
+     */
+    void fill(Item &item);
 
 private:
     /**

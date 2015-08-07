@@ -17,15 +17,69 @@
 
 #include "Item.hpp"
 
+#include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
-Item::Item(std::string id) : id(std::move(id))
+#include <boost/range/adaptor/reversed.hpp>
+
+#include "Storage.hpp"
+
+Item::Item(Storage &storage, std::string id)
+    : storage(storage), id(std::move(id)), loaded(false)
 {
 }
 
-std::string
+const std::string &
 Item::getId() const
 {
     return id;
+}
+
+std::string
+Item::getValue(const std::string &key)
+{
+    ensureLoaded();
+
+    for (const Change &c : boost::adaptors::reverse(changes)) {
+        if (c.getKey() == key) {
+            return c.getValue();
+        }
+    }
+
+    return {};
+}
+
+std::set<std::string>
+Item::listRecordNames()
+{
+    ensureLoaded();
+
+    std::set<std::string> names;
+    for (const Change &c : changes) {
+        names.insert(c.getKey());
+    }
+    return names;
+}
+
+void
+Item::ensureLoaded()
+{
+    if (!loaded) {
+        load();
+        loaded = true;
+    }
+}
+
+void
+Item::load()
+{
+    storage.fill(*this);
+
+    for (int i = 0, c = changes.size(); i < c - 1; ++i) {
+        if (changes[i].getTimestamp() > changes[i + 1].getTimestamp()) {
+            throw std::logic_error("Change set for " + id + " is not sorted.");
+        }
+    }
 }
