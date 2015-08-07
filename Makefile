@@ -19,11 +19,16 @@ bin_sources := $(wildcard $(bin_sources))
 bin_objects := $(bin_sources:.cpp=.o)
 bin_depends := $(bin_sources:.cpp=.d)
 
+release: EXTRA_CXXFLAGS := -O3
+debug: EXTRA_CXXFLAGS := -O0 -g
+debug: EXTRA_LDFLAGS := -g
+debug release: $(bin)
+
 $(bin): $(bin_objects)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 %.o: %.cpp
-	$(CXX) -o $@ -c $(CXXFLAGS) $<
+	$(CXX) -o $@ -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) $<
 
 clean:
 	-$(RM) $(bin_objects) $(bin_depends) $(bin)
