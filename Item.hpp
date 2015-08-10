@@ -45,6 +45,27 @@ private:
 
 public:
     /**
+     * @brief Copy constructor is not available.
+     *
+     * The reason is that Items lifetime is managed by Storage and making copies
+     * would change that.
+     *
+     * @param rhs Copy source.
+     */
+    Item(const Item &rhs) = delete;
+    /**
+     * @brief Move constructor is available.
+     *
+     * This one has to be public to make type moving available for containers.
+     * Shouldn't expose any lifetime issues rvalue should be created with
+     * std::move(), which can't be done accidentally.
+     *
+     * @param rhs Move source.
+     */
+    Item(Item &&rhs) = default;
+
+public:
+    /**
      * @brief Retrieves item id.
      *
      * @returns The id.
