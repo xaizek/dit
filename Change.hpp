@@ -53,13 +53,13 @@ public:
      *
      * @returns The name.
      */
-    const std::string & getKey() const { return key; }
+    std::string getKey() const { return key; }
     /**
      * @brief Retrieves value of the field described by this change.
      *
      * @returns The value.
      */
-    const std::string & getValue() const { return value; }
+    std::string getValue() const { return value; }
 
 private:
     /**
@@ -69,11 +69,11 @@ private:
     /**
      * @brief Name of the field.
      */
-    const std::string key;
+    std::string key;
     /**
      * @brief Value of the field.
      */
-    const std::string value;
+    std::string value;
 };
 
 #endif // SCRIBE__CHANGE_HPP__
