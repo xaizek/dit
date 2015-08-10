@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <stdexcept>
 #include <string>
 
@@ -87,12 +86,6 @@ Scribe::initConfig()
 int
 Scribe::run()
 {
-    std::cout << "Command: " << cmdName << std::endl;
-
-    std::cout << "Arguments:" << std::endl;
-    std::copy(args.cbegin(), args.cend(),
-              std::ostream_iterator<std::string>(std::cout, "\n"));
-
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
         std::cerr << "Unknown command name: " << cmdName << std::endl;
