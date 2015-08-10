@@ -40,9 +40,11 @@ Storage::Storage(Project &project) : project(project), loaded(false)
 Item &
 Storage::create()
 {
+    ensureLoaded();
+
     decltype(items)::iterator it;
     bool inserted;
-    std::tie(it, inserted) = items.emplace("fid", Item(*this, "fid"));
+    std::tie(it, inserted) = items.emplace("fid", Item(*this, "fid", false));
     assert(inserted && "Duplicated item id");
 
     return it->second;

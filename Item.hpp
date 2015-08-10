@@ -40,8 +40,9 @@ private:
      *
      * @param storage Storage this item belongs to.
      * @param id Id of the item.
+     * @param exists Whether this item is a dummy until loaded.
      */
-    Item(Storage &storage, std::string id);
+    Item(Storage &storage, std::string id, bool exists = true);
 
 public:
     /**

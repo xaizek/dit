@@ -29,8 +29,8 @@
 
 #include "Storage.hpp"
 
-Item::Item(Storage &storage, std::string id)
-    : storage(storage), id(std::move(id)), loaded(false), changed(false)
+Item::Item(Storage &storage, std::string id, bool exists)
+    : storage(storage), id(std::move(id)), loaded(!exists), changed(false)
 {
 }
 
