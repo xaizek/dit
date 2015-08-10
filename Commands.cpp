@@ -49,13 +49,13 @@ Commands::get(const std::string &name)
     return cmds[name].get();
 }
 
-std::vector<Command *>
+std::vector<std::reference_wrapper<Command>>
 Commands::list()
 {
-    std::vector<Command *> list;
+    std::vector<std::reference_wrapper<Command>> list;
     list.reserve(cmds.size());
     for (auto &e : cmds) {
-        list.emplace_back(e.second.get());
+        list.emplace_back(*e.second.get());
     }
 
     return std::move(list);

@@ -18,6 +18,7 @@
 #ifndef SCRIBE__COMMANDS_HPP__
 #define SCRIBE__COMMANDS_HPP__
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -59,7 +60,7 @@ public:
      *
      * @returns Vector of all commands.
      */
-    static std::vector<Command *> list();
+    static std::vector<std::reference_wrapper<Command>> list();
 
 private:
     /**
