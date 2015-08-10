@@ -72,12 +72,8 @@ operator>>(std::istream &s, std::vector<Change> &changes)
 static std::pair<std::string, std::string>
 splitRecord(const std::string &s)
 {
-    const std::string::size_type pos = s.find('=');
-    if (pos == std::string::npos) {
-        throw std::runtime_error("Broken item field: " + s);
-    }
-
-    return { s.substr(0, pos), decode(s.substr(pos + 1U)) };
+    const std::pair<std::string, std::string> p = splitAt(s, '=');
+    return { p.first, decode(p.second) };
 }
 
 /**
