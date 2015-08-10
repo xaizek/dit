@@ -35,4 +35,14 @@ class Change;
  */
 std::istream & operator>>(std::istream &s, std::vector<Change> &changes);
 
+/**
+ * @brief Writes @p changes in the stream @p s in text form.
+ *
+ * @param s Output stream for the data.
+ * @param changes Changes to write.
+ *
+ * @returns @p s.
+ */
+std::ostream & operator<<(std::ostream &s, const std::vector<Change> &changes);
+
 #endif // SCRIBE__FILE_FORMAT_HPP__

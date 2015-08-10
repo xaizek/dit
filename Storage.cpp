@@ -119,3 +119,30 @@ Storage::fill(Item &item)
 
     file >> item.changes;
 }
+
+void
+Storage::save()
+{
+    for (const auto &e : items) {
+        if (!e.second.wasChanged()) {
+            continue;
+        }
+
+        const std::string &id = e.second.getId();
+
+        const fs::path dirPath = fs::path(project.getDataDir())/id.substr(0, 1);
+
+        if (!fs::exists(dirPath)) {
+            fs::create_directories(dirPath);
+        }
+
+        const fs::path filePath = dirPath/id.substr(1);
+        std::ofstream file(filePath.string());
+        if (!file) {
+            throw std::runtime_error("Failed to write change set of " +
+                                     e.second.getId());
+        }
+        /* TODO: write only new changes (append them). */
+        file << e.second.changes;
+    }
+}

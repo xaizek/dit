@@ -21,6 +21,7 @@
 #include <ctime>
 
 #include <istream>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -34,6 +35,7 @@
 
 static std::pair<std::string, std::string> splitRecord(const std::string &s);
 static std::string decode(std::string str);
+static std::string encode(std::string str);
 
 std::istream &
 operator>>(std::istream &s, std::vector<Change> &changes)
@@ -88,5 +90,41 @@ decode(std::string str)
 {
     boost::replace_all(str, R"(\n)", "\n");
     boost::replace_all(str, R"(\\)", R"(\)");
+    return std::move(str);
+}
+
+std::ostream &
+operator<<(std::ostream &s, const std::vector<Change> &changes)
+{
+    if (changes.empty()) {
+        return s;
+    }
+
+    std::time_t timestamp = changes.front().getTimestamp() + 1;
+    for (const Change &c : changes) {
+        const std::time_t ts = c.getTimestamp();
+        if (ts != timestamp) {
+            s << ts << '\n';
+            timestamp = ts;
+        }
+
+        s << c.getKey() << '=' << encode(c.getValue()) << '\n';
+    }
+
+    return s;
+}
+
+/**
+ * @brief Encodes value to make it single-line string.
+ *
+ * @param str Data.
+ *
+ * @returns Encoded data.
+ */
+static std::string
+encode(std::string str)
+{
+    boost::replace_all(str, R"(\)", R"(\\)");
+    boost::replace_all(str, "\n", R"(\n)");
     return std::move(str);
 }

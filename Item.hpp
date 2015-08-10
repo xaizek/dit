@@ -64,6 +64,21 @@ public:
      * @returns The names.
      */
     std::set<std::string> listRecordNames();
+    /**
+     * @brief Changes @p key to have value of @p value.
+     *
+     * @p key is created if doesn't exist.
+     *
+     * @param key Key to set.
+     * @param value (New) value for the @p key.
+     */
+    void setValue(const std::string &key, const std::string &value);
+    /**
+     * @brief Checks whether item has changes that require storing.
+     *
+     * @returns @c true if so, @c false otherwise.
+     */
+    bool wasChanged() const;
 
 private:
     /**
@@ -78,6 +93,23 @@ private:
      * @throws std::runtime_error On missing/broken storage cell.
      */
     void load();
+    /**
+     * @brief Retrieves latest change for the @p key.
+     *
+     * @param key Key to loop up for.
+     *
+     * @returns The latest change or @c nullptr if no change found.
+     */
+    Change * getLatestChange(const std::string &key);
+    /**
+     * @brief Retrieves latest change for the @p key before @p before.
+     *
+     * @param key Key to loop up for.
+     * @param before Upper bound for the lookup.
+     *
+     * @returns The latest change or @c nullptr if no change found.
+     */
+    Change * getLatestChange(const std::string &key, Change *before);
 
 private:
     /**
@@ -99,6 +131,10 @@ private:
      * demand.
      */
     bool loaded;
+    /**
+     * @brief Whether item was changed.
+     */
+    bool changed;
 };
 
 #endif // SCRIBE__ITEM_HPP__

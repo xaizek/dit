@@ -17,6 +17,9 @@
 
 #include "Item.hpp"
 
+#include <cstddef>
+#include <ctime>
+
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -27,7 +30,7 @@
 #include "Storage.hpp"
 
 Item::Item(Storage &storage, std::string id)
-    : storage(storage), id(std::move(id)), loaded(false)
+    : storage(storage), id(std::move(id)), loaded(false), changed(false)
 {
 }
 
@@ -40,15 +43,8 @@ Item::getId() const
 std::string
 Item::getValue(const std::string &key)
 {
-    ensureLoaded();
-
-    for (const Change &c : boost::adaptors::reverse(changes)) {
-        if (c.getKey() == key) {
-            return c.getValue();
-        }
-    }
-
-    return {};
+    const Change *const change = getLatestChange(key);
+    return (change != nullptr) ? change->getValue() : std::string();
 }
 
 std::set<std::string>
@@ -82,4 +78,64 @@ Item::load()
             throw std::logic_error("Change set for " + id + " is not sorted.");
         }
     }
+}
+
+void
+Item::setValue(const std::string &key, const std::string &value)
+{
+    const std::time_t timestamp = std::time(NULL);
+
+    if (Change *const change = getLatestChange(key)) {
+        if (change->getValue() == value) {
+            return;
+        }
+
+        if (change->getTimestamp() == timestamp) {
+            // Update previous change with new value.
+            *change = Change(timestamp, key, value);
+
+            if (Change *const prev = getLatestChange(key, change)) {
+                if (prev->getValue() == value) {
+                    // Remove the change that matches old value.
+                    changes.erase(changes.begin() + (change - &changes[0]));
+                }
+            }
+
+            changed = true;
+            return;
+        }
+    }
+
+    changes.emplace_back(timestamp, key, value);
+    changed = true;
+}
+
+Change *
+Item::getLatestChange(const std::string &key)
+{
+    ensureLoaded();
+
+    for (Change &c : boost::adaptors::reverse(changes)) {
+        if (c.getKey() == key) {
+            return &c;
+        }
+    }
+    return nullptr;
+}
+
+Change *
+Item::getLatestChange(const std::string &key, Change *before)
+{
+    for (Change *c = before - 1; c >= &changes[0]; --c) {
+        if (c->getKey() == key) {
+            return c;
+        }
+    }
+    return nullptr;
+}
+
+bool
+Item::wasChanged() const
+{
+    return changed;
 }

@@ -77,6 +77,13 @@ public:
      * @throws std::runtime_error On missing item data.
      */
     void fill(Item &item);
+    /**
+     * @brief Stores changed items.
+     *
+     * @throws boost::filesystem::filesystem_error On issues with storage.
+     * @throws std::runtime_error On data write failure.
+     */
+    void save();
 
 private:
     /**
