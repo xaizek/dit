@@ -24,6 +24,7 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
 
 namespace {
@@ -40,7 +41,7 @@ public:
     Ls();
 
 public:
-    virtual int run(Storage &storage,
+    virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 };
 
@@ -53,11 +54,11 @@ Ls::Ls() : Command("ls", "lists items", "Usage: ls")
 }
 
 int
-Ls::run(Storage &storage, const std::vector<std::string> &args)
+Ls::run(Project &project, const std::vector<std::string> &args)
 {
     static_cast<void>(args);
 
-    for (Item &item : storage.list()) {
+    for (Item &item : project.getStorage().list()) {
         std::cout << item.getId() << std::endl;
     }
 

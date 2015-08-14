@@ -27,6 +27,7 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
 #include "utils.hpp"
 
@@ -44,7 +45,7 @@ public:
     Set();
 
 public:
-    virtual int run(Storage &storage,
+    virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 };
 
@@ -57,7 +58,7 @@ Set::Set() : Command("set", "changes items", "Usage: set id key=value...")
 }
 
 int
-Set::run(Storage &storage, const std::vector<std::string> &args)
+Set::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() < 2) {
         std::cerr << "set: Expected at least two arguments." << std::endl;
@@ -65,7 +66,7 @@ Set::run(Storage &storage, const std::vector<std::string> &args)
     }
 
     const std::string &id = args[0];
-    Item &item = storage.get(id);
+    Item &item = project.getStorage().get(id);
 
     for (const std::string &a : boost::make_iterator_range(args.begin() + 1,
                                                            args.end())) {

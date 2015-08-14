@@ -24,6 +24,7 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
 
 namespace {
@@ -40,7 +41,7 @@ public:
     Show();
 
 public:
-    virtual int run(Storage &storage,
+    virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 };
 
@@ -53,7 +54,7 @@ Show::Show() : Command("show", "displays items", "Usage: show id")
 }
 
 int
-Show::run(Storage &storage, const std::vector<std::string> &args)
+Show::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() != 1) {
         std::cerr << "show: Expected single argument (id)." << std::endl;
@@ -61,7 +62,7 @@ Show::run(Storage &storage, const std::vector<std::string> &args)
     }
 
     const std::string &id = args[0];
-    Item &item = storage.get(id);
+    Item &item = project.getStorage().get(id);
 
     for (const std::string &c : item.listRecordNames()) {
         const std::string &v = item.getValue(c);

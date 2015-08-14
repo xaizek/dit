@@ -25,6 +25,7 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
 #include "utils.hpp"
 
@@ -42,7 +43,7 @@ public:
     Add();
 
 public:
-    virtual int run(Storage &storage,
+    virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 };
 
@@ -55,14 +56,14 @@ Add::Add() : Command("add", "add new item", "Usage: add key=value")
 }
 
 int
-Add::run(Storage &storage, const std::vector<std::string> &args)
+Add::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.empty()) {
         std::cerr << "help: Expected at least one argument." << std::endl;
         return EXIT_FAILURE;
     }
 
-    Item &item = storage.create();
+    Item &item = project.getStorage().create();
 
     for (const std::string &a : args) {
         std::string key, value;

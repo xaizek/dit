@@ -41,7 +41,7 @@ public:
     Help();
 
 public:
-    virtual int run(Storage &storage,
+    virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 
 private:
@@ -70,7 +70,7 @@ Help::Help() : Command("help", "help information", "Usage: help [command]")
 }
 
 int
-Help::run(Storage &, const std::vector<std::string> &args)
+Help::run(Project &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
         std::cerr << "help: Expected at most one argument." << std::endl;

@@ -93,7 +93,7 @@ Scribe::run()
     }
 
     Project project((fs::path(projectsDir)/"app").string());
-    cmd->run(project.getStorage(), args);
+    cmd->run(project, args);
 
     project.getStorage().save();
 
