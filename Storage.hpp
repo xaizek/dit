@@ -26,7 +26,6 @@
 namespace boost { namespace filesystem {
   class path;
 } }
-namespace fs = boost::filesystem;
 
 class Item;
 class Project;
@@ -105,7 +104,7 @@ private:
      *
      * @throws boost::filesystem::filesystem_error On broken storage.
      */
-    void loadDir(const fs::path &path);
+    void loadDir(const boost::filesystem::path &path);
 
 private:
     /**
