@@ -20,6 +20,7 @@
 
 #include <string>
 
+#include "Config.hpp"
 #include "Storage.hpp"
 
 /**
@@ -42,6 +43,12 @@ public:
      * @returns The storage.
      */
     Storage & getStorage();
+    /**
+     * @brief Retrieves configuration of the project.
+     *
+     * @returns The configuration.
+     */
+    Config & getConfig();
     /**
      * @brief Retrieves path to root directory of the project.
      *
@@ -67,6 +74,10 @@ private:
      * @brief Storage of the project.
      */
     Storage storage;
+    /**
+     * @brief Configuration of the project.
+     */
+    Config config;
     /**
      * @brief Path to root directory of the project.
      */

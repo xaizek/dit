@@ -22,13 +22,14 @@
 
 #include <boost/filesystem.hpp>
 
+#include "Config.hpp"
 #include "Item.hpp"
 #include "Storage.hpp"
 
 namespace fs = boost::filesystem;
 
-Project::Project(std::string rootDir) : storage(*this)
-                                      , rootDir(std::move(rootDir))
+Project::Project(std::string rootDir)
+    : storage(*this), config(*this), rootDir(std::move(rootDir))
 {
     dataDir = (fs::path(this->rootDir)/"items").string();
 }
@@ -37,6 +38,12 @@ Storage &
 Project::getStorage()
 {
     return storage;
+}
+
+Config &
+Project::getConfig()
+{
+    return config;
 }
 
 const std::string &
@@ -56,4 +63,5 @@ Project::save()
 {
     // Since storage uses config, order here matters.
     storage.save();
+    config.save();
 }
