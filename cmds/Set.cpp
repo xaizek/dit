@@ -36,13 +36,13 @@ namespace {
 /**
  * @brief Implementation of "set" command, which sets item information.
  */
-class Set : public Command
+class SetCmd : public Command
 {
 public:
     /**
      * @brief Constructs the command implementation.
      */
-    Set();
+    SetCmd();
 
 public:
     /**
@@ -52,16 +52,16 @@ public:
                     const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(Set);
+REGISTER_COMMAND(SetCmd);
 
 }
 
-Set::Set() : Command("set", "changes items", "Usage: set id key=value...")
+SetCmd::SetCmd() : Command("set", "changes items", "Usage: set id key=value...")
 {
 }
 
 int
-Set::run(Project &project, const std::vector<std::string> &args)
+SetCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() < 2) {
         std::cerr << "set: Expected at least two arguments." << std::endl;

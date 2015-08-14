@@ -34,13 +34,13 @@ namespace {
 /**
  * @brief Implementation of "add" command, which sets item information.
  */
-class Add : public Command
+class AddCmd : public Command
 {
 public:
     /**
      * @brief Constructs the command implementation.
      */
-    Add();
+    AddCmd();
 
 public:
     /**
@@ -50,16 +50,16 @@ public:
                     const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(Add);
+REGISTER_COMMAND(AddCmd);
 
 }
 
-Add::Add() : Command("add", "add new item", "Usage: add key=value")
+AddCmd::AddCmd() : Command("add", "add new item", "Usage: add key=value")
 {
 }
 
 int
-Add::run(Project &project, const std::vector<std::string> &args)
+AddCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.empty()) {
         std::cerr << "help: Expected at least one argument." << std::endl;

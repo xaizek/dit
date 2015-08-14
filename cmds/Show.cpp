@@ -32,13 +32,13 @@ namespace {
 /**
  * @brief Implementation of "show" command, which displays item information.
  */
-class Show : public Command
+class ShowCmd : public Command
 {
 public:
     /**
      * @brief Constructs the command implementation.
      */
-    Show();
+    ShowCmd();
 
 public:
     /**
@@ -48,16 +48,16 @@ public:
                     const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(Show);
+REGISTER_COMMAND(ShowCmd);
 
 }
 
-Show::Show() : Command("show", "displays items", "Usage: show id")
+ShowCmd::ShowCmd() : Command("show", "displays items", "Usage: show id")
 {
 }
 
 int
-Show::run(Project &project, const std::vector<std::string> &args)
+ShowCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() != 1) {
         std::cerr << "show: Expected single argument (id)." << std::endl;

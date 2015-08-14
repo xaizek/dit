@@ -32,13 +32,13 @@ namespace {
 /**
  * @brief Implementation of "help" command, which sets item information.
  */
-class Help : public Command
+class HelpCmd : public Command
 {
 public:
     /**
      * @brief Constructs the command implementation.
      */
-    Help();
+    HelpCmd();
 
 public:
     /**
@@ -64,16 +64,17 @@ private:
     int commandHelp(const std::string &cmdName);
 };
 
-REGISTER_COMMAND(Help);
+REGISTER_COMMAND(HelpCmd);
 
 }
 
-Help::Help() : Command("help", "help information", "Usage: help [command]")
+HelpCmd::HelpCmd()
+    : Command("help", "help information", "Usage: help [command]")
 {
 }
 
 int
-Help::run(Project &, const std::vector<std::string> &args)
+HelpCmd::run(Project &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
         std::cerr << "help: Expected at most one argument." << std::endl;
@@ -89,7 +90,7 @@ Help::run(Project &, const std::vector<std::string> &args)
 }
 
 int
-Help::listCommands()
+HelpCmd::listCommands()
 {
     for (Command &cmd : sorted(Commands::list())) {
         std::cout << cmd.getName() << " -- " << cmd.getDescr() << '\n';
@@ -106,7 +107,7 @@ operator<(const Command &l, const Command &r)
 }
 
 int
-Help::commandHelp(const std::string &cmdName)
+HelpCmd::commandHelp(const std::string &cmdName)
 {
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {

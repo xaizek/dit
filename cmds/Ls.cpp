@@ -32,13 +32,13 @@ namespace {
 /**
  * @brief Implementation of "ls" command, which lists items.
  */
-class Ls : public Command
+class LsCmd : public Command
 {
 public:
     /**
      * @brief Constructs the command implementation.
      */
-    Ls();
+    LsCmd();
 
 public:
     /**
@@ -48,16 +48,16 @@ public:
                     const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(Ls);
+REGISTER_COMMAND(LsCmd);
 
 }
 
-Ls::Ls() : Command("ls", "lists items", "Usage: ls")
+LsCmd::LsCmd() : Command("ls", "lists items", "Usage: ls")
 {
 }
 
 int
-Ls::run(Project &project, const std::vector<std::string> &args)
+LsCmd::run(Project &project, const std::vector<std::string> &args)
 {
     static_cast<void>(args);
 
