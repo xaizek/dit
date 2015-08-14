@@ -26,6 +26,8 @@
 
 #include <boost/range.hpp>
 
+// TODO: add missing comments here
+
 // Heavily based on code from this post:
 // http://ericniebler.com/2013/10/13/out-parameters-vs-move-semantics/
 

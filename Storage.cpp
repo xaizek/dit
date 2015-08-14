@@ -33,7 +33,8 @@
 
 namespace fs = boost::filesystem;
 
-Storage::Storage(Project &project) : project(project)
+Storage::Storage(Project &project)
+    : project(project), idGenerator(project.getConfig())
 {
 }
 
@@ -42,10 +43,15 @@ Storage::create()
 {
     ensureLoaded();
 
+    const std::string id = idGenerator.getId();
+
     decltype(items)::iterator it;
     bool inserted;
-    std::tie(it, inserted) = items.emplace("fid", Item(*this, "fid", false));
+    std::tie(it, inserted) = items.emplace(id, Item(*this, id, false));
     assert(inserted && "Duplicated item id");
+
+    // Advance ID if we got here without exceptions.
+    idGenerator.advanceId();
 
     return it->second;
 }
@@ -138,4 +144,6 @@ Storage::save()
         /* TODO: write only new changes (append them). */
         file << e.second.changes;
     }
+
+    idGenerator.save();
 }

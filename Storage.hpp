@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "IdGenerator.hpp"
 #include "LazyLoadable.hpp"
 
 namespace boost { namespace filesystem {
@@ -46,14 +47,6 @@ public:
      * @param project Project, which is parent of the storage.
      */
     Storage(Project &project);
-
-public:
-    /**
-     * @brief Initializes storage for a new project.
-     *
-     * @param project Project to initialize.
-     */
-    static void init(Project &project);
 
 public:
     /**
@@ -121,6 +114,10 @@ private:
      * @brief Items known to the storage.
      */
     std::map<std::string, Item> items;
+    /**
+     * @brief Implementation of ID generation algorithm.
+     */
+    IdGenerator idGenerator;
 };
 
 #endif // SCRIBE__STORAGE_HPP__
