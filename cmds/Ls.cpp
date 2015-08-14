@@ -41,6 +41,9 @@ public:
     Ls();
 
 public:
+    /**
+     * @copydoc Command::run()
+     */
     virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
 };
