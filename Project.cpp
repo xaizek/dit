@@ -50,3 +50,10 @@ Project::getDataDir() const
 {
     return dataDir;
 }
+
+void
+Project::save()
+{
+    // Since storage uses config, order here matters.
+    storage.save();
+}

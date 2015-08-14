@@ -54,6 +54,13 @@ public:
      * @returns The path.
      */
     const std::string & getDataDir() const;
+    /**
+     * @brief Stores all project related data.
+     *
+     * @throws boost::filesystem::filesystem_error On issues with storage.
+     * @throws std::runtime_error On data write failure.
+     */
+    void save();
 
 private:
     /**
