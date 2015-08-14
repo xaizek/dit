@@ -60,15 +60,6 @@ Item::listRecordNames()
 }
 
 void
-Item::ensureLoaded()
-{
-    if (!loaded) {
-        load();
-        loaded = true;
-    }
-}
-
-void
 Item::load()
 {
     storage.fill(*this);

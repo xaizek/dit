@@ -22,6 +22,8 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+#include "LazyLoadable.hpp"
+
 class Project;
 
 /**
@@ -30,8 +32,10 @@ class Project;
  * Keys that start with exclamation mark ("!") are builtin ones and shouldn't
  * normally be touched from the outside.
  */
-class Config
+class Config : private LazyLoadable<Config>
 {
+    friend class LazyLoadable<Config>;
+
 public:
     /**
      * @brief Constructs configuration for the @p project.
@@ -88,10 +92,6 @@ public:
 
 private:
     /**
-     * @brief Ensures that in-memory representation is up-to-date.
-     */
-    void ensureLoaded();
-    /**
      * @brief Fills in in-memory representation.
      */
     void load();
@@ -105,10 +105,6 @@ private:
      * @brief In-memory storage of the configuration.
      */
     boost::property_tree::ptree props;
-    /**
-     * @brief Whether configuration was loaded from permanent storage.
-     */
-    bool loaded;
     /**
      * @brief Whether there are change to write back to permanent storage.
      */

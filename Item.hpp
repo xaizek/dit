@@ -23,14 +23,16 @@
 #include <vector>
 
 #include "Change.hpp"
+#include "LazyLoadable.hpp"
 
 class Storage;
 
 /**
  * @brief Single item to take care of.
  */
-class Item
+class Item : private LazyLoadable<Item>
 {
+    friend class LazyLoadable<Item>;
     friend class Storage;
 
 private:
@@ -103,12 +105,6 @@ public:
     bool wasChanged() const;
 
 private:
-    /**
-     * @brief Ensures that data is loaded from storage.
-     *
-     * @throws std::runtime_error On missing/broken storage cell.
-     */
-    void ensureLoaded();
     /**
      * @brief Actually loads data from storage.
      *

@@ -28,8 +28,7 @@
 namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
-Config::Config(Project &project)
-    : project(project), loaded(false), changed(false)
+Config::Config(Project &project) : project(project), changed(false)
 {
 }
 
@@ -73,15 +72,6 @@ Config::save()
 
     std::string fname = (fs::path(project.getRootDir())/"config").string();
     write_info(fname, props);
-}
-
-void
-Config::ensureLoaded()
-{
-    if (!loaded) {
-        load();
-        loaded = true;
-    }
 }
 
 void

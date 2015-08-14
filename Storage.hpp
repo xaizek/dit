@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "LazyLoadable.hpp"
+
 namespace boost { namespace filesystem {
   class path;
 } }
@@ -33,8 +35,10 @@ class Project;
 /**
  * @brief Storage for a set of items.
  */
-class Storage
+class Storage : private LazyLoadable<Storage>
 {
+    friend class LazyLoadable<Storage>;
+
 public:
     /**
      * @brief Creates storage for the @p project.
@@ -42,6 +46,14 @@ public:
      * @param project Project, which is parent of the storage.
      */
     Storage(Project &project);
+
+public:
+    /**
+     * @brief Initializes storage for a new project.
+     *
+     * @param project Project to initialize.
+     */
+    static void init(Project &project);
 
 public:
     /**
@@ -86,12 +98,6 @@ public:
 
 private:
     /**
-     * @brief Ensures that storage is loaded from physical source.
-     *
-     * @throws boost::filesystem::filesystem_error On broken storage.
-     */
-    void ensureLoaded();
-    /**
      * @brief Actually loads storage from physical source, first level.
      *
      * @throws boost::filesystem::filesystem_error On broken storage.
@@ -115,13 +121,6 @@ private:
      * @brief Items known to the storage.
      */
     std::map<std::string, Item> items;
-    /**
-     * @brief Whether storage is loaded from physical source.
-     *
-     * Otherwise it can contain newly created in-memory items, but be missing
-     * items that were created and stored before.
-     */
-    bool loaded;
 };
 
 #endif // SCRIBE__STORAGE_HPP__

@@ -33,7 +33,7 @@
 
 namespace fs = boost::filesystem;
 
-Storage::Storage(Project &project) : project(project), loaded(false)
+Storage::Storage(Project &project) : project(project)
 {
 }
 
@@ -74,15 +74,6 @@ Storage::list()
         list.emplace_back(e.second);
     }
     return list;
-}
-
-void
-Storage::ensureLoaded()
-{
-    if (!loaded) {
-        load();
-        loaded = true;
-    }
 }
 
 void
