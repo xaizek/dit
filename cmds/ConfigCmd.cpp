@@ -47,6 +47,10 @@ public:
      */
     virtual int run(Project &project,
                     const std::vector<std::string> &args) override;
+
+private:
+    int printAllValues(Config &config);
+    void printKey(Config &config, const std::string &key);
 };
 
 REGISTER_COMMAND(ConfigCmd);
@@ -62,11 +66,11 @@ ConfigCmd::ConfigCmd()
 int
 ConfigCmd::run(Project &project, const std::vector<std::string> &args)
 {
-    if (args.empty()) {
-        return EXIT_FAILURE;
-    }
-
     Config &config = project.getConfig();
+
+    if (args.empty()) {
+        return printAllValues(config);
+    }
 
     for (const std::string &a : args) {
         bool set;
@@ -87,10 +91,40 @@ ConfigCmd::run(Project &project, const std::vector<std::string> &args)
         if (set) {
             config.set(key, value);
         } else {
-            std::cout << key << " = " << config.get(key, "<not set>") << '\n';
+            printKey(config, key);
         }
     }
     std::cout.flush();
 
     return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Lists configuration keys along with their values.
+ *
+ * Builtin keys are not listed.
+ *
+ * @param config Configuration to read keys from.
+ *
+ * @returns Error code.
+ */
+int
+ConfigCmd::printAllValues(Config &config)
+{
+    for (const std::string &key : config.list()) {
+        printKey(config, key);
+    }
+    return EXIT_FAILURE;
+}
+
+/**
+ * @brief Prints single key-value pair.
+ *
+ * @param config Configuration.
+ * @param key Name of key to print.
+ */
+void
+ConfigCmd::printKey(Config &config, const std::string &key)
+{
+    std::cout << key << " = " << config.get(key, "<not set>") << '\n';
 }

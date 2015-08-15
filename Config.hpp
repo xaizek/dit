@@ -19,6 +19,7 @@
 #define SCRIBE__CONFIG_HPP__
 
 #include <string>
+#include <vector>
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -78,6 +79,12 @@ public:
      * @returns The value or @p def.
      */
     std::string get(const std::string &key, const std::string &def);
+    /**
+     * @brief Lists all existing keys in alphabetical order.
+     *
+     * @returns The list.
+     */
+    std::vector<std::string> list();
     /**
      * @brief Assigns value to the @p key.
      *

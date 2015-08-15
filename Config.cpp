@@ -18,11 +18,14 @@
 #include "Config.hpp"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/filesystem.hpp>
 
+#include "utils/propsRange.hpp"
 #include "Project.hpp"
 
 namespace fs = boost::filesystem;
@@ -44,6 +47,20 @@ Config::get(const std::string &key, const std::string &def)
 {
     ensureLoaded();
     return props.get<std::string>(key, def);
+}
+
+std::vector<std::string>
+Config::list()
+{
+    ensureLoaded();
+
+    std::vector<std::string> list;
+    for (const std::string &propName : propsRange(props)) {
+        if (propName[0] != '!') {
+            list.push_back(propName);
+        }
+    }
+    return std::move(list);
 }
 
 void
