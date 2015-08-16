@@ -32,8 +32,10 @@ class LazyLoadable
 protected:
     /**
      * @brief Initializes the instance as "not loaded".
+     *
+     * @param loaded Whether instance is loaded on initialization.
      */
-    LazyLoadable() : loaded(false)
+    LazyLoadable(bool loaded = false) : loaded(loaded)
     {
     }
 

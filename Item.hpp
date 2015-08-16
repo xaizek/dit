@@ -143,13 +143,6 @@ private:
      */
     std::vector<Change> changes;
     /**
-     * @brief Whether item contains real data.
-     *
-     * Otherwise this instance represents an item and data will be loaded on
-     * demand.
-     */
-    bool loaded;
-    /**
      * @brief Whether item was changed.
      */
     bool changed;
