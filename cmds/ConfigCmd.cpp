@@ -22,11 +22,11 @@
 #include <string>
 #include <vector>
 
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
 #include "Project.hpp"
-#include "utils.hpp"
 
 namespace {
 

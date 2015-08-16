@@ -21,7 +21,6 @@
 
 #include <istream>
 #include <iterator>
-#include <stdexcept>
 #include <string>
 
 #include <boost/range.hpp>
@@ -97,27 +96,6 @@ inline detail::linesRange
 getLines(std::istream& s, char delim = '\n')
 {
     return detail::linesRange(s, delim);
-}
-
-/**
- * @brief Splits string in two parts at the leftmost delimiter.
- *
- * @param s String to split.
- * @param delim Delimiter, which separates left and right parts of the string.
- *
- * @returns Pair of left and right string parts.
- *
- * @throws std::runtime_error On failure to find delimiter in the string.
- */
-inline std::pair<std::string, std::string>
-splitAt(const std::string &s, char delim)
-{
-    const std::string::size_type pos = s.find(delim);
-    if (pos == std::string::npos) {
-        throw std::runtime_error("Can't split " + s + " with " + delim);
-    }
-
-    return { s.substr(0, pos), s.substr(pos + 1U) };
 }
 
 #endif // SCRIBE__UTILS_HPP__

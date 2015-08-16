@@ -22,12 +22,12 @@
 #include <utility>
 #include <vector>
 
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
-#include "utils.hpp"
 
 namespace {
 

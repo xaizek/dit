@@ -19,17 +19,17 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include <boost/range/iterator_range.hpp>
 
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
-#include "utils.hpp"
 
 namespace {
 
