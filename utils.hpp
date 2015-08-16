@@ -120,38 +120,4 @@ splitAt(const std::string &s, char delim)
     return { s.substr(0, pos), s.substr(pos + 1U) };
 }
 
-namespace detail {
-
-template <class C>
-class Sorted
-{
-public:
-    Sorted(C &&c) : c(std::move(c))
-    {
-        std::sort(this->c.begin(), this->c.end());
-    }
-
-    typename C::iterator begin() { return c.begin(); }
-    typename C::iterator end() { return c.end(); }
-
-private:
-    C c;
-};
-
-}
-
-/**
- * @brief Adapter for iterating container elements in sorted order.
- *
- * @tparam C Type of container.
- * @param c Container itself.
- *
- * @returns Object suitable to be used in range for loop.
- */
-template <class C>
-detail::Sorted<C> sorted(C &&c)
-{
-    return detail::Sorted<C>(std::move(c));
-}
-
 #endif // SCRIBE__UTILS_HPP__
