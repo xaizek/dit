@@ -30,9 +30,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "utils/getLines.hpp"
 #include "utils/strings.hpp"
 #include "Change.hpp"
-#include "utils.hpp"
 
 static std::pair<std::string, std::string> splitRecord(const std::string &s);
 static std::string decode(std::string str);
