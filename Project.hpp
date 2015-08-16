@@ -50,12 +50,6 @@ public:
      */
     Config & getConfig();
     /**
-     * @brief Retrieves path to root directory of the project.
-     *
-     * @returns The path.
-     */
-    const std::string & getRootDir() const;
-    /**
      * @brief Retrieves path to directory where items are stored.
      *
      * @returns The path.

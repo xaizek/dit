@@ -26,12 +26,11 @@
 #include <boost/filesystem.hpp>
 
 #include "utils/propsRange.hpp"
-#include "Project.hpp"
 
 namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
-Config::Config(Project &project) : project(project), changed(false)
+Config::Config(std::string path) : path(std::move(path)), changed(false)
 {
 }
 
@@ -87,20 +86,17 @@ Config::save()
         return;
     }
 
-    std::string fname = (fs::path(project.getRootDir())/"config").string();
-    write_info(fname, props);
+    write_info(path, props);
 }
 
 void
 Config::load()
 {
-    std::string fname = (fs::path(project.getRootDir())/"config").string();
-
     try {
-        read_info(fname, props);
+        read_info(path, props);
     } catch (pt::info_parser_error &) {
-        // It's OK if project specific configuration doesn't exist.
-        if (fs::exists(fname)) {
+        // It's OK if specific configuration doesn't exist yet.
+        if (fs::exists(path)) {
             throw;
         }
     }

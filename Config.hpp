@@ -25,8 +25,6 @@
 
 #include "LazyLoadable.hpp"
 
-class Project;
-
 /**
  * @brief Abstraction over configuration storage.
  *
@@ -39,11 +37,11 @@ class Config : private LazyLoadable<Config>
 
 public:
     /**
-     * @brief Constructs configuration for the @p project.
+     * @brief Constructs configuration for file specified by @p path.
      *
-     * @param project Associated project.
+     * @param path Associated project.
      */
-    Config(Project &project);
+    explicit Config(std::string path);
     /**
      * @brief Copying is forbidden.
      *
@@ -105,9 +103,9 @@ private:
 
 private:
     /**
-     * @brief Associated project.
+     * @brief Path to configuration file.
      */
-    Project &project;
+    const std::string path;
     /**
      * @brief In-memory storage of the configuration.
      */

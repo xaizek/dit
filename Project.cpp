@@ -28,10 +28,25 @@
 
 namespace fs = boost::filesystem;
 
+static std::string getSubRootPath(const fs::path &rootPath,
+                                  const std::string &subPath);
+
 Project::Project(std::string rootDir)
-    : storage(*this), config(*this), rootDir(std::move(rootDir))
+    : storage(*this), config(getSubRootPath(rootDir, "config")),
+      rootDir(std::move(rootDir))
 {
-    dataDir = (fs::path(this->rootDir)/"items").string();
+    dataDir = getSubRootPath(this->rootDir, "items");
+}
+
+/**
+ * @brief Retrieves path to configuration file of the project.
+ *
+ * @returns The path.
+ */
+static std::string
+getSubRootPath(const fs::path &rootPath, const std::string &subPath)
+{
+    return (rootPath/subPath).string();
 }
 
 Storage &
@@ -44,12 +59,6 @@ Config &
 Project::getConfig()
 {
     return config;
-}
-
-const std::string &
-Project::getRootDir() const
-{
-    return rootDir;
 }
 
 const std::string &
