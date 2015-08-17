@@ -18,8 +18,11 @@
 #ifndef SCRIBE__SCRIBE_HPP__
 #define SCRIBE__SCRIBE_HPP__
 
+#include <memory>
 #include <string>
 #include <vector>
+
+class Config;
 
 /**
  * @brief Application implementation.
@@ -36,14 +39,24 @@ public:
      * @throws std::runtime_error on broken argument list.
      */
     Scribe(int argc, const char *const argv[]);
+    /**
+     * @brief Emit field destruction locally.
+     */
+    ~Scribe();
 
 public:
     /**
      * @brief Entry point of the application.
      *
-     * @returns Exit status of the applicatio (to be returned by @c main()).
+     * @returns Exit status of the application (to be returned by @c main()).
      */
     int run();
+    /**
+     * @brief Retrieves global configuration object.
+     *
+     * @returns The configuration.
+     */
+    Config & getConfig();
 
 private:
     /**
@@ -73,6 +86,10 @@ private:
      * @brief Arguments for the command specified by @c cmdName.
      */
     std::vector<std::string> args;
+    /**
+     * @brief Holds global configuration.
+     */
+    std::unique_ptr<Config> config;
     /**
      * @brief Root directory of all projects.
      */

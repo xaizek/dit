@@ -29,6 +29,7 @@
 
 #include "Command.hpp"
 #include "Commands.hpp"
+#include "Config.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 
@@ -43,6 +44,10 @@ Scribe::Scribe(int argc, const char *const argv[])
 {
     initArgs(argc, argv);
     initConfig();
+}
+
+Scribe::~Scribe()
+{
 }
 
 void
@@ -73,14 +78,17 @@ Scribe::initConfig()
         throw std::runtime_error("HOME environment variable is not set.");
     }
 
-    fs::path config_home;
+    fs::path configHomePath;
     if (const char *const config_home_env = std::getenv("XDG_CONFIG_HOME")) {
-        config_home = fs::path(config_home_env)/"scribe";
+        configHomePath = fs::path(config_home_env)/"scribe";
     } else {
-        config_home = home/".config/scribe";
+        configHomePath = home/".config/scribe";
     }
 
-    projectsDir = (config_home/"projects").string();
+    projectsDir = (configHomePath/"projects").string();
+
+    std::string configPath = (configHomePath/"config").string();
+    config.reset(new Config(configPath));
 }
 
 int
@@ -96,6 +104,13 @@ Scribe::run()
     cmd->run(project, args);
 
     project.save();
+    config->save();
 
     return EXIT_SUCCESS;
+}
+
+Config &
+Scribe::getConfig()
+{
+    return *config;
 }
