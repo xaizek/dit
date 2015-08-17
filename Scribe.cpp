@@ -53,7 +53,14 @@ Scribe::initArgs(int argc, const char *const argv[])
     }
 
     appName = argv[0];
-    std::copy(argv + 1, argv + argc, std::back_inserter(args));
+
+    // TODO: come up with better parsing code.
+    int offset = 1;
+    if (argc > 1 && argv[1][0] == '@') {
+        prjName = &argv[1][1];
+        ++offset;
+    }
+    std::copy(argv + offset, argv + argc, std::back_inserter(args));
 
     if (!args.empty()) {
         cmdName = args[0];
@@ -97,7 +104,16 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    Project project((fs::path(projectsDir)/"app").string());
+    if (prjName.empty()) {
+        prjName = config->get("core.defprj", "");
+    }
+
+    if (prjName.empty()) {
+        std::cerr << "No project specified" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    Project project((fs::path(projectsDir)/prjName).string());
 
     const int exitCode = cmd->run(project, args);
 

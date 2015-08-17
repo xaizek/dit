@@ -79,6 +79,10 @@ private:
      */
     std::string appName;
     /**
+     * @brief Name of the project to operate on.
+     */
+    std::string prjName;
+    /**
      * @brief Name of command to execute.
      */
     std::string cmdName;
