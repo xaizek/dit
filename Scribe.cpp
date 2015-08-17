@@ -35,11 +35,6 @@
 
 namespace fs = boost::filesystem;
 
-/**
- * @brief Default command name used when run without arguments.
- */
-static std::string DEFAULT_CMD = "ls";
-
 Scribe::Scribe(int argc, const char *const argv[])
 {
     initArgs(argc, argv);
@@ -60,9 +55,7 @@ Scribe::initArgs(int argc, const char *const argv[])
     appName = argv[0];
     std::copy(argv + 1, argv + argc, std::back_inserter(args));
 
-    if (args.empty()) {
-        cmdName = DEFAULT_CMD;
-    } else {
+    if (!args.empty()) {
         cmdName = args[0];
         args.erase(args.begin());
     }
@@ -94,6 +87,10 @@ Scribe::initConfig()
 int
 Scribe::run()
 {
+    if (cmdName.empty()) {
+        cmdName = config->get("core.defcmd", "ls");
+    }
+
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
         std::cerr << "Unknown command name: " << cmdName << std::endl;
