@@ -49,6 +49,12 @@ getSubRootPath(const fs::path &rootPath, const std::string &subPath)
     return (rootPath/subPath).string();
 }
 
+bool
+Project::exists() const
+{
+    return fs::is_directory(rootDir);
+}
+
 Storage &
 Project::getStorage()
 {

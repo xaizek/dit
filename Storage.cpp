@@ -86,6 +86,12 @@ void
 Storage::load()
 {
     const std::string &dataDir = project.getDataDir();
+
+    // Suppress throwing exceptions if project doesn't have any items.
+    if (project.exists() && !fs::is_directory(dataDir)) {
+        return;
+    }
+
     for (fs::directory_entry &e : fs::directory_iterator(dataDir)) {
         loadDir(e.path());
     }

@@ -38,6 +38,12 @@ public:
 
 public:
     /**
+     * @brief Checks whether project exists.
+     *
+     * @returns @c true if so, @c false otherwise.
+     */
+    bool exists() const;
+    /**
      * @brief Retrieves storage associates with this project.
      *
      * @returns The storage.
