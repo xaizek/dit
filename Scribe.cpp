@@ -101,12 +101,15 @@ Scribe::run()
     }
 
     Project project((fs::path(projectsDir)/"app").string());
-    cmd->run(project, args);
 
-    project.save();
-    config->save();
+    const int exitCode = cmd->run(project, args);
 
-    return EXIT_SUCCESS;
+    if (exitCode == EXIT_SUCCESS) {
+        project.save();
+        config->save();
+    }
+
+    return exitCode;
 }
 
 Config &
