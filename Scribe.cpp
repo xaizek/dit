@@ -114,6 +114,10 @@ Scribe::run()
     }
 
     Project project((fs::path(projectsDir)/prjName).string());
+    if (!project.exists()) {
+        std::cerr << "Project does not exist: " << prjName << std::endl;
+        return EXIT_FAILURE;
+    }
 
     const int exitCode = cmd->run(project, args);
 
