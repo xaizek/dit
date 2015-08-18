@@ -21,9 +21,7 @@
 #include <utility>
 
 Command::Command(std::string name, std::string descr, std::string help)
-    : name(std::move(name))
-    , descr(std::move(descr))
-    , help(std::move(help))
+    : name(std::move(name)), descr(std::move(descr)), help(std::move(help))
 {
 }
 
@@ -43,4 +41,16 @@ std::string
 Command::getHelp() const
 {
     return help;
+}
+
+boost::optional<int>
+Command::run(Scribe &, const std::vector<std::string> &)
+{
+    return {};
+}
+
+boost::optional<int>
+Command::run(Project &, const std::vector<std::string> &)
+{
+    return {};
 }

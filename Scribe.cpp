@@ -26,6 +26,7 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
+#include <boost/optional.hpp>
 
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -104,6 +105,13 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
+    if (boost::optional<int> exitCode = cmd->run(*this, args)) {
+        if (*exitCode == EXIT_SUCCESS) {
+            config->save();
+        }
+        return *exitCode;
+    }
+
     if (prjName.empty()) {
         prjName = config->get("core.defprj", "");
     }
@@ -119,14 +127,17 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    const int exitCode = cmd->run(project, args);
+    if (boost::optional<int> exitCode = cmd->run(project, args)) {
+        if (*exitCode == EXIT_SUCCESS) {
+            project.save();
+            config->save();
+        }
 
-    if (exitCode == EXIT_SUCCESS) {
-        project.save();
-        config->save();
+        return *exitCode;
     }
 
-    return exitCode;
+    assert(false && "Command has no or broken implementation.");
+    return EXIT_FAILURE;
 }
 
 Config &

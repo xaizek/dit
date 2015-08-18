@@ -48,8 +48,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(SetCmd);
@@ -60,7 +61,7 @@ SetCmd::SetCmd() : Command("set", "changes items", "Usage: set id key=value...")
 {
 }
 
-int
+boost::optional<int>
 SetCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() < 2) {

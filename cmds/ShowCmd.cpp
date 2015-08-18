@@ -44,8 +44,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(ShowCmd);
@@ -56,7 +57,7 @@ ShowCmd::ShowCmd() : Command("show", "displays items", "Usage: show id")
 {
 }
 
-int
+boost::optional<int>
 ShowCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() != 1) {

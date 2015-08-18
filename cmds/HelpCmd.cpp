@@ -44,8 +44,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Scribe &scribe,
+        const std::vector<std::string> &args) override;
 
 private:
     /**
@@ -73,8 +74,8 @@ HelpCmd::HelpCmd()
 {
 }
 
-int
-HelpCmd::run(Project &, const std::vector<std::string> &args)
+boost::optional<int>
+HelpCmd::run(Scribe &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
         std::cerr << "help: Expected at most one argument." << std::endl;

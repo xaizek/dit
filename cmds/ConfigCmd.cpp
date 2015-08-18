@@ -45,8 +45,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
 
 private:
     int printAllValues(Config &config);
@@ -63,7 +64,7 @@ ConfigCmd::ConfigCmd()
 {
 }
 
-int
+boost::optional<int>
 ConfigCmd::run(Project &project, const std::vector<std::string> &args)
 {
     Config &config = project.getConfig();

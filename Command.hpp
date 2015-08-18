@@ -21,7 +21,10 @@
 #include <string>
 #include <vector>
 
+#include <boost/optional.hpp>
+
 class Project;
+class Scribe;
 
 /**
  * @brief Base class for sub-commands.
@@ -66,14 +69,27 @@ public:
 
 public:
     /**
-     * @brief Executes command with specified arguments.
+     * @brief Executes generic command (no project) with specified arguments.
+     *
+     * @param scribe Application instance.
+     * @param args List of arguments for the command.
+     *
+     * @returns Exit code suitable for returning it from @c main() or empty
+     *          value if not implemented.
+     */
+    virtual boost::optional<int> run(Scribe &scribe,
+                                     const std::vector<std::string> &args);
+    /**
+     * @brief Executes project command with specified arguments.
      *
      * @param project Project to perform operation on.
      * @param args List of arguments for the command.
      *
-     * @returns Exit code suitable for returning it from @c main().
+     * @returns Exit code suitable for returning it from @c main() or empty
+     *          value if not implemented.
      */
-    virtual int run(Project &project, const std::vector<std::string> &args) = 0;
+    virtual boost::optional<int> run(Project &project,
+                                     const std::vector<std::string> &args);
 
 private:
     /**

@@ -46,8 +46,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(AddCmd);
@@ -58,7 +59,7 @@ AddCmd::AddCmd() : Command("add", "add new item", "Usage: add key=value")
 {
 }
 
-int
+boost::optional<int>
 AddCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.empty()) {

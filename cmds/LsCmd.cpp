@@ -44,8 +44,9 @@ public:
     /**
      * @copydoc Command::run()
      */
-    virtual int run(Project &project,
-                    const std::vector<std::string> &args) override;
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(LsCmd);
@@ -56,10 +57,9 @@ LsCmd::LsCmd() : Command("ls", "lists items", "Usage: ls")
 {
 }
 
-int
-LsCmd::run(Project &project, const std::vector<std::string> &args)
+boost::optional<int>
+LsCmd::run(Project &project, const std::vector<std::string> &)
 {
-    static_cast<void>(args);
 
     for (Item &item : project.getStorage().list()) {
         std::cout << item.getId() << std::endl;
