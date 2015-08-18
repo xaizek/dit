@@ -17,13 +17,13 @@
 
 #include <cstdlib>
 
-#include <iostream>
 #include <string>
 #include <vector>
 
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "ItemTable.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
 
@@ -60,10 +60,17 @@ LsCmd::LsCmd() : Command("ls", "lists items", "Usage: ls")
 boost::optional<int>
 LsCmd::run(Project &project, const std::vector<std::string> &)
 {
+    Config &config = project.getConfig();
+    std::string fmt = config.get("ui.ls.fmt", "_id|title");
+    std::string sort = config.get("ui.ls.sort", "title|_id");
+
+    ItemTable table(fmt, sort);
 
     for (Item &item : project.getStorage().list()) {
-        std::cout << item.getId() << std::endl;
+        table.append(item);
     }
+
+    table.print();
 
     return EXIT_SUCCESS;
 }
