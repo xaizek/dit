@@ -1,5 +1,5 @@
 CXXFLAGS += -std=c++11 -Wall -Wextra -Werror -MMD -I$(abspath .)
-LDFLAGS += -lboost_filesystem -lboost_system
+LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_system
 
 ifneq ($(OS),Windows_NT)
     bin_suffix :=
