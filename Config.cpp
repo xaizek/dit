@@ -45,7 +45,8 @@ std::string
 Config::get(const std::string &key, const std::string &def)
 {
     ensureLoaded();
-    return props.get<std::string>(key, def);
+    std::string val = props.get<std::string>(key, def);
+    return val.empty() ? def : std::move(val);
 }
 
 std::vector<std::string>

@@ -127,5 +127,8 @@ ConfigCmd::printAllValues(Config &config)
 void
 ConfigCmd::printKey(Config &config, const std::string &key)
 {
-    std::cout << key << " = " << config.get(key, "<not set>") << '\n';
+    const std::string val = config.get(key, "<not set>");
+    if (!val.empty()) {
+        std::cout << key << " = " << val << '\n';
+    }
 }
