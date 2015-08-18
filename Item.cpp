@@ -44,6 +44,10 @@ Item::getId() const
 std::string
 Item::getValue(const std::string &key)
 {
+    if (key == "_id") {
+        return getId();
+    }
+
     const Change *const change = getLatestChange(key);
     return (change != nullptr) ? change->getValue() : std::string();
 }
@@ -75,6 +79,10 @@ Item::load()
 void
 Item::setValue(const std::string &key, const std::string &value)
 {
+    if (key.empty() || key[0] == '_') {
+        return;
+    }
+
     const std::time_t timestamp = std::time(NULL);
 
     if (Change *const change = getLatestChange(key)) {

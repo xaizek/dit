@@ -29,6 +29,9 @@ class Storage;
 
 /**
  * @brief Single item to take care of.
+ *
+ * Pseudo-keys start with '_', such keys are read-only.
+ * TODO: validate what's written above.
  */
 class Item : private LazyLoadable<Item>
 {
