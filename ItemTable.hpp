@@ -19,6 +19,7 @@
 #define SCRIBE__ITEMTABLE_HPP__
 
 #include <functional>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -55,8 +56,10 @@ public:
     void append(Item &item);
     /**
      * @brief Prints table on standard output.
+     *
+     * @param os Output stream.
      */
-    void print();
+    void print(std::ostream &os);
 
 private:
     /**

@@ -70,7 +70,7 @@ LsCmd::run(Project &project, const std::vector<std::string> &)
         table.append(item);
     }
 
-    table.print();
+    table.print(out());
 
     return EXIT_SUCCESS;
 }

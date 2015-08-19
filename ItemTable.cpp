@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <functional>
 #include <iomanip>
-#include <iostream>
 #include <iterator>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -148,7 +148,7 @@ void ItemTable::append(Item &item)
     items.emplace_back(item);
 }
 
-void ItemTable::print()
+void ItemTable::print(std::ostream &os)
 {
     // Ensure items are in correct order.
     const std::vector<std::string> keys = split(sort, '|');
@@ -171,18 +171,16 @@ void ItemTable::print()
 
     // Print table heading.
     for (Column &col : cols) {
-        std::cout << std::setw(col.getWidth()) << std::left
-                  << col.getHeading() << gap;
+        os << std::setw(col.getWidth()) << std::left << col.getHeading() << gap;
     }
-    std::cout << '\n';
+    os << '\n';
 
     // Print table lines.
     for (unsigned int i = 0, n = items.size(); i < n; ++i) {
         for (Column &col : cols) {
-            std::cout << std::setw(col.getWidth()) << std::left
-                      << col[i] << gap;
+            os << std::setw(col.getWidth()) << std::left << col[i] << gap;
         }
-        std::cout << '\n';
+        os << '\n';
     }
 }
 
