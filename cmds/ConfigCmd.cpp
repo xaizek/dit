@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -124,7 +124,7 @@ ConfigCmd::run(Scribe &scribe, const std::vector<std::string> &args)
     po::notify(vm);
 
     if (vm.count("help")) {
-        std::cout << visible;
+        out() << visible;
         return EXIT_SUCCESS;
     }
 
@@ -164,7 +164,7 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
         }
 
         if (key.empty() || key[0] == '!') {
-            std::cout << "Wrong key name: '" << key << "'\n";
+            out() << "Wrong key name: '" << key << "'\n";
             continue;
         }
 
@@ -174,7 +174,6 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
             printKey(config, key);
         }
     }
-    std::cout.flush();
 
     return EXIT_SUCCESS;
 }
@@ -193,6 +192,6 @@ ConfigCmd::printKey(Config &config, const std::string &key)
 {
     const std::string val = config.get(key, "<not set>");
     if (!val.empty()) {
-        std::cout << key << " = " << val << '\n';
+        out() << key << " = " << val << '\n';
     }
 }

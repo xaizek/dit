@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -65,7 +65,7 @@ boost::optional<int>
 SetCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() < 2) {
-        std::cerr << "set: Expected at least two arguments." << std::endl;
+        err() << "Expected at least two arguments.\n";
         return EXIT_FAILURE;
     }
 
@@ -78,7 +78,7 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
         std::tie(key, value) = splitAt(a, '=');
 
         if (key.empty() || key[0] == '_') {
-            std::cout << "Wrong key name: '" << key << "'\n";
+            out() << "Wrong key name: '" << key << "'\n";
             continue;
         }
 

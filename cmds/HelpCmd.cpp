@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -78,7 +78,7 @@ boost::optional<int>
 HelpCmd::run(Scribe &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
-        std::cerr << "help: Expected at most one argument." << std::endl;
+        err() << "Expected at most one argument.\n";
         return EXIT_FAILURE;
     }
 
@@ -94,9 +94,8 @@ int
 HelpCmd::listCommands()
 {
     for (Command &cmd : sorted(Commands::list())) {
-        std::cout << cmd.getName() << " -- " << cmd.getDescr() << '\n';
+        out() << cmd.getName() << " -- " << cmd.getDescr() << '\n';
     }
-    std::cout.flush();
 
     return EXIT_SUCCESS;
 }
@@ -112,12 +111,12 @@ HelpCmd::commandHelp(const std::string &cmdName)
 {
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
-        std::cerr << "help: Unknown command name: " << cmdName << std::endl;
+        err() << "Unknown command name: " << cmdName << '\n';
         return EXIT_FAILURE;
     }
 
-    std::cout << cmdName << " -- " << cmd->getDescr() << '\n'
-              << cmd->getHelp() << std::endl;
+    out() << cmdName << " -- " << cmd->getDescr() << '\n'
+          << cmd->getHelp() << '\n';
 
     return EXIT_SUCCESS;
 }

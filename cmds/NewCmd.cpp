@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -64,8 +64,7 @@ boost::optional<int>
 NewCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 {
     if (args.size() != 1) {
-        std::cerr << "new: Expected single argument (project name)."
-                  << std::endl;
+        err() << "Expected single argument (project name).\n";
         return EXIT_FAILURE;
     }
 
@@ -73,8 +72,7 @@ NewCmd::run(Scribe &scribe, const std::vector<std::string> &args)
     std::string rootDir = (fs::path(scribe.getProjectsDir())/prjName).string();
 
     if (Project(rootDir).exists()) {
-        std::cerr << "new: project already exists: " << prjName
-                  << std::endl;
+        err() << "project already exists: " << prjName << '\n';
         return EXIT_FAILURE;
     }
 

@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -63,7 +63,7 @@ boost::optional<int>
 AddCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.empty()) {
-        std::cerr << "help: Expected at least one argument." << std::endl;
+        err() << "Expected at least one argument.\n";
         return EXIT_FAILURE;
     }
 
@@ -75,7 +75,7 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
         item.setValue(key, value);
     }
 
-    std::cout << "Created item: " << item.getId() << std::endl;
+    out() << "Created item: " << item.getId() << '\n';
 
     return EXIT_SUCCESS;
 }

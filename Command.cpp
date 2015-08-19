@@ -17,6 +17,7 @@
 
 #include "Command.hpp"
 
+#include <iostream>
 #include <string>
 #include <utility>
 
@@ -53,4 +54,16 @@ boost::optional<int>
 Command::run(Project &, const std::vector<std::string> &)
 {
     return {};
+}
+
+std::ostream &
+Command::out()
+{
+    return std::cout;
+}
+
+std::ostream &
+Command::err()
+{
+    return std::cerr << getName() << ": ";
 }

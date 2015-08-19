@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -61,7 +61,7 @@ boost::optional<int>
 ShowCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() != 1) {
-        std::cerr << "show: Expected single argument (id)." << std::endl;
+        err() << "Expected single argument (id).\n";
         return EXIT_FAILURE;
     }
 
@@ -70,7 +70,7 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
 
     for (const std::string &c : item.listRecordNames()) {
         const std::string &v = item.getValue(c);
-        std::cout << c << " = " << v << std::endl;
+        out() << c << " = " << v << '\n';
     }
 
     return EXIT_SUCCESS;

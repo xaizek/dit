@@ -18,6 +18,7 @@
 #ifndef SCRIBE__COMMAND_HPP__
 #define SCRIBE__COMMAND_HPP__
 
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -90,6 +91,23 @@ public:
      */
     virtual boost::optional<int> run(Project &project,
                                      const std::vector<std::string> &args);
+
+protected:
+    /**
+     * @brief Retrieves stream for writing normal output of a command.
+     *
+     * @returns The stream.
+     */
+    std::ostream & out();
+    /**
+     * @brief Retrieves stream for writing error output of a command.
+     *
+     * The stream is preconfigured to output command name, so don't duplicate
+     * it.
+     *
+     * @returns The stream.
+     */
+    std::ostream & err();
 
 private:
     /**
