@@ -30,11 +30,25 @@ class Project
 {
 public:
     /**
+     * @brief Initializes new project.
+     *
+     * @param rootDir Root directory of the project.
+     *
+     * @throws std::runtime_error If project directory already exists.
+     */
+    static void init(const std::string &rootDir);
+
+public:
+    /**
      * @brief Creates an instance of particular project.
      *
      * @param rootDir Root directory of the project.
      */
     Project(std::string rootDir);
+    /**
+     * @brief Emit destructor in the corresponding source file.
+     */
+    ~Project();
 
 public:
     /**

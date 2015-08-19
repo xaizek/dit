@@ -33,6 +33,12 @@
 
 namespace fs = boost::filesystem;
 
+void
+Storage::init(Project &project)
+{
+    IdGenerator::init(project.getConfig());
+}
+
 Storage::Storage(Project &project)
     : project(project), idGenerator(project.getConfig())
 {

@@ -27,7 +27,7 @@
 #include "LazyLoadable.hpp"
 
 namespace boost { namespace filesystem {
-  class path;
+    class path;
 } }
 
 class Item;
@@ -39,6 +39,14 @@ class Project;
 class Storage : private LazyLoadable<Storage>
 {
     friend class LazyLoadable<Storage>;
+
+public:
+    /**
+     * @brief Initializes storage for a new project.
+     *
+     * @param project Project to initialize.
+     */
+    static void init(Project &project);
 
 public:
     /**

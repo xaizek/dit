@@ -17,6 +17,7 @@
 
 #include "Project.hpp"
 
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -31,11 +32,27 @@ namespace fs = boost::filesystem;
 static std::string getSubRootPath(const fs::path &rootPath,
                                   const std::string &subPath);
 
+void
+Project::init(const std::string &rootDir)
+{
+    if (!fs::create_directories(rootDir)) {
+        throw std::runtime_error("Directory already exists at: " + rootDir);
+    }
+
+    Project prj(rootDir);
+    Storage::init(prj);
+    prj.save();
+}
+
 Project::Project(std::string rootDir)
     : storage(*this), config(getSubRootPath(rootDir, "config")),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");
+}
+
+Project::~Project()
+{
 }
 
 /**

@@ -20,12 +20,41 @@
 #include <cassert>
 #include <cmath>
 
+#include <algorithm>
+#include <array>
+#include <random>
 #include <string>
 #include <utility>
 
 #include "Config.hpp"
 
 static int getIdx(int k, int b);
+
+/**
+ * @brief Set of characters available for use in sequences.
+ */
+static const char ALPHABET[] =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+void
+IdGenerator::init(Config &config)
+{
+    std::array<std::string, 3> sequences = { ALPHABET, ALPHABET, ALPHABET };
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    for (std::string &s : sequences) {
+        std::shuffle(s.begin(), s.end(), g);
+    }
+
+    config.set("!ids.sequences.first", sequences[0]);
+    config.set("!ids.sequences.second", sequences[1]);
+    config.set("!ids.sequences.third", sequences[2]);
+    config.set("!ids.count", "0");
+    config.set("!ids.next",
+               { sequences[0][0], sequences[1][0], sequences[2][0] });
+}
 
 IdGenerator::IdGenerator(Config &config) : config(config), changed(false)
 {

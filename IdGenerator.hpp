@@ -34,6 +34,14 @@ class IdGenerator : private LazyLoadable<IdGenerator>
 
 public:
     /**
+     * @brief Creates generator for the configuration.
+     *
+     * @param config Configuration to initialize.
+     */
+    static void init(Config &config);
+
+public:
+    /**
      * @brief Constructs ID generator out of configuration.
      *
      * @param config

@@ -145,3 +145,9 @@ Scribe::getConfig()
 {
     return *config;
 }
+
+const std::string &
+Scribe::getProjectsDir() const
+{
+    return projectsDir;
+}

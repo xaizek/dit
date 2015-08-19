@@ -57,6 +57,12 @@ public:
      * @returns The configuration.
      */
     Config & getConfig();
+    /**
+     * @brief Retrieves path to location of all projects.
+     *
+     * @returns The path.
+     */
+    const std::string & getProjectsDir() const;
 
 private:
     /**
