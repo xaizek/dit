@@ -27,6 +27,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "Change.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "file_format.hpp"

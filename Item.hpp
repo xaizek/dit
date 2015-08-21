@@ -22,9 +22,9 @@
 #include <string>
 #include <vector>
 
-#include "Change.hpp"
 #include "LazyLoadable.hpp"
 
+class Change;
 class Storage;
 
 /**
@@ -69,6 +69,10 @@ public:
      * @param rhs Move source.
      */
     Item(Item &&rhs) = default;
+    /**
+     * @brief Emit destruction code in corresponding source file.
+     */
+    ~Item();
 
 public:
     /**

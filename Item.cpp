@@ -27,11 +27,16 @@
 
 #include <boost/range/adaptor/reversed.hpp>
 
+#include "Change.hpp"
 #include "Storage.hpp"
 
 Item::Item(Storage &storage, std::string id, bool exists)
     : LazyLoadable<Item>(!exists), storage(storage), id(std::move(id)),
       changed(false)
+{
+}
+
+Item::~Item()
 {
 }
 
