@@ -23,9 +23,25 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "ItemFilter.hpp"
 #include "ItemTable.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+
+/**
+ * @brief Usage message for "ls" command.
+ */
+const char *const USAGE = R"(Usage: ls [expr...]
+
+Where <expr> is of the form:
+
+    <field> == <value>
+    <field> != <value>
+
+For example:
+
+    status==done
+    category!=cli)";
 
 namespace {
 
@@ -53,21 +69,24 @@ REGISTER_COMMAND(LsCmd);
 
 }
 
-LsCmd::LsCmd() : Command("ls", "lists items", "Usage: ls")
+LsCmd::LsCmd() : Command("ls", "lists items", USAGE)
 {
 }
 
 boost::optional<int>
-LsCmd::run(Project &project, const std::vector<std::string> &)
+LsCmd::run(Project &project, const std::vector<std::string> &args)
 {
     Config &config = project.getConfig();
     std::string fmt = config.get("ui.ls.fmt", "_id|title");
     std::string sort = config.get("ui.ls.sort", "title|_id");
 
     ItemTable table(fmt, sort);
+    ItemFilter filter(args);
 
     for (Item &item : project.getStorage().list()) {
-        table.append(item);
+        if (filter.passes(item)) {
+            table.append(item);
+        }
     }
 
     table.print(out());
