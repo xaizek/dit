@@ -72,6 +72,13 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     for (const std::string &a : args) {
         std::string key, value;
         std::tie(key, value) = splitAt(a, '=');
+
+        std::string error;
+        if (!Item::isValidKeyName(key, true, error)) {
+            out() << "Wrong key name \"" << key << "\": " << error << '\n';
+            return EXIT_FAILURE;
+        }
+
         item.setValue(key, value);
     }
 

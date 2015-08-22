@@ -26,9 +26,46 @@
 #include <vector>
 
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/spirit/include/qi_char_.hpp>
+#include <boost/spirit/include/qi_char_class.hpp>
+#include <boost/spirit/include/qi_core.hpp>
+#include <boost/spirit/include/qi_eps.hpp>
+#include <boost/spirit/include/qi_parse.hpp>
 
 #include "Change.hpp"
 #include "Storage.hpp"
+
+bool
+Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
+{
+    namespace ascii = boost::spirit::ascii;
+    namespace qi = boost::spirit::qi;
+
+    using qi::alnum;
+    using qi::alpha;
+    using qi::char_;
+    using qi::lexeme;
+    using qi::eps;
+
+    auto iter = name.cbegin();
+    auto end = name.cend();
+    bool r = qi::phrase_parse(iter, end,
+                              lexeme[ (alpha | char_('_')) >>
+                                      *(alnum | char_('_') | char_('-'))],
+                              ascii::space);
+
+    if (!r || iter != end) {
+        error = "Invalid key name at " + std::string(&*iter);
+        return false;
+    }
+
+    if (forWrite && name[0] == '_') {
+        error = "The key is read-only.";
+        return false;
+    }
+
+    return true;
+}
 
 Item::Item(Storage &storage, std::string id, bool exists)
     : LazyLoadable<Item>(!exists), storage(storage), id(std::move(id)),
@@ -49,6 +86,11 @@ Item::getId() const
 std::string
 Item::getValue(const std::string &key)
 {
+    std::string error;
+    if (!isValidKeyName(key, false, error)) {
+        throw std::runtime_error(error);
+    }
+
     if (key == "_id") {
         return getId();
     }
@@ -84,8 +126,9 @@ Item::load()
 void
 Item::setValue(const std::string &key, const std::string &value)
 {
-    if (key.empty() || key[0] == '_') {
-        return;
+    std::string error;
+    if (!isValidKeyName(key, true, error)) {
+        throw std::runtime_error(error);
     }
 
     const std::time_t timestamp = std::time(NULL);

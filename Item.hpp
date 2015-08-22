@@ -31,12 +31,25 @@ class Storage;
  * @brief Single item to take care of.
  *
  * Pseudo-keys start with '_', such keys are read-only.
- * TODO: validate what's written above.
+ * Keys can include only [-a-zA-Z_0-9], but can't start with [-_0-9].
  */
 class Item : private LazyLoadable<Item>
 {
     friend class LazyLoadable<Item>;
     friend class Storage;
+
+public:
+    /**
+     * @brief Checks whether key name is of valid format.
+     *
+     * @param name Key name to evaluate.
+     * @param forWrite Whether key is going to be changed.
+     * @param[out] error Additional error message on wrong keys.
+     *
+     * @returns @c true if key name is valid, @c false otherwise.
+     */
+    static bool isValidKeyName(const std::string &name, bool forWrite,
+                               std::string &error);
 
 private:
     /**
@@ -87,6 +100,8 @@ public:
      * @param key Key of the value.
      *
      * @returns The value or empty string if it doesn't exist.
+     *
+     * @throws std::runtime_error On wrong key name.
      */
     std::string getValue(const std::string &key);
     /**
@@ -102,6 +117,8 @@ public:
      *
      * @param key Key to set.
      * @param value (New) value for the @p key.
+     *
+     * @throws std::runtime_error On wrong key name.
      */
     void setValue(const std::string &key, const std::string &value);
     /**

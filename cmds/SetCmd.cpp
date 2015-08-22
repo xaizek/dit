@@ -77,9 +77,10 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
         std::string key, value;
         std::tie(key, value) = splitAt(a, '=');
 
-        if (key.empty() || key[0] == '_') {
-            out() << "Wrong key name: '" << key << "'\n";
-            continue;
+        std::string error;
+        if (!Item::isValidKeyName(key, true, error)) {
+            out() << "Wrong key name \"" << key << "\": " << error << '\n';
+            return EXIT_FAILURE;
         }
 
         item.setValue(key, value);
