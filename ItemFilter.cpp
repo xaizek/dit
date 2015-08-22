@@ -25,7 +25,10 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/fusion/functional.hpp>
-#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_char_.hpp>
+#include <boost/spirit/include/qi_char_class.hpp>
+#include <boost/spirit/include/qi_core.hpp>
+#include <boost/spirit/include/qi_parse.hpp>
 
 #include "Item.hpp"
 

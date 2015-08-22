@@ -29,7 +29,6 @@
 #include <boost/spirit/include/qi_char_.hpp>
 #include <boost/spirit/include/qi_char_class.hpp>
 #include <boost/spirit/include/qi_core.hpp>
-#include <boost/spirit/include/qi_eps.hpp>
 #include <boost/spirit/include/qi_parse.hpp>
 
 #include "Change.hpp"
@@ -45,13 +44,12 @@ Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
     using qi::alpha;
     using qi::char_;
     using qi::lexeme;
-    using qi::eps;
 
     auto iter = name.cbegin();
     auto end = name.cend();
     bool r = qi::phrase_parse(iter, end,
                               lexeme[ (alpha | char_('_')) >>
-                                      *(alnum | char_('_') | char_('-'))],
+                                     *(alnum | char_('_') | char_('-'))],
                               ascii::space);
 
     if (!r || iter != end) {
