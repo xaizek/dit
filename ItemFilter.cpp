@@ -47,7 +47,7 @@ enum class Op
  */
 struct ItemFilter::Cond
 {
-    std::string field; /**< @brief Name of the field. */
+    std::string key;   /**< @brief Name of the key. */
     Op op;             /**< @brief Operation to use for comparison. */
     std::string value; /**< @brief Value to match against. */
 };
@@ -55,7 +55,7 @@ struct ItemFilter::Cond
 // Make Boost.Fusion aware of the structure so it can be composed automatically.
 BOOST_FUSION_ADAPT_STRUCT(
     Cond,
-    (std::string, field)
+    (std::string, key)
     (Op, op)
     (std::string, value)
 )
@@ -72,10 +72,19 @@ public:
             ("==" , Op::eq)
             ("!=" , Op::ne)
             // TODO:
-            // ("/"  , Op::contains)
-            // ("#"  , Op::notcontain)
-            // ("//" , Op::matches)
-            // ("##" , Op::notmatchRE)
+            // ("/"   , Op::contains)
+            // ("#"   , Op::notcontain)
+            // ("//"  , Op::matches)
+            // ("##"  , Op::notmatch)
+            // OR ("ic" -- ignore case)
+            // ("/"   , Op::iccontains)
+            // ("#"   , Op::icnotcontain)
+            // ("//"  , Op::contains)
+            // ("##"  , Op::notcontains)
+            // ("=~"  , Op::icmatches)
+            // ("!~"  , Op::icnotmatch)
+            // ("=~~" , Op::matches)
+            // ("!~~" , Op::notmatch)
         ;
     }
 } op;
@@ -96,29 +105,28 @@ public:
      */
     CondParser() : CondParser::base_type(expr)
     {
-        using qi::_1;
         using qi::alnum;
         using qi::alpha;
         using qi::char_;
         using qi::lexeme;
 
-        expr  %= field >> op >> value;
-        field %= lexeme[ (alpha | char_('_')) >>
+        expr  %= key >> op >> value;
+        key   %= lexeme[ (alpha | char_('_')) >>
                         *(alnum | char_('_') | char_('-')) ];
         value %= lexeme[ *char_ ];
     }
 
 private:
     /**
-     * @brief Whole expression: expr ::= field op value
+     * @brief Whole expression: expr ::= key op value
      *
      * Where: op ::= "==" | "!="
      */
     qi::rule<I, Cond(), ascii::space_type> expr;
     /**
-     * @brief Field name: field ::= [a-zA-Z_] [-a-zA-Z_]*
+     * @brief key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
      */
-    qi::rule<I, std::string(), ascii::space_type> field;
+    qi::rule<I, std::string(), ascii::space_type> key;
     /**
      * @brief Value to compare with: value ::= .*
      */
@@ -156,7 +164,7 @@ bool
 ItemFilter::passes(Item &item) const
 {
     for (const Cond &cond : conds) {
-        const std::string &val = item.getValue(cond.field);
+        const std::string &val = item.getValue(cond.key);
         switch (cond.op) {
             case Op::eq:
                 if (val != cond.value) {
