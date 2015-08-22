@@ -36,6 +36,11 @@
 
 namespace fs = boost::filesystem;
 
+/**
+ * @brief Character in front of project name on command-line.
+ */
+const char PROJECT_PREFIX_CHAR = '.';
+
 Scribe::Scribe(int argc, const char *const argv[])
 {
     initArgs(argc, argv);
@@ -57,7 +62,7 @@ Scribe::initArgs(int argc, const char *const argv[])
 
     // TODO: come up with better parsing code.
     int offset = 1;
-    if (argc > 1 && argv[1][0] == '@') {
+    if (argc > 1 && argv[1][0] == PROJECT_PREFIX_CHAR) {
         prjName = &argv[1][1];
         ++offset;
     }
