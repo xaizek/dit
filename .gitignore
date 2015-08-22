@@ -1,4 +1,6 @@
 # build artefacts
+/debug/
+/release/
 *.d
 *.o
 /scribe
