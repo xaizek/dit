@@ -9,12 +9,12 @@ endif
 
 # traverse directories ($1) recursively looking for a pattern ($2) to make list
 # of matching files
-rwildcard = $(foreach d,$(wildcard $1/*),$(call rwildcard,$d/,$2) \
-                                         $(filter $(subst *,%,$2),$d))
+rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) \
+                                        $(filter $(subst *,%,$2),$d))
 
 bin := scribe$(bin_suffix)
 
-bin_sources := $(call rwildcard, ., *.cpp)
+bin_sources := $(call rwildcard, , *.cpp)
 bin_sources := $(wildcard $(bin_sources))
 bin_objects := $(bin_sources:.cpp=.o)
 bin_depends := $(bin_sources:.cpp=.d)
