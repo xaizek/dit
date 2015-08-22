@@ -35,12 +35,16 @@ const char *const USAGE = R"(Usage: ls [expr...]
 
 Where <expr> is of the form:
 
-    <field> == <value>
-    <field> != <value>
+    <field> == <value>  --  case sensitive equality comparison
+    <field> != <value>  --  case sensitive inequality comparison
+    <field>  / <value>  --  case insensitive substring match
+    <field> =/ <value>  --  case insensitive substring match
+    <field>  # <value>  --  case insensitive substring non-match
+    <field> !/ <value>  --  case insensitive substring non-match
 
 For example:
 
-    status==done
+    status==done title/ui
     category!=cli)";
 
 namespace {

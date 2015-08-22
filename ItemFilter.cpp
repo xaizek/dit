@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/fusion/functional.hpp>
 #include <boost/spirit/include/qi.hpp>
 
@@ -38,8 +39,10 @@ using Cond = ItemFilter::Cond;
  */
 enum class Op
 {
-    eq, /**< @brief Check for equality. */
-    ne, /**< @brief Check for inequality. */
+    eq,           /**< @brief Check for equality. */
+    ne,           /**< @brief Check for inequality. */
+    iccontains,   /**< @brief Look up substring ignoring case. */
+    icnotcontain, /**< @brief Look up substring not ignoring case. */
 };
 
 /**
@@ -69,16 +72,18 @@ public:
     op_()
     {
         add
-            ("==" , Op::eq)
-            ("!=" , Op::ne)
+            ("=="  , Op::eq)
+            ("!="  , Op::ne)
             // TODO:
             // ("/"   , Op::contains)
             // ("#"   , Op::notcontain)
             // ("//"  , Op::matches)
             // ("##"  , Op::notmatch)
             // OR ("ic" -- ignore case)
-            // ("/"   , Op::iccontains)
-            // ("#"   , Op::icnotcontain)
+            ("/"   , Op::iccontains)
+            ("=/"  , Op::iccontains)
+            ("#"   , Op::icnotcontain)
+            ("!/"  , Op::icnotcontain)
             // ("//"  , Op::contains)
             // ("##"  , Op::notcontains)
             // ("=~"  , Op::icmatches)
@@ -173,6 +178,16 @@ ItemFilter::passes(Item &item) const
                 break;
             case Op::ne:
                 if (val == cond.value) {
+                    return false;
+                }
+                break;
+            case Op::iccontains:
+                if (!boost::icontains(val, cond.value)) {
+                    return false;
+                }
+                break;
+            case Op::icnotcontain:
+                if (boost::contains(val, cond.value)) {
                     return false;
                 }
                 break;
