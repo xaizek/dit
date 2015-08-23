@@ -104,6 +104,10 @@ Scribe::run()
         cmdName = config->get("core.defcmd", "ls");
     }
 
+    if (prjName.empty()) {
+        prjName = config->get("core.defprj", "");
+    }
+
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
         std::cerr << "Unknown command name: " << cmdName << std::endl;
@@ -115,10 +119,6 @@ Scribe::run()
             config->save();
         }
         return *exitCode;
-    }
-
-    if (prjName.empty()) {
-        prjName = config->get("core.defprj", "");
     }
 
     if (prjName.empty()) {
@@ -155,4 +155,10 @@ const std::string &
 Scribe::getProjectsDir() const
 {
     return projectsDir;
+}
+
+const std::string &
+Scribe::getPrj() const
+{
+    return prjName;
 }
