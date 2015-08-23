@@ -24,9 +24,11 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -36,6 +38,8 @@
 
 namespace fs = boost::filesystem;
 
+static std::vector<std::string> breakIntoArgs(const std::string &line);
+
 /**
  * @brief Character in front of project name on command-line.
  */
@@ -43,8 +47,8 @@ const char PROJECT_PREFIX_CHAR = '.';
 
 Scribe::Scribe(int argc, const char *const argv[])
 {
-    initArgs(argc, argv);
     initConfig();
+    initArgs(argc, argv);
 }
 
 Scribe::~Scribe()
@@ -66,10 +70,29 @@ Scribe::initArgs(int argc, const char *const argv[])
     }
     std::copy(argv + offset, argv + argc, std::back_inserter(args));
 
+    if (args.empty()) {
+        args = breakIntoArgs(config->get("core.defcmd", "ls"));
+    }
+
     if (!args.empty()) {
         cmdName = args[0];
         args.erase(args.begin());
     }
+}
+
+/**
+ * @brief Tokenize the command line, respecting escapes and quotes.
+ *
+ * @param line Line to parse.
+ *
+ * @returns Array of arguments.
+ */
+static std::vector<std::string>
+breakIntoArgs(const std::string &line)
+{
+    boost::escaped_list_separator<char> sep("\\", " ", "\"'");
+    boost::tokenizer<boost::escaped_list_separator<char>> tok(line, sep);
+    return std::vector<std::string>(tok.begin(), tok.end());
 }
 
 void
@@ -98,10 +121,6 @@ Scribe::initConfig()
 int
 Scribe::run()
 {
-    if (cmdName.empty()) {
-        cmdName = config->get("core.defcmd", "ls");
-    }
-
     if (prjName.empty()) {
         prjName = config->get("core.defprj", "");
     }
