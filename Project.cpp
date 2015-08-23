@@ -72,6 +72,12 @@ Project::exists() const
     return fs::is_directory(rootDir);
 }
 
+std::string
+Project::getName() const
+{
+    return fs::path(rootDir).filename().string();
+}
+
 Storage &
 Project::getStorage()
 {

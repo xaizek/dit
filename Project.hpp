@@ -58,6 +58,12 @@ public:
      */
     bool exists() const;
     /**
+     * @brief Retrieves name of the project.
+     *
+     * @returns The name.
+     */
+    std::string getName() const;
+    /**
      * @brief Retrieves storage associates with this project.
      *
      * @returns The storage.
