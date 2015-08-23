@@ -84,6 +84,12 @@ private:
      * @brief Initializes configuration.
      */
     void initConfig();
+    /**
+     * @brief Parses arguments possibly replacing them.
+     *
+     * @returns Name of the command to execute.
+     */
+    std::string parseArgs();
 
 private:
     /**
@@ -91,11 +97,9 @@ private:
      */
     std::string prjName;
     /**
-     * @brief Name of command to execute.
-     */
-    std::string cmdName;
-    /**
-     * @brief Arguments for the command specified by @c cmdName.
+     * @brief Arguments passed to the application.
+     *
+     * Does not include project name and changes over time.
      */
     std::vector<std::string> args;
     /**

@@ -24,9 +24,12 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -35,6 +38,8 @@
 #include "Project.hpp"
 
 namespace fs = boost::filesystem;
+
+static std::vector<std::string> breakIntoArgs(const std::string &line);
 
 /**
  * @brief Character in front of project name on command-line.
@@ -65,11 +70,6 @@ Scribe::initArgs(int argc, const char *const argv[])
         ++offset;
     }
     std::copy(argv + offset, argv + argc, std::back_inserter(args));
-
-    if (!args.empty()) {
-        cmdName = args[0];
-        args.erase(args.begin());
-    }
 }
 
 void
@@ -98,13 +98,11 @@ Scribe::initConfig()
 int
 Scribe::run()
 {
-    if (cmdName.empty()) {
-        cmdName = config->get("core.defcmd", "ls");
-    }
-
     if (prjName.empty()) {
         prjName = config->get("core.defprj", "");
     }
+
+    std::string cmdName = parseArgs();
 
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
@@ -141,6 +139,44 @@ Scribe::run()
 
     assert(false && "Command has no or broken implementation.");
     return EXIT_FAILURE;
+}
+
+std::string
+Scribe::parseArgs()
+{
+    if (args.empty()) {
+        args = breakIntoArgs(config->get("core.defcmd", "ls"));
+    }
+
+    std::string cmdName;
+    if (!args.empty()) {
+        cmdName = args[0];
+        args.erase(args.begin());
+    }
+
+    std::string aliasRHS = config->get("alias." + cmdName, "");
+    if (!aliasRHS.empty()) {
+        std::vector<std::string> moreArgs = breakIntoArgs(aliasRHS);
+        args.insert(args.begin(), moreArgs.cbegin() + 1, moreArgs.cend());
+        cmdName = moreArgs[0];
+    }
+
+    return std::move(cmdName);
+}
+
+/**
+ * @brief Tokenize the command line, respecting escapes and quotes.
+ *
+ * @param line Line to parse.
+ *
+ * @returns Array of arguments.
+ */
+static std::vector<std::string>
+breakIntoArgs(const std::string &line)
+{
+    boost::escaped_list_separator<char> sep("\\", " ", "\"'");
+    boost::tokenizer<boost::escaped_list_separator<char>> tok(line, sep);
+    return std::vector<std::string>(tok.begin(), tok.end());
 }
 
 Config &
