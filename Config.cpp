@@ -56,7 +56,7 @@ Config::list()
 
     std::vector<std::string> list;
     for (const std::string &propName : propsRange(props)) {
-        if (propName[0] != '!') {
+        if (propName[0] != '!' && !get(propName).empty()) {
             list.push_back(propName);
         }
     }
