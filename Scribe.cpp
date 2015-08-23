@@ -154,6 +154,13 @@ Scribe::parseArgs()
         args.erase(args.begin());
     }
 
+    std::string aliasRHS = config->get("alias." + cmdName, "");
+    if (!aliasRHS.empty()) {
+        std::vector<std::string> moreArgs = breakIntoArgs(aliasRHS);
+        args.insert(args.begin(), moreArgs.cbegin() + 1, moreArgs.cend());
+        cmdName = moreArgs[0];
+    }
+
     return std::move(cmdName);
 }
 
