@@ -63,6 +63,12 @@ public:
      * @returns The path.
      */
     const std::string & getProjectsDir() const;
+    /**
+     * @brief Retrieves name of active project.
+     *
+     * @returns The name or empty string.
+     */
+    const std::string & getPrj() const;
 
 private:
     /**
