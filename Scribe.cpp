@@ -58,8 +58,6 @@ Scribe::initArgs(int argc, const char *const argv[])
         throw std::runtime_error("Broken argument list.");
     }
 
-    appName = argv[0];
-
     // TODO: come up with better parsing code.
     int offset = 1;
     if (argc > 1 && argv[1][0] == PROJECT_PREFIX_CHAR) {

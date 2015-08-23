@@ -87,10 +87,6 @@ private:
 
 private:
     /**
-     * @brief Name used to run the application.
-     */
-    std::string appName;
-    /**
      * @brief Name of the project to operate on.
      */
     std::string prjName;
