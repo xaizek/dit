@@ -115,7 +115,7 @@ HelpCmd::commandHelp(const std::string &cmdName)
         return EXIT_FAILURE;
     }
 
-    out() << cmdName << " -- " << cmd->getDescr() << '\n'
+    out() << cmdName << " -- " << cmd->getDescr() << "\n\n"
           << cmd->getHelp() << '\n';
 
     return EXIT_SUCCESS;
