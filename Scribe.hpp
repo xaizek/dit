@@ -23,6 +23,7 @@
 #include <vector>
 
 class Config;
+class Project;
 
 /**
  * @brief Application implementation.
@@ -51,6 +52,17 @@ public:
      * @returns Exit status of the application (to be returned by @c main()).
      */
     int run();
+    /**
+     * @brief Completes command-line.
+     *
+     * Always the last argument is completed.
+     *
+     * @param project Active project for completion.
+     * @param args Arguments to complete.
+     *
+     * @returns Exit status of the application (to be returned by @c main()).
+     */
+    int complete(Project &project, std::vector<std::string> args);
     /**
      * @brief Retrieves global configuration object.
      *
@@ -87,9 +99,11 @@ private:
     /**
      * @brief Parses arguments possibly replacing them.
      *
+     * @param args Arguments to process.
+     *
      * @returns Name of the command to execute.
      */
-    std::string parseArgs();
+    std::string parseArgs(std::vector<std::string> &args);
 
 private:
     /**

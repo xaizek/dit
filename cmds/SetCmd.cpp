@@ -18,7 +18,9 @@
 #include <cstdlib>
 
 #include <ostream>
+#include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -49,6 +51,12 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
 };
@@ -84,6 +92,49 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
         }
 
         item.setValue(key, value);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+boost::optional<int>
+SetCmd::complete(Project &project, const std::vector<std::string> &args)
+{
+    Storage &storage = project.getStorage();
+
+    // Complete item id.
+    if (args.size() <= 1) {
+        for (Item &item : storage.list()) {
+            out() << item.getId() << '\n';
+        }
+        return EXIT_SUCCESS;
+    }
+
+    // Complete value.
+    if (args.back().find('=') != std::string::npos) {
+        std::string key = args.back();
+        key.pop_back();
+
+        try {
+            Item &item = storage.get(args[0]);
+            out() << "'" << item.getValue(key) << "'\n";
+            return EXIT_SUCCESS;
+        } catch (std::runtime_error &) {
+            return EXIT_FAILURE;
+        }
+    }
+
+    // Complete key.
+
+    std::unordered_set<std::string> keys;
+
+    for (Item &item : storage.list()) {
+        const std::set<std::string> &itemKeys = item.listRecordNames();
+        keys.insert(itemKeys.cbegin(), itemKeys.cend());
+    }
+
+    for (const std::string &key : keys) {
+        out() << key << '\n';
     }
 
     return EXIT_SUCCESS;

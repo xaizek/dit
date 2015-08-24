@@ -80,9 +80,11 @@ public:
     /**
      * @brief Lists all existing keys in alphabetical order.
      *
-     * @returns The list.
+     * @param path Starting path in the configuration.
+     *
+     * @returns The list (items are relative to path).
      */
-    std::vector<std::string> list();
+    std::vector<std::string> list(const std::string &path = {});
     /**
      * @brief Assigns value to the @p key.
      *

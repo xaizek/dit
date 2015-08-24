@@ -47,6 +47,12 @@ public:
     virtual boost::optional<int> run(
         Project &project,
         const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(ShowCmd);
@@ -71,6 +77,20 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
     for (const std::string &c : item.listRecordNames()) {
         const std::string &v = item.getValue(c);
         out() << c << " = " << v << '\n';
+    }
+
+    return EXIT_SUCCESS;
+}
+
+boost::optional<int>
+ShowCmd::complete(Project &project, const std::vector<std::string> &args)
+{
+    if (args.size() > 1) {
+        return EXIT_FAILURE;
+    }
+
+    for (Item &item : project.getStorage().list()) {
+        out() << item.getId() << '\n';
     }
 
     return EXIT_SUCCESS;

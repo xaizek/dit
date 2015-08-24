@@ -102,7 +102,10 @@ Scribe::run()
         prjName = config->get("core.defprj", "");
     }
 
-    std::string cmdName = parseArgs();
+    if (args.empty()) {
+        args = breakIntoArgs(config->get("core.defcmd", "ls"));
+    }
+    std::string cmdName = parseArgs(args);
 
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
@@ -141,13 +144,29 @@ Scribe::run()
     return EXIT_FAILURE;
 }
 
-std::string
-Scribe::parseArgs()
+int
+Scribe::complete(Project &project, std::vector<std::string> args)
 {
-    if (args.empty()) {
-        args = breakIntoArgs(config->get("core.defcmd", "ls"));
+    const std::string &cmdName = parseArgs(args);
+
+    Command *const cmd = Commands::get(cmdName);
+    if (cmd == nullptr) {
+        return EXIT_FAILURE;
     }
 
+    if (boost::optional<int> exitCode = cmd->complete(*this, args)) {
+        return *exitCode;
+    }
+    if (boost::optional<int> exitCode = cmd->complete(project, args)) {
+        return *exitCode;
+    }
+
+    return EXIT_FAILURE;
+}
+
+std::string
+Scribe::parseArgs(std::vector<std::string> &args)
+{
     std::string cmdName;
     if (!args.empty()) {
         cmdName = args[0];

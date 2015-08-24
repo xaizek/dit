@@ -91,6 +91,28 @@ public:
      */
     virtual boost::optional<int> run(Project &project,
                                      const std::vector<std::string> &args);
+    /**
+     * @brief Asks for generic command (no project) argument completion.
+     *
+     * @param scribe Application instance.
+     * @param args List of arguments for the command.
+     *
+     * @returns Exit code suitable for returning it from @c main() or empty
+     *          value if not implemented.
+     */
+    virtual boost::optional<int> complete(Scribe &scribe,
+                                          const std::vector<std::string> &args);
+    /**
+     * @brief Asks for possibly project-specific argument completion.
+     *
+     * @param project Project to perform operation on.
+     * @param args List of arguments for the command.
+     *
+     * @returns Exit code suitable for returning it from @c main() or empty
+     *          value if not implemented.
+     */
+    virtual boost::optional<int> complete(Project &project,
+                                          const std::vector<std::string> &args);
 
 protected:
     /**
