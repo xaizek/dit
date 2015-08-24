@@ -1,0 +1,101 @@
+#!/bin/bash
+
+complete -F _scribe scribe
+
+# main completion function, dispatches command line and picks function that will
+# generate real completion list
+function _scribe()
+{
+    local first="${COMP_WORDS[1]}"
+    local cur="${COMP_WORDS[$COMP_CWORD]}"
+    local project=
+    if [ $COMP_CWORD -eq 1 ]; then
+        if [ "${cur:0:1}" = . ]; then
+            _scribe_project "$cur"
+        else
+            _scribe_command "$cur"
+        fi
+    elif [ $COMP_CWORD -eq 2 ]; then
+        if [ "${first:0:1}" = . ]; then
+            _scribe_command "$cur"
+        else
+            local args=( "${COMP_WORDS[@]}" )
+            unset args[0]
+            if [ -z "$cur" ]; then
+                args=( "${args[@]}" . )
+            fi
+            _scribe_arg
+        fi
+    else
+        local args=( $COMP_LINE )
+        unset args[0]
+        if [ "${first:0:1}" = . ]; then
+            local project="${args[1]}"
+            unset args[1]
+        fi
+        if [ -z "$cur" ]; then
+            # this is a fake argument to make application aware of its existence
+            # (otherwise it doesn't get it at all)
+            args=( "${args[@]}" . )
+        elif [ "${COMP_LINE:$(( $COMP_POINT - 1 ))}" = ' ' ]; then
+            # if completion is requested after a space, treat this as an empty
+            # argument (which is reasonable, but readline does something weird
+            # here)
+            cur=
+        elif [ "${COMP_LINE:$(( $COMP_POINT - 1 ))}" = '=' ]; then
+            # try to fix issues related to use of = as a word separator (this is
+            # a readline setting, which we can't control per command completion)
+            cur=
+        fi
+        _scribe_arg
+    fi
+}
+
+# completes names of projects
+function _scribe_project()
+{
+    COMPREPLY=( $( compgen -W "$(scribe complete projects)" -- "$cur" ) )
+}
+
+# completes names of aliases and commands
+function _scribe_command()
+{
+    COMPREPLY=( $( compgen -W "$(scribe complete commands)" -- "$cur" ) )
+}
+
+# completes arguments of commands
+function _scribe_arg()
+{
+    # obtain completion from the application
+    local compl="$(scribe $project complete args ${args[@]})"
+    local IFS=$'\n'
+    COMPREPLY=( $( compgen -W "$compl" -- "$cur" ) )
+
+    # try to properly escape completion results
+    # almost unchanged from from: http://stackoverflow.com/a/1146716/1535516
+    local escaped_single_qoute="'\''"
+    local i=0
+    for entry in ${COMPREPLY[*]}
+    do
+        if [[ "${cur:0:1}" == "'" ]]; then
+            # started with single quote, escaping only other single quotes
+            # [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
+            COMPREPLY[$i]="${entry//\'/${escaped_single_qoute}}"
+        elif [[ "${cur:0:1}" == '"' ]]; then
+            # started with double quote, escaping all double quotes and all
+            # backslashes
+            # ["]bla'bla"bla\bla bla --> ["]bla'bla\"bla\\bla bla
+            entry="${entry//\\/\\\\}"
+            COMPREPLY[$i]="${entry//\"/\\\"}"
+        else
+            # no quotes in front, escaping _everything_
+            # [ ]bla'bla"bla\bla bla --> [ ]bla\'bla\"bla\\bla\ bla
+            entry="${entry//\\/\\\\}"
+            entry="${entry//\'/\'}"
+            entry="${entry//\"/\\\"}"
+            entry="${entry//|/\\|}"
+            COMPREPLY[$i]="${entry// /\\ }"
+        fi
+        (( i++ ))
+    done
+}
