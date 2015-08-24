@@ -56,6 +56,18 @@ Command::run(Project &, const std::vector<std::string> &)
     return {};
 }
 
+boost::optional<int>
+Command::complete(Scribe &, const std::vector<std::string> &)
+{
+    return {};
+}
+
+boost::optional<int>
+Command::complete(Project &, const std::vector<std::string> &)
+{
+    return {};
+}
+
 std::ostream &
 Command::out()
 {
