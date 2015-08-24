@@ -47,6 +47,12 @@ public:
     virtual boost::optional<int> run(
         Scribe &scribe,
         const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
+        Scribe &scribe,
+        const std::vector<std::string> &args) override;
 
 private:
     /**
@@ -88,6 +94,20 @@ HelpCmd::run(Scribe &, const std::vector<std::string> &args)
 
     const std::string &cmdName = args[0];
     return commandHelp(cmdName);
+}
+
+boost::optional<int>
+HelpCmd::complete(Scribe &, const std::vector<std::string> &args)
+{
+    if (args.size() > 1) {
+        return EXIT_FAILURE;
+    }
+
+    for (Command &cmd : Commands::list()) {
+        out() << cmd.getName() << '\n';
+    }
+
+    return EXIT_SUCCESS;
 }
 
 int

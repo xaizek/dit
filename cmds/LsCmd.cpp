@@ -18,6 +18,7 @@
 #include <cstdlib>
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "Command.hpp"
@@ -67,6 +68,12 @@ public:
     virtual boost::optional<int> run(
         Project &project,
         const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
+        Project &project,
+        const std::vector<std::string> &args) override;
 };
 
 REGISTER_COMMAND(LsCmd);
@@ -94,6 +101,23 @@ LsCmd::run(Project &project, const std::vector<std::string> &args)
     }
 
     table.print(out());
+
+    return EXIT_SUCCESS;
+}
+
+boost::optional<int>
+LsCmd::complete(Project &project, const std::vector<std::string> &)
+{
+    std::unordered_set<std::string> keys;
+
+    for (Item &item : project.getStorage().list()) {
+        const std::set<std::string> &itemKeys = item.listRecordNames();
+        keys.insert(itemKeys.cbegin(), itemKeys.cend());
+    }
+
+    for (const std::string &key : keys) {
+        out() << key << '\n';
+    }
 
     return EXIT_SUCCESS;
 }

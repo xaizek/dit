@@ -20,6 +20,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/program_options.hpp>
@@ -57,6 +58,12 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
 
@@ -178,13 +185,45 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
     return EXIT_SUCCESS;
 }
 
+boost::optional<int>
+ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
+{
+    Config &config = project.getConfig();
+
+    if (!args.empty() && args.back().find('=') != std::string::npos) {
+        std::string last = args.back();
+        last.pop_back();
+        out() << '\'' << config.get(last, "") << "'\n";
+        return EXIT_SUCCESS;
+    }
+
+    std::unordered_set<std::string> keys;
+    {
+        std::vector<std::string> allKeys = config.list();
+        keys.insert(allKeys.cbegin(), allKeys.cend());
+    }
+
+    for (const std::string &arg : args) {
+        const std::string::size_type pos = arg.find('=');
+        if (pos != 0U) {
+            keys.erase(arg.substr(0U, pos));
+        }
+    }
+
+    for (const std::string &key : keys) {
+        out() << key << '\n';
+    }
+
+    return EXIT_SUCCESS;
+}
+
 int
 ConfigCmd::printAllValues(Config &config)
 {
     for (const std::string &key : config.list()) {
         printKey(config, key);
     }
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 void

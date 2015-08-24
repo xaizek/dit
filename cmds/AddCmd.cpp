@@ -19,6 +19,7 @@
 
 #include <ostream>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -47,6 +48,12 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
 };
@@ -91,4 +98,28 @@ bool
 operator<(const Command &l, const Command &r)
 {
     return l.getName() < r.getName();
+}
+
+boost::optional<int>
+AddCmd::complete(Project &project, const std::vector<std::string> &args)
+{
+    std::unordered_set<std::string> keys;
+
+    for (Item &item : project.getStorage().list()) {
+        const std::set<std::string> &itemKeys = item.listRecordNames();
+        keys.insert(itemKeys.cbegin(), itemKeys.cend());
+    }
+
+    for (const std::string &arg : args) {
+        const std::string::size_type pos = arg.find('=');
+        if (pos != 0U && pos != std::string::npos) {
+            keys.erase(arg.substr(0U, pos));
+        }
+    }
+
+    for (const std::string &key : keys) {
+        out() << key << '\n';
+    }
+
+    return EXIT_SUCCESS;
 }

@@ -15,8 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with scribe.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <cassert>
 #include <cstdlib>
 
+#include <functional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -38,6 +40,7 @@ const char *const USAGE = R"(Usage: complete what
 
 Where <what> is one of:
 
+    args ...  --  last argument of command line for a command
     commands  --  list of commands and aliases
     projects  --  list of available projects
 
@@ -63,6 +66,18 @@ public:
     virtual boost::optional<int> run(
         Scribe &scribe,
         const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::run()
+     */
+    virtual boost::optional<int> run(
+        Project &project,
+        const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
+        Scribe &scribe,
+        const std::vector<std::string> &args) override;
 
 private:
     /**
@@ -81,6 +96,12 @@ private:
      * @returns Exit code to be returned by run.
      */
     int listCommands(Config &config);
+
+private:
+    /**
+     * @brief Storage for the pointer between calls of @c run().
+     */
+    Scribe *scribe;
 };
 
 REGISTER_COMMAND(CompleteCmd);
@@ -88,21 +109,25 @@ REGISTER_COMMAND(CompleteCmd);
 }
 
 CompleteCmd::CompleteCmd()
-    : Command("complete", "provides completion lists", USAGE)
+    : Command("complete", "provides completion lists", USAGE), scribe(nullptr)
 {
 }
 
 boost::optional<int>
 CompleteCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 {
-    if (args.size() != 1) {
-        err() << "Expected exactly one argument.\n";
+    this->scribe = &scribe;
+
+    if (args.size() == 0 || (args.size() > 1 && args[0] != "args")) {
+        err() << "Wrong number of arguments.\n";
         return EXIT_FAILURE;
     }
 
     const std::string &what = args[0];
 
-    if (what == "commands") {
+    if (what == "args") {
+        return {};
+    } else if (what == "commands") {
         return listCommands(scribe.getConfig());
     } else if (what == "projects") {
         return listProjects(scribe.getProjectsDir());
@@ -110,6 +135,29 @@ CompleteCmd::run(Scribe &scribe, const std::vector<std::string> &args)
         err() << "Unknown argument: " << what << '\n';
         return EXIT_FAILURE;
     }
+}
+
+boost::optional<int>
+CompleteCmd::run(Project &project, const std::vector<std::string> &args)
+{
+    assert(args[0] == "args" && "Incorrect arguments for this overload.");
+
+    return scribe->complete(project, std::vector<std::string>(args.begin() + 1,
+                                                              args.end()));
+}
+
+boost::optional<int>
+CompleteCmd::complete(Scribe &, const std::vector<std::string> &args)
+{
+    if (args.size() > 1) {
+        return EXIT_FAILURE;
+    }
+
+    out() << "args\n";
+    out() << "commands\n";
+    out() << "projects\n";
+
+    return EXIT_SUCCESS;
 }
 
 int
