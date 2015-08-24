@@ -50,13 +50,16 @@ Config::get(const std::string &key, const std::string &def)
 }
 
 std::vector<std::string>
-Config::list()
+Config::list(const std::string &path)
 {
     ensureLoaded();
 
     std::vector<std::string> list;
-    for (const std::string &propName : propsRange(props)) {
-        if (propName[0] != '!' && !get(propName).empty()) {
+    for (const std::string &propName : propsRange(props.get_child(path))) {
+        const std::string &fullPath = path.empty()
+                                    ? propName
+                                    : path + '.' + propName;
+        if (propName[0] != '!' && !get(fullPath).empty()) {
             list.push_back(propName);
         }
     }
