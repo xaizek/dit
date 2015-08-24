@@ -33,6 +33,7 @@ bin_depends := $(bin_sources:%.cpp=$(out_dir)/%.d)
 out_dirs    := $(sort $(dir $(bin_objects)))
 
 release: EXTRA_CXXFLAGS := -O3
+release: EXTRA_LDFLAGS := -Wl,--strip-all
 debug: EXTRA_CXXFLAGS := -O0 -g
 debug: EXTRA_LDFLAGS := -g
 debug release: $(out_dir)/$(bin)
