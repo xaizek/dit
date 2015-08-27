@@ -33,6 +33,20 @@
 #include "Project.hpp"
 #include "Storage.hpp"
 
+/**
+ * @brief Usage message for "set" command.
+ */
+const char *const USAGE = R"(Usage: set id key[+]=value...
+
+Sets or appends to values of items:
+
+    <field>=<value>   --  set new value
+    <field>+=<value>  --  append to the old value after new-line character
+
+For example:
+
+    status=done comment+='This was a hard one.')";
+
 namespace {
 
 /**
@@ -65,7 +79,7 @@ REGISTER_COMMAND(SetCmd);
 
 }
 
-SetCmd::SetCmd() : Command("set", "changes items", "Usage: set id key=value...")
+SetCmd::SetCmd() : Command("set", "changes items", USAGE)
 {
 }
 
@@ -85,13 +99,27 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
         std::string key, value;
         std::tie(key, value) = splitAt(a, '=');
 
+        bool append = false;
+        if (!key.empty() && key.back() == '+') {
+            append = true;
+            key.pop_back();
+        }
+
         std::string error;
         if (!Item::isValidKeyName(key, true, error)) {
             out() << "Wrong key name \"" << key << "\": " << error << '\n';
             return EXIT_FAILURE;
         }
 
-        item.setValue(key, value);
+        if (append) {
+            std::string current = item.getValue(key);
+            if (!current.empty()) {
+                current += '\n';
+            }
+            item.setValue(key, current + value);
+        } else {
+            item.setValue(key, value);
+        }
     }
 
     return EXIT_SUCCESS;
