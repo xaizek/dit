@@ -26,33 +26,17 @@
 #include <vector>
 
 #include <boost/range/adaptor/reversed.hpp>
-#include <boost/spirit/include/qi_char_.hpp>
-#include <boost/spirit/include/qi_char_class.hpp>
-#include <boost/spirit/include/qi_core.hpp>
-#include <boost/spirit/include/qi_parse.hpp>
 
 #include "Change.hpp"
 #include "Storage.hpp"
+#include "parsing.hpp"
 
 bool
 Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
 {
-    namespace ascii = boost::spirit::ascii;
-    namespace qi = boost::spirit::qi;
-
-    using qi::alnum;
-    using qi::alpha;
-    using qi::char_;
-    using qi::lexeme;
-
     auto iter = name.cbegin();
     auto end = name.cend();
-    bool r = qi::phrase_parse(iter, end,
-                              lexeme[ (alpha | char_('_')) >>
-                                     *(alnum | char_('_') | char_('-'))],
-                              ascii::space);
-
-    if (!r || iter != end) {
+    if (!parseKeyName(iter, end)) {
         error = "Invalid key name at " + std::string(&*iter);
         return false;
     }

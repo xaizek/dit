@@ -24,143 +24,19 @@
 #include <vector>
 
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/fusion/functional.hpp>
-#include <boost/spirit/include/qi_char_.hpp>
-#include <boost/spirit/include/qi_char_class.hpp>
-#include <boost/spirit/include/qi_core.hpp>
-#include <boost/spirit/include/qi_parse.hpp>
 
 #include "Item.hpp"
-
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
-
-using Cond = ItemFilter::Cond;
-
-/**
- * @brief Enumerations of supported operations.
- */
-enum class Op
-{
-    eq,           /**< @brief Check for equality. */
-    ne,           /**< @brief Check for inequality. */
-    iccontains,   /**< @brief Look up substring ignoring case. */
-    icnotcontain, /**< @brief Look up substring not ignoring case. */
-};
-
-/**
- * @brief Single condition expression.
- */
-struct ItemFilter::Cond
-{
-    std::string key;   /**< @brief Name of the key. */
-    Op op;             /**< @brief Operation to use for comparison. */
-    std::string value; /**< @brief Value to match against. */
-};
-
-// Make Boost.Fusion aware of the structure so it can be composed automatically.
-BOOST_FUSION_ADAPT_STRUCT(
-    Cond,
-    (std::string, key)
-    (Op, op)
-    (std::string, value)
-)
-
-/**
- * @brief Symbol table of comparison operators.
- */
-static class op_ : public qi::symbols<char, Op>
-{
-public:
-    op_()
-    {
-        add
-            ("=="  , Op::eq)
-            ("!="  , Op::ne)
-            // TODO:
-            // ("/"   , Op::contains)
-            // ("#"   , Op::notcontain)
-            // ("//"  , Op::matches)
-            // ("##"  , Op::notmatch)
-            // OR ("ic" -- ignore case)
-            ("/"   , Op::iccontains)
-            ("=/"  , Op::iccontains)
-            ("#"   , Op::icnotcontain)
-            ("!/"  , Op::icnotcontain)
-            // ("//"  , Op::contains)
-            // ("##"  , Op::notcontains)
-            // ("=~"  , Op::icmatches)
-            // ("!~"  , Op::icnotmatch)
-            // ("=~~" , Op::matches)
-            // ("!~~" , Op::notmatch)
-        ;
-    }
-} op;
-
-namespace {
-
-/**
- * @brief Parser of a single conditional expression.
- *
- * @tparam I Type of iterator used to consume input.
- */
-template <typename I>
-class CondParser : public qi::grammar<I, Cond(), ascii::space_type>
-{
-public:
-    /**
-     * @brief Constructs the parser.
-     */
-    CondParser() : CondParser::base_type(expr)
-    {
-        using qi::alnum;
-        using qi::alpha;
-        using qi::char_;
-        using qi::lexeme;
-
-        expr  %= key >> op >> value;
-        key   %= lexeme[ (alpha | char_('_')) >>
-                        *(alnum | char_('_') | char_('-')) ];
-        value %= lexeme[ *char_ ];
-    }
-
-private:
-    /**
-     * @brief Whole expression: expr ::= key op value
-     *
-     * Where: op ::= "==" | "!="
-     */
-    qi::rule<I, Cond(), ascii::space_type> expr;
-    /**
-     * @brief key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
-     */
-    qi::rule<I, std::string(), ascii::space_type> key;
-    /**
-     * @brief Value to compare with: value ::= .*
-     */
-    qi::rule<I, std::string(), ascii::space_type> value;
-};
-
-}
+#include "parsing.hpp"
 
 ItemFilter::ItemFilter(const std::vector<std::string> &exprs)
 {
-    CondParser<std::string::const_iterator> g;
-
     for (const std::string &expr : exprs) {
-        std::string::const_iterator iter = expr.begin();
-        std::string::const_iterator end = expr.end();
         Cond cond;
-        bool r = qi::phrase_parse(iter, end, g, ascii::space, cond);
-
-        if (r && iter == end)
-        {
-            conds.emplace_back(std::move(cond));
-        }
-        else
-        {
+        auto iter = expr.cbegin();
+        if (!parseCond(iter, expr.cend(), cond)) {
             throw std::runtime_error("Wrong expression: " + expr);
         }
+        conds.emplace_back(std::move(cond));
     }
 }
 

@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+class Cond;
 class Item;
 
 /**
@@ -31,9 +32,6 @@ class Item;
  */
 class ItemFilter
 {
-public:
-    class Cond;
-
 public:
     /**
      * @brief Constructs the filter.
