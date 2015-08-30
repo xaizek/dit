@@ -30,6 +30,7 @@
 #include "Config.hpp"
 #include "Project.hpp"
 #include "Scribe.hpp"
+#include "decoration.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -88,6 +89,8 @@ ProjectsCmd::run(Scribe &scribe, const std::vector<std::string> &args)
     const std::string &projectsDir = scribe.getProjectsDir();
 
     std::vector<std::pair<std::string, std::string>> infos;
+
+    // Gather project information.
     for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
         Project prj(e.path().string());
         if (!prj.exists()) {
@@ -98,12 +101,16 @@ ProjectsCmd::run(Scribe &scribe, const std::vector<std::string> &args)
         infos.emplace_back(prj.getName(), descr);
     }
 
+    // Sort them.
     std::sort(infos.begin(), infos.end());
 
+    // Display.
     const std::string &prj = scribe.getPrj();
     for (const std::pair<std::string, std::string> &info : infos) {
-        out() << (info.first == prj ? '*' : ' ');
-        out() << info.first;
+        out() << decor::bold
+              << (info.first == prj ? '*' : ' ')
+              << info.first
+              << decor::def;
         if (!info.second.empty()) {
             out() << " -- " << info.second;
         }

@@ -33,6 +33,7 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 #include "Item.hpp"
+#include "decoration.hpp"
 
 static std::vector<std::string> split(const std::string &str, char with);
 
@@ -171,7 +172,10 @@ void ItemTable::print(std::ostream &os)
 
     // Print table heading.
     for (Column &col : cols) {
-        os << std::setw(col.getWidth()) << std::left << col.getHeading() << gap;
+        os << decor::cyan_fg << decor::inv << decor::bold
+           << std::setw(col.getWidth()) << std::left << col.getHeading()
+           << decor::def
+           << gap;
     }
     os << '\n';
 

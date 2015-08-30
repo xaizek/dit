@@ -24,6 +24,7 @@
 #include "utils/containers.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
+#include "decoration.hpp"
 
 static bool operator<(const Command &l, const Command &r);
 
@@ -114,7 +115,9 @@ int
 HelpCmd::listCommands()
 {
     for (Command &cmd : sorted(Commands::list())) {
-        out() << cmd.getName() << " -- " << cmd.getDescr() << '\n';
+        out() << decor::bold << cmd.getName() << decor::def
+              << " -- "
+              << cmd.getDescr() << '\n';
     }
 
     return EXIT_SUCCESS;
@@ -135,7 +138,9 @@ HelpCmd::commandHelp(const std::string &cmdName)
         return EXIT_FAILURE;
     }
 
-    out() << cmdName << " -- " << cmd->getDescr() << "\n\n"
+    out() << decor::bold << cmdName << decor::def
+          << " -- "
+          << cmd->getDescr() << "\n\n"
           << cmd->getHelp() << '\n';
 
     return EXIT_SUCCESS;

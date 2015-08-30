@@ -31,6 +31,7 @@
 #include "Config.hpp"
 #include "Project.hpp"
 #include "Scribe.hpp"
+#include "decoration.hpp"
 
 namespace po = boost::program_options;
 
@@ -231,6 +232,6 @@ ConfigCmd::printKey(Config &config, const std::string &key)
 {
     const std::string val = config.get(key, "<not set>");
     if (!val.empty()) {
-        out() << key << " = " << val << '\n';
+        out() << decor::bold << key << decor::def << " = " << val << '\n';
     }
 }

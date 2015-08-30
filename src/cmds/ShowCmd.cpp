@@ -26,6 +26,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "decoration.hpp"
 
 namespace {
 
@@ -76,7 +77,7 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
 
     for (const std::string &c : item.listRecordNames()) {
         const std::string &v = item.getValue(c);
-        out() << c << " = " << v << '\n';
+        out() << decor::bold << c << decor::def << " = " << v << '\n';
     }
 
     return EXIT_SUCCESS;
