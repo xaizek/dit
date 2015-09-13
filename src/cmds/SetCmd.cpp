@@ -18,7 +18,6 @@
 #include <cstdlib>
 
 #include <ostream>
-#include <stdexcept>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -32,6 +31,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "integration.hpp"
 
 /**
  * @brief Usage message for "set" command.
@@ -111,9 +111,15 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
             return EXIT_FAILURE;
         }
 
+        const std::string current = append ? std::string() : item.getValue(key);
+        if (boost::optional<std::string> v = editValue(key, value, current)) {
+            value = std::move(*v);
+        }
+
         if (append) {
             std::string current = item.getValue(key);
             if (!current.empty()) {
+                // XXX: should be add new line if value is empty?
                 current += '\n';
             }
             item.setValue(key, current + value);

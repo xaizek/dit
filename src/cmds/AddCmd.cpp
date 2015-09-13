@@ -29,6 +29,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "integration.hpp"
 
 namespace {
 
@@ -86,6 +87,9 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
             return EXIT_FAILURE;
         }
 
+        if (boost::optional<std::string> v = editValue(key, value, {})) {
+            value = std::move(*v);
+        }
         item.setValue(key, value);
     }
 

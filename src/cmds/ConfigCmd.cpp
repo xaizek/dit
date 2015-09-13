@@ -32,6 +32,7 @@
 #include "Project.hpp"
 #include "Scribe.hpp"
 #include "decoration.hpp"
+#include "integration.hpp"
 
 namespace po = boost::program_options;
 
@@ -176,11 +177,16 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
             continue;
         }
 
-        if (set) {
-            config.set(key, value);
-        } else {
+        if (!set) {
             printKey(config, key);
+            continue;
         }
+
+        if (boost::optional<std::string> v = editValue(key, value,
+                                                       config.get(key, {}))) {
+            value = std::move(*v);
+        }
+        config.set(key, value);
     }
 
     return EXIT_SUCCESS;
