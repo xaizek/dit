@@ -167,6 +167,14 @@ SetCmd::complete(Project &project, const std::vector<std::string> &args)
         keys.insert(itemKeys.cbegin(), itemKeys.cend());
     }
 
+    // Remove elements already present on the command-line from completion list.
+    for (const std::string &arg : args) {
+        const std::string::size_type pos = arg.find('=');
+        if (pos != 0U) {
+            keys.erase(arg.substr(0U, pos));
+        }
+    }
+
     for (const std::string &key : keys) {
         out() << key << '\n';
     }
