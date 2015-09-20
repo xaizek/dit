@@ -19,6 +19,7 @@
 #define SCRIBE__PARSING_HPP__
 
 #include <string>
+#include <vector>
 
 /**
  * @brief Enumerations of supported operations.
@@ -63,5 +64,14 @@ bool parseKeyName(std::string::const_iterator &iter,
  */
 bool parseCond(std::string::const_iterator &iter,
                std::string::const_iterator end, Cond &cond);
+
+/**
+ * @brief Parses paired arguments turning "field: a val" into "field='a val'".
+ *
+ * @param args Original arguments.
+ *
+ * @returns Processed arguments with concatenated items.
+ */
+std::vector<std::string> parsePairedArgs(const std::vector<std::string> &args);
 
 #endif // SCRIBE__PARSING_HPP__

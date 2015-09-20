@@ -210,15 +210,23 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
         keys.insert(allKeys.cbegin(), allKeys.cend());
     }
 
+    // Remove elements already present on the command-line from completion list.
     for (const std::string &arg : args) {
         const std::string::size_type pos = arg.find('=');
-        if (pos != 0U) {
+        if (pos != 0U && pos != std::string::npos) {
             keys.erase(arg.substr(0U, pos));
+            continue;
+        }
+
+        if (!arg.empty() && arg.back() == ':') {
+            keys.erase(arg.substr(0U, arg.size() - 1U));
         }
     }
 
+    // Due to implicitly added space after completion match colon form is easier
+    // to type.
     for (const std::string &key : keys) {
-        out() << key << '\n';
+        out() << key << ":\n";
     }
 
     return EXIT_SUCCESS;

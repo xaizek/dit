@@ -31,7 +31,9 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "completion.hpp"
 #include "integration.hpp"
+#include "parsing.hpp"
 
 /**
  * @brief Usage message for "set" command.
@@ -94,8 +96,8 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
     const std::string &id = args[0];
     Item &item = project.getStorage().get(id);
 
-    for (const std::string &a : boost::make_iterator_range(args.begin() + 1,
-                                                           args.end())) {
+    for (const std::string &a : parsePairedArgs({ args.cbegin() + 1,
+                                                  args.cend() })) {
         std::string key, value;
         std::tie(key, value) = splitAt(a, '=');
 
@@ -158,26 +160,5 @@ SetCmd::complete(Project &project, const std::vector<std::string> &args)
         }
     }
 
-    // Complete key.
-
-    std::unordered_set<std::string> keys;
-
-    for (Item &item : storage.list()) {
-        const std::set<std::string> &itemKeys = item.listRecordNames();
-        keys.insert(itemKeys.cbegin(), itemKeys.cend());
-    }
-
-    // Remove elements already present on the command-line from completion list.
-    for (const std::string &arg : args) {
-        const std::string::size_type pos = arg.find('=');
-        if (pos != 0U) {
-            keys.erase(arg.substr(0U, pos));
-        }
-    }
-
-    for (const std::string &key : keys) {
-        out() << key << '\n';
-    }
-
-    return EXIT_SUCCESS;
+    return completeKeys(storage, out(), { args.cbegin() + 1, args.cend() });
 }

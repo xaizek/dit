@@ -29,7 +29,9 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "completion.hpp"
 #include "integration.hpp"
+#include "parsing.hpp"
 
 namespace {
 
@@ -77,7 +79,7 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
 
     Item &item = project.getStorage().create();
 
-    for (const std::string &a : args) {
+    for (const std::string &a : parsePairedArgs(args)) {
         std::string key, value;
         std::tie(key, value) = splitAt(a, '=');
 
@@ -107,24 +109,5 @@ operator<(const Command &l, const Command &r)
 boost::optional<int>
 AddCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    std::unordered_set<std::string> keys;
-
-    for (Item &item : project.getStorage().list()) {
-        const std::set<std::string> &itemKeys = item.listRecordNames();
-        keys.insert(itemKeys.cbegin(), itemKeys.cend());
-    }
-
-    // Remove elements already present on the command-line from completion list.
-    for (const std::string &arg : args) {
-        const std::string::size_type pos = arg.find('=');
-        if (pos != 0U && pos != std::string::npos) {
-            keys.erase(arg.substr(0U, pos));
-        }
-    }
-
-    for (const std::string &key : keys) {
-        out() << key << '\n';
-    }
-
-    return EXIT_SUCCESS;
+    return completeKeys(project.getStorage(), out(), args);
 }

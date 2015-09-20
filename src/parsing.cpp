@@ -18,6 +18,8 @@
 #include "parsing.hpp"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <boost/fusion/functional.hpp>
 #include <boost/spirit/include/qi_char_.hpp>
@@ -133,4 +135,49 @@ parseCond(std::string::const_iterator &iter, std::string::const_iterator end,
     CondParser<std::string::const_iterator> grammar;
     return qi::phrase_parse(iter, end, grammar, ascii::space, cond)
         && iter == end;
+}
+
+std::vector<std::string>
+parsePairedArgs(const std::vector<std::string> &args)
+{
+    enum class State { REGULAR, FIRST, APPEND, };
+
+    std::vector<std::string> parsed;
+
+    State state = State::REGULAR;
+    for (const std::string &arg : args) {
+        // Assignment resets parsing to initial state.
+        if (arg.find('=') != std::string::npos) {
+            parsed.emplace_back(arg);
+            state = State::REGULAR;
+            continue;
+        }
+
+        if (arg.size() > 1U && arg.back() == ':') {
+            if (state == State::FIRST) {
+                // Remove trailing '=' from item so that its value is not
+                // erased.
+                parsed.back().pop_back();
+            }
+
+            parsed.emplace_back(arg.begin(), --arg.end());
+            parsed.back() += '=';
+            state = State::FIRST;
+        } else if (state == State::FIRST) {
+            parsed.back().append(arg);
+            state = State::APPEND;
+        } else if (state == State::APPEND) {
+            parsed.back().append(' ' + arg);
+        } else {
+            parsed.emplace_back(arg);
+        }
+    }
+
+    if (state == State::FIRST) {
+        // Remove trailing '=' from item so that its value is not
+        // erased.
+        parsed.back().pop_back();
+    }
+
+    return std::move(parsed);
 }
