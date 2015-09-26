@@ -33,6 +33,7 @@
 #include "Scribe.hpp"
 #include "decoration.hpp"
 #include "integration.hpp"
+#include "parsing.hpp"
 
 namespace po = boost::program_options;
 
@@ -161,7 +162,7 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
         return printAllValues(config);
     }
 
-    for (const std::string &a : args) {
+    for (const std::string &a : parsePairedArgs(args)) {
         bool set;
         std::string key, value;
         try {
