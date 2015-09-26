@@ -18,6 +18,7 @@
 #ifndef SCRIBE__PARSING_HPP__
 #define SCRIBE__PARSING_HPP__
 
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,26 @@ struct Cond
     std::string key;   /**< @brief Name of the key. */
     Op op;             /**< @brief Operation to use for comparison. */
     std::string value; /**< @brief Value to match against. */
+};
+
+/**
+ * @brief Describes table row decoration rule.
+ */
+struct ColorRule
+{
+    /**
+     * @brief Decorator prototype.
+     */
+    typedef std::ostream & (*decoration)(std::ostream &os);
+
+    /**
+     * @brief Condition by which rule is chosen.
+     */
+    Cond cond;
+    /**
+     * @brief Decorations to apply according to this rule.
+     */
+    std::vector<decoration> decors;
 };
 
 /**

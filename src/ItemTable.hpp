@@ -25,10 +25,12 @@
 
 class Item;
 
+struct ColorRule;
+
 /**
  * @brief Item table formatter and printer.
  *
- * Format and sorting are configurable via constructors parameters.
+ * Format and sorting are configurable via constructor's parameters.
  */
 class ItemTable
 {
@@ -63,6 +65,18 @@ public:
 
 private:
     /**
+     * @brief Applies item/structure-specific decorators to a stream.
+     *
+     * @param os Stream to be decorated.
+     * @param item Item for which stream should be decorated or @c nullptr for
+     *             headers.
+     *
+     * @returns @p os
+     */
+    std::ostream & decorate(std::ostream &os, Item *item);
+
+private:
+    /**
      * @brief Sorting specification.
      */
     const std::string sort;
@@ -74,6 +88,10 @@ private:
      * @brief List of items to sort.
      */
     std::vector<std::reference_wrapper<Item>> items;
+    /**
+     * @brief Rules for table colorization.
+     */
+    std::vector<ColorRule> colorRules;
 };
 
 #endif // SCRIBE__ITEMTABLE_HPP__
