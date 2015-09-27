@@ -89,9 +89,11 @@ LsCmd::run(Project &project, const std::vector<std::string> &args)
 {
     Config &config = project.getConfig();
     std::string fmt = config.get("ui.ls.fmt", "_id|title");
+    std::string colorSpec = config.get("ui.ls.color",
+                                       "fg-cyan inv bold !heading");
     std::string sort = config.get("ui.ls.sort", "title|_id");
 
-    ItemTable table(fmt, sort);
+    ItemTable table(fmt, colorSpec, sort);
     ItemFilter filter(args);
 
     for (Item &item : project.getStorage().list()) {

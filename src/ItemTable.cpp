@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <iterator>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -132,7 +133,8 @@ private:
     std::vector<std::string> values;
 };
 
-ItemTable::ItemTable(const std::string &fmt, std::string sort)
+ItemTable::ItemTable(const std::string &fmt, const std::string &colorSpec,
+                     std::string sort)
     : sort(std::move(sort))
 {
     for (std::string key : split(fmt, '|')) {
@@ -143,48 +145,9 @@ ItemTable::ItemTable(const std::string &fmt, std::string sort)
         cols.emplace_back(std::move(key), std::move(heading));
     }
 
-    colorRules.push_back({
-        { { "!heading", Op::eq, {} } },
-        { decor::cyan_fg, decor::inv, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "bug" },
-          { "type", Op::eq, "issue" },
-          { "type", Op::eq, "glitch" },
-          { "type", Op::eq, "fix" } },
-        { decor::red_fg, decor::inv, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "feature" } },
-        { decor::blue_bg, decor::white_fg, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "improvement" } },
-        { decor::green_fg, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "idea" } },
-        { decor::inv, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "wish" } },
-        { decor::magenta_bg, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "change" } },
-        { decor::blue_fg, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { { "type", Op::eq, "addition" } },
-        { decor::green_fg, decor::inv, }
-    });
+    if (!parseColorRules(colorSpec, colorRules)) {
+        throw std::runtime_error("Failed to parse colorization specification.");
+    }
 }
 
 ItemTable::~ItemTable()

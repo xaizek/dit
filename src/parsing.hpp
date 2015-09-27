@@ -97,4 +97,15 @@ bool parseCond(std::string::const_iterator &iter,
  */
 std::vector<std::string> parsePairedArgs(const std::vector<std::string> &args);
 
+/**
+ * @brief Parses string into set of color rules.
+ *
+ * @param spec Rules specification.
+ * @param[out] colorRules Buffer for parsing results.
+ *
+ * @returns @c true on successful parsing and @c false otherwise.
+ */
+bool parseColorRules(const std::string &spec,
+                     std::vector<ColorRule> &colorRules);
+
 #endif // SCRIBE__PARSING_HPP__

@@ -41,9 +41,13 @@ public:
      * @brief Constructs the table formatter.
      *
      * @param fmt Format specification: <field>|<field>...
+     * @param colorSpec Colorization specification: <dec>... <cond>... ; ...
      * @param sort Multi-key sorting specification: <field>|<field>...
+     *
+     * @throws std::runtime_error On failed parsing of @p colorSpec.
      */
-    ItemTable(const std::string &fmt, std::string sort);
+    ItemTable(const std::string &fmt, const std::string &colorSpec,
+              std::string sort);
     /**
      * @brief To emit destructing code in corresponding source file.
      */
