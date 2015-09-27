@@ -144,57 +144,45 @@ ItemTable::ItemTable(const std::string &fmt, std::string sort)
     }
 
     colorRules.push_back({
-        { "!heading", Op::eq, {} },
+        { { "!heading", Op::eq, {} } },
         { decor::cyan_fg, decor::inv, decor::bold, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "bug" },
+        { { "type", Op::eq, "bug" },
+          { "type", Op::eq, "issue" },
+          { "type", Op::eq, "glitch" },
+          { "type", Op::eq, "fix" } },
         { decor::red_fg, decor::inv, decor::bold, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "issue" },
-        { decor::red_fg, decor::inv, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { "type", Op::eq, "fix" },
-        { decor::red_fg, decor::inv, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { "type", Op::eq, "glitch" },
-        { decor::red_fg, decor::inv, decor::bold, }
-    });
-
-    colorRules.push_back({
-        { "type", Op::eq, "feature" },
+        { { "type", Op::eq, "feature" } },
         { decor::blue_bg, decor::white_fg, decor::bold, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "improvement" },
+        { { "type", Op::eq, "improvement" } },
         { decor::green_fg, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "idea" },
+        { { "type", Op::eq, "idea" } },
         { decor::inv, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "wish" },
+        { { "type", Op::eq, "wish" } },
         { decor::magenta_bg, decor::bold, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "change" },
+        { { "type", Op::eq, "change" } },
         { decor::blue_fg, decor::bold, }
     });
 
     colorRules.push_back({
-        { "type", Op::eq, "addition" },
+        { { "type", Op::eq, "addition" } },
         { decor::green_fg, decor::inv, }
     });
 }
@@ -259,16 +247,21 @@ ItemTable::decorate(std::ostream &os, Item *item)
     const ColorRule *match = nullptr;
 
     for (const ColorRule &rule : colorRules) {
-        if (rule.cond.key == "!heading") {
-            if (item == nullptr) {
-                match = &rule;
-                break;
+        for (const Cond &cond : rule.conds) {
+            if (cond.key == "!heading") {
+                if (item == nullptr) {
+                    match = &rule;
+                    break;
+                }
+            } else if (item != nullptr) {
+                if (ItemFilter(cond).passes(*item)) {
+                    match = &rule;
+                    break;
+                }
             }
-        } else if (item != nullptr) {
-            if (ItemFilter(rule.cond).passes(*item)) {
-                match = &rule;
-                break;
-            }
+        }
+        if (match != nullptr) {
+            break;
         }
     }
 

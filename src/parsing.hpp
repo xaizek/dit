@@ -54,9 +54,11 @@ struct ColorRule
     typedef std::ostream & (*decoration)(std::ostream &os);
 
     /**
-     * @brief Condition by which rule is chosen.
+     * @brief Conditions by which rule is chosen.
+     *
+     * Rule is matched if any of these match.
      */
-    Cond cond;
+    std::vector<Cond> conds;
     /**
      * @brief Decorations to apply according to this rule.
      */
