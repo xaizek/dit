@@ -21,6 +21,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -38,6 +39,11 @@ ItemFilter::ItemFilter(const std::vector<std::string> &exprs)
         }
         conds.emplace_back(std::move(cond));
     }
+}
+
+ItemFilter::ItemFilter(Cond cond)
+{
+    conds.emplace_back(std::move(cond));
 }
 
 ItemFilter::~ItemFilter()

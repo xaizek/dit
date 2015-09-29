@@ -34,11 +34,17 @@ class ItemFilter
 {
 public:
     /**
-     * @brief Constructs the filter.
+     * @brief Constructs the filter out of conditions in textual form.
      *
      * @param exprs Set of expressions to check against.
      */
     explicit ItemFilter(const std::vector<std::string> &exprs);
+    /**
+     * @brief Constructs the filter out of single condition.
+     *
+     * @param cond
+     */
+    explicit ItemFilter(Cond cond);
     /**
      * @brief Emit destructor code in corresponding source file.
      */

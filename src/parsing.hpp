@@ -18,6 +18,7 @@
 #ifndef SCRIBE__PARSING_HPP__
 #define SCRIBE__PARSING_HPP__
 
+#include <iosfwd>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,28 @@ struct Cond
     std::string key;   /**< @brief Name of the key. */
     Op op;             /**< @brief Operation to use for comparison. */
     std::string value; /**< @brief Value to match against. */
+};
+
+/**
+ * @brief Describes table row decoration rule.
+ */
+struct ColorRule
+{
+    /**
+     * @brief Decorator prototype.
+     */
+    typedef std::ostream & (*decoration)(std::ostream &os);
+
+    /**
+     * @brief Conditions by which rule is chosen.
+     *
+     * Rule is matched if any of these match.
+     */
+    std::vector<Cond> conds;
+    /**
+     * @brief Decorations to apply according to this rule.
+     */
+    std::vector<decoration> decors;
 };
 
 /**
@@ -73,5 +96,16 @@ bool parseCond(std::string::const_iterator &iter,
  * @returns Processed arguments with concatenated items.
  */
 std::vector<std::string> parsePairedArgs(const std::vector<std::string> &args);
+
+/**
+ * @brief Parses string into set of color rules.
+ *
+ * @param spec Rules specification.
+ * @param[out] colorRules Buffer for parsing results.
+ *
+ * @returns @c true on successful parsing and @c false otherwise.
+ */
+bool parseColorRules(const std::string &spec,
+                     std::vector<ColorRule> &colorRules);
 
 #endif // SCRIBE__PARSING_HPP__

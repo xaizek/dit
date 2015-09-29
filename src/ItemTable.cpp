@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <iterator>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,8 +34,12 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 #include "Item.hpp"
+#include "ItemFilter.hpp"
 #include "decoration.hpp"
+#include "parsing.hpp"
 
+static std::ostream & operator<<(std::ostream &os,
+                              const std::vector<ColorRule::decoration> &decors);
 static std::vector<std::string> split(const std::string &str, char with);
 
 /**
@@ -128,7 +133,8 @@ private:
     std::vector<std::string> values;
 };
 
-ItemTable::ItemTable(const std::string &fmt, std::string sort)
+ItemTable::ItemTable(const std::string &fmt, const std::string &colorSpec,
+                     std::string sort)
     : sort(std::move(sort))
 {
     for (std::string key : split(fmt, '|')) {
@@ -138,18 +144,24 @@ ItemTable::ItemTable(const std::string &fmt, std::string sort)
 
         cols.emplace_back(std::move(key), std::move(heading));
     }
+
+    if (!parseColorRules(colorSpec, colorRules)) {
+        throw std::runtime_error("Failed to parse colorization specification.");
+    }
 }
 
 ItemTable::~ItemTable()
 {
 }
 
-void ItemTable::append(Item &item)
+void
+ItemTable::append(Item &item)
 {
     items.emplace_back(item);
 }
 
-void ItemTable::print(std::ostream &os)
+void
+ItemTable::print(std::ostream &os)
 {
     // Ensure items are in correct order.
     const std::vector<std::string> keys = split(sort, '|');
@@ -172,7 +184,7 @@ void ItemTable::print(std::ostream &os)
 
     // Print table heading.
     for (Column &col : cols) {
-        os << decor::cyan_fg << decor::inv << decor::bold
+        decorate(os, nullptr)
            << std::setw(col.getWidth()) << std::left << col.getHeading()
            << decor::def
            << gap;
@@ -181,11 +193,63 @@ void ItemTable::print(std::ostream &os)
 
     // Print table lines.
     for (unsigned int i = 0, n = items.size(); i < n; ++i) {
+        decorate(os, &items[i].get());
         for (Column &col : cols) {
-            os << std::setw(col.getWidth()) << std::left << col[i] << gap;
+            os << std::setw(col.getWidth()) << std::left << col[i];
+            if (&col != &cols.back()) {
+                os << gap;
+            }
         }
-        os << '\n';
+        os << decor::def << '\n';
     }
+}
+
+std::ostream &
+ItemTable::decorate(std::ostream &os, Item *item)
+{
+    const ColorRule *match = nullptr;
+
+    for (const ColorRule &rule : colorRules) {
+        for (const Cond &cond : rule.conds) {
+            if (cond.key == "!heading") {
+                if (item == nullptr) {
+                    match = &rule;
+                    break;
+                }
+            } else if (item != nullptr) {
+                if (ItemFilter(cond).passes(*item)) {
+                    match = &rule;
+                    break;
+                }
+            }
+        }
+        if (match != nullptr) {
+            break;
+        }
+    }
+
+    if (match != nullptr) {
+        os << match->decors;
+    }
+
+    return os;
+}
+
+/**
+ * @brief Applies multiple decorators to single stream.
+ *
+ * @param os Stream to apply decorators.
+ * @param decors Decorators to process.
+ *
+ * @returns @p os
+ */
+static std::ostream &
+operator<<(std::ostream &os, const std::vector<ColorRule::decoration> &decors)
+{
+    for (const ColorRule::decoration &decor : decors) {
+        os << decor;
+    }
+    return os;
 }
 
 /**

@@ -21,11 +21,14 @@
 #include <utility>
 #include <vector>
 
-#include <boost/fusion/functional.hpp>
+#include <boost/fusion/adapted/struct.hpp>
+#include <boost/spirit/include/qi_attr.hpp>
 #include <boost/spirit/include/qi_char_.hpp>
 #include <boost/spirit/include/qi_char_class.hpp>
 #include <boost/spirit/include/qi_core.hpp>
 #include <boost/spirit/include/qi_parse.hpp>
+
+#include "decoration.hpp"
 
 namespace ascii = boost::spirit::ascii;
 namespace qi = boost::spirit::qi;
@@ -35,12 +38,18 @@ using qi::alpha;
 using qi::char_;
 using qi::lexeme;
 
-// Make Boost.Fusion aware of the structure so it can be composed automatically.
+// Make Boost.Fusion aware of structures so they can be inferred automatically
+// from parsing rules.
 BOOST_FUSION_ADAPT_STRUCT(
     Cond,
     (std::string, key)
     (Op, op)
     (std::string, value)
+)
+BOOST_FUSION_ADAPT_STRUCT(
+    ColorRule,
+    (std::vector<ColorRule::decoration>, decors)
+    (std::vector<Cond>, conds)
 )
 
 /**
@@ -75,6 +84,40 @@ public:
 } op;
 
 /**
+ * @brief Symbol table of decorations.
+ */
+static class dec_ : public qi::symbols<char, ColorRule::decoration>
+{
+public:
+    dec_()
+    {
+        add
+            ("bold"       , &decor::bold)
+            ("inv"        , &decor::inv)
+            ("def"        , &decor::def)
+
+            ("fg-black"   , &decor::black_fg)
+            ("fg-red"     , &decor::red_fg)
+            ("fg-green"   , &decor::green_fg)
+            ("fg-yellow"  , &decor::yellow_fg)
+            ("fg-blue"    , &decor::blue_fg)
+            ("fg-magenta" , &decor::magenta_fg)
+            ("fg-cyan"    , &decor::cyan_fg)
+            ("fg-white"   , &decor::white_fg)
+
+            ("bg-black"   , &decor::black_bg)
+            ("bg-red"     , &decor::red_bg)
+            ("bg-green"   , &decor::green_bg)
+            ("bg-yellow"  , &decor::yellow_bg)
+            ("bg-blue"    , &decor::blue_bg)
+            ("bg-magenta" , &decor::magenta_bg)
+            ("bg-cyan"    , &decor::cyan_bg)
+            ("bg-white"   , &decor::white_bg)
+        ;
+    }
+} dec;
+
+/**
  * @brief key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
  */
 static qi::rule<std::string::const_iterator, std::string(), ascii::space_type>
@@ -93,7 +136,7 @@ class CondParser : public qi::grammar<I, Cond(), ascii::space_type>
 {
 public:
     /**
-     * @brief Constructs the parser.
+     * @brief Constructs and configures the parser.
      */
     CondParser() : CondParser::base_type(expr)
     {
@@ -106,17 +149,71 @@ private:
     /**
      * @brief Whole expression: expr ::= key op value
      *
-     * Where: op ::= "==" | "!="
+     * Where: op ::= "==" | "!=" | "/" | "=/" | "#" | "!/"
      */
     qi::rule<I, Cond(), ascii::space_type> expr;
     /**
-     * @brief key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
+     * @brief Key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
      */
     qi::rule<I, std::string(), ascii::space_type> key;
     /**
      * @brief Value to compare with: value ::= .*
      */
     qi::rule<I, std::string(), ascii::space_type> value;
+};
+
+/**
+ * @brief Parser of colorization specification.
+ *
+ * @tparam I Type of iterator used to consume input.
+ */
+template <typename I>
+class ColorRulesParser :
+    public qi::grammar<I, std::vector<ColorRule>(), ascii::space_type>
+{
+public:
+    /**
+     * @brief Constructs and configures the parser.
+     */
+    ColorRulesParser() : ColorRulesParser::base_type(rules)
+    {
+        using ascii::string;
+        using qi::attr;
+
+        rules   %= -(rule >> *(';' >> rule));
+        rule    %= +dec >> +match;
+        match   %= special | cond;
+        special %= string("!heading") >> attr(Op::eq) >> attr(std::string());
+        // Not reusing CondParser here because it parses till the end of the
+        // string.
+        cond    %= ::key >> op >> lexeme[ *(char_ - ' ' - '\t' - ';') ];
+    }
+
+private:
+    /**
+     * @brief Whole expression: rules ::= [ rule (';' rule)+ ]
+     */
+    qi::rule<I, std::vector<ColorRule>(), ascii::space_type> rules;
+    /**
+     * @brief Single rule: rule ::= dec+ match+
+     */
+    qi::rule<I, ColorRule(), ascii::space_type> rule;
+    /**
+     * @brief Single item matcher: match ::= special | cond
+     */
+    qi::rule<I, Cond(), ascii::space_type> match;
+    /**
+     * @brief Pseudo match item: special ::= "!heading"
+     */
+    qi::rule<I, Cond(), ascii::space_type> special;
+    /**
+     * @brief Item condition: cond ::= key op value
+     *
+     * Where:
+     *  - op ::= "==" | "!=" | "/" | "=/" | "#" | "!/"
+     *  - value ::= [^ \t;]*
+     */
+    qi::rule<I, Cond(), ascii::space_type> cond;
 };
 
 }
@@ -180,4 +277,14 @@ parsePairedArgs(const std::vector<std::string> &args)
     }
 
     return std::move(parsed);
+}
+
+bool
+parseColorRules(const std::string &spec, std::vector<ColorRule> &colorRules)
+{
+    std::string::const_iterator iter = spec.cbegin();
+    ColorRulesParser<std::string::const_iterator> grammar;
+    return qi::phrase_parse(iter, spec.cend(), grammar, ascii::space,
+                            colorRules)
+        && iter == spec.cend();
 }
