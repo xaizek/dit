@@ -66,6 +66,8 @@ $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 check: $(target) $(out_dir)/tests/tests
 	@$(out_dir)/tests/tests
 
+# work around parenthesis warning in tests somehow caused by ccache
+$(out_dir)/tests/tests: EXTRA_CXXFLAGS += -Wno-error=parentheses
 $(out_dir)/tests/tests: $(filter-out %/main.o,$(bin_objects)) $(tests_objects) \
                       | $(out_dirs)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
