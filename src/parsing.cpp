@@ -243,11 +243,15 @@ parsePairedArgs(const std::vector<std::string> &args)
 
     State state = State::REGULAR;
     for (const std::string &arg : args) {
-        // Assignment resets parsing to initial state.
-        if (arg.find('=') != std::string::npos) {
-            parsed.emplace_back(arg);
-            state = State::REGULAR;
-            continue;
+        // Assignment with valid key name resets parsing to initial state.
+        const std::string::size_type eqPos = arg.find('=');
+        if (eqPos != std::string::npos) {
+            auto iter = arg.cbegin();
+            if (parseKeyName(iter, iter + eqPos)) {
+                parsed.emplace_back(arg);
+                state = State::REGULAR;
+                continue;
+            }
         }
 
         if (arg.size() > 1U && arg.back() == ':') {
