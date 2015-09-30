@@ -69,8 +69,10 @@ check: $(target) $(out_dir)/tests/tests
 # work around parenthesis warning in tests somehow caused by ccache
 $(out_dir)/tests/tests: EXTRA_CXXFLAGS += -Wno-error=parentheses
 $(out_dir)/tests/tests: $(filter-out %/main.o,$(bin_objects)) $(tests_objects) \
+                        tests/. \
                       | $(out_dirs)
-	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
+	$(CXX) -o $@ $(filter-out %/main.o,$(bin_objects)) $(tests_objects) \
+           $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 $(out_dir)/%.o: %.cpp | $(out_dirs)
 	$(CXX) -o $@ -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) $<
