@@ -4,3 +4,4 @@
 *.d
 *.o
 /scribe
+/tests/tests
