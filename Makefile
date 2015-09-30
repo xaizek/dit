@@ -17,16 +17,18 @@ pos = $(strip $(eval T := ) \
                                       $(eval T := $T $(elem)))) \
               $i)
 
-# determine output directory, "." by default or "release"/"debug" for
-# corresponding targets
+# determine output directory and build target; "." is the directory by default
+# or "release"/"debug" for corresponding targets
 ifneq ($(call pos,release,$(MAKECMDGOALS)),-1)
     out_dir := release
+    target  := release
 else
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
     else
         out_dir := .
     endif
+    target := debug
 endif
 
 # traverse directories ($1) recursively looking for a pattern ($2) to make list
@@ -59,7 +61,7 @@ debug release: $(out_dir)/$(bin)
 $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
 
-check: $(out_dir)/tests/tests
+check: $(target) $(out_dir)/tests/tests
 	@$(out_dir)/tests/tests
 
 $(out_dir)/tests/tests: $(filter-out %/main.o,$(bin_objects)) $(tests_objects) \
