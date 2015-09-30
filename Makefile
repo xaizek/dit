@@ -22,6 +22,9 @@ pos = $(strip $(eval T := ) \
 ifneq ($(call pos,release,$(MAKECMDGOALS)),-1)
     out_dir := release
     target  := release
+
+    EXTRA_CXXFLAGS := -O3
+    EXTRA_LDFLAGS  := -Wl,--strip-all
 else
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
@@ -29,6 +32,9 @@ else
         out_dir := .
     endif
     target := debug
+
+    EXTRA_CXXFLAGS := -O0 -g
+    EXTRA_LDFLAGS  := -g
 endif
 
 # traverse directories ($1) recursively looking for a pattern ($2) to make list
@@ -50,10 +56,6 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
-release: EXTRA_CXXFLAGS := -O3
-release: EXTRA_LDFLAGS := -Wl,--strip-all
-debug: EXTRA_CXXFLAGS := -O0 -g
-debug: EXTRA_LDFLAGS := -g
 debug release: $(out_dir)/$(bin)
 
 .PHONY: clean check
