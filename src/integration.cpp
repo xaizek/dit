@@ -17,8 +17,6 @@
 
 #include "integration.hpp"
 
-#include <cstdlib>
-
 #include <fstream>
 #include <iterator>
 #include <limits>
@@ -27,11 +25,9 @@
 #include <utility>
 
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
-#include <boost/scope_exit.hpp>
 
-namespace fs = boost::filesystem;
+#include "utils/fs.hpp"
 
 static void writeBufferFile(const std::string &path, const std::string &key,
                             const std::string &current);
@@ -46,16 +42,9 @@ editValue(const std::string &key, const std::string &value,
         return {};
     }
 
-    // Create name for temporary file and the file itself.
-    std::string tmpFile = (fs::temp_directory_path()
-                        /  fs::unique_path("scribe-buf-%%%%-%%%%")).string();
-
+    // Create name for temporary file name and the file itself.
+    TempFile tmpFile("buf");
     writeBufferFile(tmpFile, key, current);
-
-    // Make sure temporary file will be removed later.
-    BOOST_SCOPE_EXIT(&tmpFile) {
-        static_cast<void>(std::remove(tmpFile.c_str()));
-    } BOOST_SCOPE_EXIT_END
 
     if (!editBufferFile(tmpFile)) {
         return current;
