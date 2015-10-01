@@ -40,8 +40,9 @@ public:
      * @brief Constructs configuration for file specified by @p path.
      *
      * @param path Associated project.
+     * @param parent Parent configuration used as a fallback for unknown values.
      */
-    explicit Config(std::string path);
+    explicit Config(std::string path, Config *parent = nullptr);
     /**
      * @brief Copying is forbidden.
      *
@@ -108,6 +109,10 @@ private:
      * @brief Path to configuration file.
      */
     const std::string path;
+    /**
+     * @brief Parent configuration used as a fallback for unknown values.
+     */
+    Config *const parent;
     /**
      * @brief In-memory storage of the configuration.
      */
