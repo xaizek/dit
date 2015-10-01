@@ -43,8 +43,9 @@ public:
      * @brief Creates an instance of particular project.
      *
      * @param rootDir Root directory of the project.
+     * @param globalConfig Global application configuration.
      */
-    Project(std::string rootDir);
+    explicit Project(std::string rootDir, Config *globalConfig = nullptr);
     /**
      * @brief Emit destructor in the corresponding source file.
      */

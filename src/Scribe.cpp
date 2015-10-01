@@ -125,7 +125,7 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    Project project((fs::path(projectsDir)/prjName).string());
+    Project project((fs::path(projectsDir)/prjName).string(), config.get());
     if (!project.exists()) {
         std::cerr << "Project does not exist: " << prjName << std::endl;
         return EXIT_FAILURE;

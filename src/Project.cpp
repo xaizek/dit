@@ -44,8 +44,8 @@ Project::init(const std::string &rootDir)
     prj.save();
 }
 
-Project::Project(std::string rootDir)
-    : storage(*this), config(getSubRootPath(rootDir, "config")),
+Project::Project(std::string rootDir, Config *globalConfig)
+    : storage(*this), config(getSubRootPath(rootDir, "config"), globalConfig),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");

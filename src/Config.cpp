@@ -30,7 +30,8 @@
 namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
-Config::Config(std::string path) : path(std::move(path)), changed(false)
+Config::Config(std::string path, Config *parent)
+    : path(std::move(path)), parent(parent), changed(false)
 {
 }
 
@@ -38,15 +39,26 @@ std::string
 Config::get(const std::string &key)
 {
     ensureLoaded();
-    return props.get<std::string>(key);
+
+    try {
+        return props.get<std::string>(key);
+    } catch (boost::property_tree::ptree_bad_path &) {
+        if (parent == nullptr) {
+            throw;
+        }
+
+        // Do nothing, just execute the code below.
+    }
+    return parent->get(key);
 }
 
 std::string
 Config::get(const std::string &key, const std::string &def)
 {
     ensureLoaded();
-    std::string val = props.get<std::string>(key, def);
-    return val.empty() ? def : std::move(val);
+    std::string actualDef = (parent == nullptr) ? def : parent->get(key, def);
+    std::string val = props.get<std::string>(key, actualDef);
+    return val.empty() ? actualDef : std::move(val);
 }
 
 std::vector<std::string>
