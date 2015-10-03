@@ -17,6 +17,7 @@
 
 #include "parsing.hpp"
 
+#include <regex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,6 +28,7 @@
 #include <boost/spirit/include/qi_char_class.hpp>
 #include <boost/spirit/include/qi_core.hpp>
 #include <boost/spirit/include/qi_parse.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "decoration.hpp"
 
@@ -218,6 +220,10 @@ private:
 
 }
 
+static std::vector<std::string> applyAlias(
+    const std::vector<std::string> &alias, std::vector<std::string> &args,
+    bool completion);
+
 bool
 parseKeyName(std::string::const_iterator &iter, std::string::const_iterator end)
 {
@@ -291,4 +297,90 @@ parseColorRules(const std::string &spec, std::vector<ColorRule> &colorRules)
     return qi::phrase_parse(iter, spec.cend(), grammar, ascii::space,
                             colorRules)
         && iter == spec.cend();
+}
+
+std::string
+parseInvocation(std::vector<std::string> &args,
+                std::function<std::string(const std::string &)> aliasResolver,
+                bool completion)
+{
+    std::string cmdName;
+    if (!args.empty()) {
+        cmdName = args[0];
+        args.erase(args.begin());
+    }
+
+    const std::string aliasRHS = aliasResolver(cmdName);
+    if (!aliasRHS.empty()) {
+        const std::vector<std::string> &alias = breakIntoArgs(aliasRHS);
+        args = applyAlias(alias, args, completion);
+
+        if (args.empty()) {
+            cmdName.clear();
+        } else {
+            cmdName = args[0];
+            args.erase(args.begin());
+        }
+    }
+
+    return std::move(cmdName);
+}
+
+/**
+ * @brief Performs alias argument substitution.
+ *
+ * @param alias Right-hand side of the alias.
+ * @param[in,out] args Arguments passed to the alias.
+ * @param completion Whether we're performing completion.
+ *
+ * @returns Name of the command to execute.
+ */
+static std::vector<std::string>
+applyAlias(const std::vector<std::string> &alias,
+           std::vector<std::string> &args, bool completion)
+{
+    static std::regex argRegex(R"(\$\{(\d+)\})");
+
+    std::vector<bool> argUsed(args.size());
+
+    std::vector<std::string> substituted;
+
+    std::smatch match;
+    for (const std::string &arg : alias) {
+        if (std::regex_match(arg, match, argRegex)) {
+            const unsigned int argN = std::stoi(match[1].str());
+            if (argN == 0) {
+                substituted.push_back(arg);
+            } else if (argN <= args.size()) {
+                substituted.push_back(args[argN - 1U]);
+                argUsed[argN - 1U] = true;
+
+                // Stop after inserting last argument during completion.
+                if (completion && argN == args.size()) {
+                    return std::move(substituted);
+                }
+            } else {
+                substituted.emplace_back();
+            }
+        } else {
+            substituted.push_back(arg);
+        }
+    }
+
+    // Append all unused elements.
+    for (unsigned int i = 0; i < args.size(); ++i) {
+        if (!argUsed[i]) {
+            substituted.push_back(args[i]);
+        }
+    }
+
+    return std::move(substituted);
+}
+
+std::vector<std::string>
+breakIntoArgs(const std::string &line)
+{
+    boost::escaped_list_separator<char> sep("\\", " ", "\"'");
+    boost::tokenizer<boost::escaped_list_separator<char>> tok(line, sep);
+    return std::vector<std::string>(tok.begin(), tok.end());
 }

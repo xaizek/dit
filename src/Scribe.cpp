@@ -21,25 +21,23 @@
 #include <cstdlib>
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
-#include <boost/tokenizer.hpp>
 
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
+#include "parsing.hpp"
 
 namespace fs = boost::filesystem;
-
-static std::vector<std::string> breakIntoArgs(const std::string &line);
 
 /**
  * @brief Character in front of project name on command-line.
@@ -105,7 +103,9 @@ Scribe::run()
     if (args.empty()) {
         args = breakIntoArgs(config->get("core.defcmd", "ls"));
     }
-    std::string cmdName = parseArgs(args);
+    auto aliasResolver = std::bind(std::mem_fn(&Scribe::resolveAlias), this,
+                                   std::placeholders::_1);
+    std::string cmdName = parseInvocation(args, aliasResolver, false);
 
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
@@ -147,7 +147,9 @@ Scribe::run()
 int
 Scribe::complete(Project &project, std::vector<std::string> args)
 {
-    const std::string &cmdName = parseArgs(args);
+    auto aliasResolver = std::bind(std::mem_fn(&Scribe::resolveAlias), this,
+                                   std::placeholders::_1);
+    const std::string &cmdName = parseInvocation(args, aliasResolver, true);
 
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
@@ -165,37 +167,9 @@ Scribe::complete(Project &project, std::vector<std::string> args)
 }
 
 std::string
-Scribe::parseArgs(std::vector<std::string> &args)
+Scribe::resolveAlias(const std::string &name)
 {
-    std::string cmdName;
-    if (!args.empty()) {
-        cmdName = args[0];
-        args.erase(args.begin());
-    }
-
-    std::string aliasRHS = config->get("alias." + cmdName, "");
-    if (!aliasRHS.empty()) {
-        std::vector<std::string> moreArgs = breakIntoArgs(aliasRHS);
-        args.insert(args.begin(), moreArgs.cbegin() + 1, moreArgs.cend());
-        cmdName = moreArgs[0];
-    }
-
-    return std::move(cmdName);
-}
-
-/**
- * @brief Tokenize the command line, respecting escapes and quotes.
- *
- * @param line Line to parse.
- *
- * @returns Array of arguments.
- */
-static std::vector<std::string>
-breakIntoArgs(const std::string &line)
-{
-    boost::escaped_list_separator<char> sep("\\", " ", "\"'");
-    boost::tokenizer<boost::escaped_list_separator<char>> tok(line, sep);
-    return std::vector<std::string>(tok.begin(), tok.end());
+    return config->get("alias." + name, std::string());
 }
 
 Config &

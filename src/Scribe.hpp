@@ -97,13 +97,13 @@ private:
      */
     void initConfig();
     /**
-     * @brief Parses arguments possibly replacing them.
+     * @brief Maps alias name to its right-hand side.
      *
-     * @param args Arguments to process.
+     * @param name Name of an alias.
      *
-     * @returns Name of the command to execute.
+     * @returns Right-hand side of the alias.
      */
-    std::string parseArgs(std::vector<std::string> &args);
+    std::string resolveAlias(const std::string &name);
 
 private:
     /**

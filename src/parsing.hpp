@@ -18,6 +18,7 @@
 #ifndef SCRIBE__PARSING_HPP__
 #define SCRIBE__PARSING_HPP__
 
+#include <functional>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -107,5 +108,27 @@ std::vector<std::string> parsePairedArgs(const std::vector<std::string> &args);
  */
 bool parseColorRules(const std::string &spec,
                      std::vector<ColorRule> &colorRules);
+
+/**
+ * @brief Parses arguments possibly replacing them.
+ *
+ * @param args Arguments to process.
+ * @param aliasResolver Resolves RHS of an alias by its name.
+ * @param completion Whether this is for command-line completion.
+ *
+ * @returns Name of the command to execute.
+ */
+std::string parseInvocation(std::vector<std::string> &args,
+                  std::function<std::string(const std::string &)> aliasResolver,
+                  bool completion);
+
+/**
+ * @brief Tokenize the command line, respecting escapes and quotes.
+ *
+ * @param line Line to parse.
+ *
+ * @returns Array of arguments.
+ */
+std::vector<std::string> breakIntoArgs(const std::string &line);
 
 #endif // SCRIBE__PARSING_HPP__
