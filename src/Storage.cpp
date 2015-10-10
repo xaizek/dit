@@ -24,6 +24,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 
 #include <boost/filesystem.hpp>
 
@@ -54,7 +55,7 @@ Storage::create()
 
     decltype(items)::iterator it;
     bool inserted;
-    std::tie(it, inserted) = items.emplace(id, Item(*this, id, false));
+    std::tie(it, inserted) = items.emplace(id, Item(*this, id, false, {}));
     assert(inserted && "Duplicated item id");
 
     // Advance ID if we got here without exceptions.
@@ -111,14 +112,14 @@ Storage::loadDir(const fs::path &path)
     for (fs::directory_entry &e : fs::directory_iterator(path)) {
         const std::string id = prefix.string() + e.path().filename().string();
 
-        bool inserted;
-        std::tie(std::ignore, inserted) = items.emplace(id, Item(*this, id));
+        bool inserted = items.emplace(id, Item(*this, id, true, {})).second;
         assert(inserted && "Duplicated item id");
+        (void)inserted;
     }
 }
 
 void
-Storage::fill(Item &item)
+Storage::fill(Item &item, pk<Item>)
 {
     const std::string &id = item.getId();
     const fs::path path =
@@ -129,7 +130,7 @@ Storage::fill(Item &item)
         throw std::runtime_error("Failed to read change set of " + id);
     }
 
-    file >> item.changes;
+    file >> item.getChanges({});
 }
 
 void
@@ -155,7 +156,7 @@ Storage::save()
                                      e.second.getId());
         }
         /* TODO: write only new changes (append them). */
-        file << e.second.changes;
+        file << e.second.getChanges({});
     }
 
     idGenerator.save();
