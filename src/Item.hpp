@@ -27,6 +27,7 @@
 
 class Change;
 class Storage;
+class Tests;
 
 /**
  * @brief Single item to take care of.
@@ -61,6 +62,12 @@ public:
      * @param exists Whether this item is a dummy until loaded.
      */
     Item(Storage &storage, std::string id, bool exists, pk<Storage>);
+    /**
+     * @brief Constructs new item for testing purposes.
+     *
+     * @param id Id of the item.
+     */
+    Item(std::string id, pk<Tests>);
 
 public:
     /**

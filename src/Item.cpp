@@ -56,6 +56,12 @@ Item::Item(Storage &storage, std::string id, bool exists, pk<Storage>)
 {
 }
 
+Item::Item(std::string id, pk<Tests>)
+    : LazyLoadable<Item>(true), storage(storage), id(std::move(id)),
+      changed(false)
+{
+}
+
 Item::~Item()
 {
 }

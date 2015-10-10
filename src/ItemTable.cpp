@@ -76,9 +76,9 @@ public:
      *
      * @returns The heading.
      */
-    const std::string & getHeading() const
+    const std::string getHeading() const
     {
-        return heading;
+        return truncate(heading);
     }
 
     /**
@@ -103,15 +103,47 @@ public:
     }
 
     /**
-     * @brief Retrieves value of the column by index.
+     * @brief Reduces width of the column by @p by positions.
      *
-     * @param i Index of the value.
+     * @param by Amount by which to adjust column width.
+     */
+    void reduceWidthBy(unsigned int by)
+    {
+        width -= std::min(width, by);
+    }
+
+    /**
+     * @brief Retrieves printable value of the column by index.
+     *
+     * The value can be truncated to fit limited width, which is indicated by
+     * trailing ellipsis.
+     *
+     * @param i Index of the value (no range checks are performed).
      *
      * @returns The value.
      */
-    const std::string & operator[](unsigned int i) const
+    std::string operator[](unsigned int i) const
     {
-        return values[i];
+        return truncate(values[i]);
+    }
+
+private:
+    /**
+     * @brief Truncates a string with ellipsis to fit into column width.
+     *
+     * @param s The string to truncate.
+     *
+     * @returns Truncated string, which is the same as @p s if it already fits.
+     */
+    std::string truncate(const std::string &s) const
+    {
+        if (s.length() <= width) {
+            return s;
+        }
+        if (width <= 3U) {
+            return std::string("...").substr(0U, width);
+        }
+        return s.substr(0U, width - 3U) + "...";
     }
 
 private:
@@ -133,9 +165,11 @@ private:
     std::vector<std::string> values;
 };
 
+static const std::string gap = "  ";
+
 ItemTable::ItemTable(const std::string &fmt, const std::string &colorSpec,
-                     std::string sort)
-    : sort(std::move(sort))
+                     std::string sort, unsigned int maxWidth)
+    : sort(std::move(sort)), maxWidth(maxWidth)
 {
     for (std::string key : split(fmt, '|')) {
         std::string heading = key;
@@ -163,26 +197,111 @@ ItemTable::append(Item &item)
 void
 ItemTable::print(std::ostream &os)
 {
-    // Ensure items are in correct order.
+    sortItems();
+
+    fillColumns();
+
+    if (!adjustColumnsWidths()) {
+        // Available width is not enough to display table.
+        return;
+    }
+
+    printTableHeader(os);
+    printTableRows(os);
+}
+
+void
+ItemTable::sortItems()
+{
     const std::vector<std::string> keys = split(sort, '|');
     for (const std::string &key : boost::adaptors::reverse(keys)) {
         std::stable_sort(items.begin(), items.end(),
-                         [&key](Item &a, Item &b)
-                         {
+                         [&key](Item &a, Item &b) {
                              return a.getValue(key) < b.getValue(key);
                          });
     }
+}
 
-    // Populate columns with items data.
+void
+ItemTable::fillColumns()
+{
     for (Item &item : items) {
         for (Column &col : cols) {
             col.append(item.getValue(col.getKey()));
         }
     }
+}
 
-    const std::string gap = "  ";
+bool
+ItemTable::adjustColumnsWidths()
+{
+    // The code below assumes that there is at least one column.
+    if (cols.empty()) {
+        return false;
+    }
 
-    // Print table heading.
+    // Calculate real width of the table.
+    unsigned int realWidth = 0U;
+    for (Column &col : cols) {
+        realWidth += col.getWidth();
+    }
+    realWidth += gap.length()*(cols.size() - 1U);
+
+    // Make ordering of columns that goes from widest to narrowest.
+    std::vector<std::reference_wrapper<Column>> sorted {
+        cols.begin(), cols.end()
+    };
+    std::sort(sorted.begin(), sorted.end(),
+              [](const Column &a, const Column &b) {
+                  return a.getWidth() >= b.getWidth();
+              });
+
+    // Repeatedly reduce columns until we reach target width.
+    // At each iteration: reduce width of (at most all, but not necessarily) the
+    // widest columns by making them at most as wide as the narrower columns
+    // that directly follow them.
+    while (realWidth > maxWidth) {
+        unsigned int toReduce = realWidth - maxWidth;
+
+        // Make list of the widest columns as well as figure out by which amount
+        // we can adjust the width (difference between column widths).
+        std::vector<std::reference_wrapper<Column>> widest;
+        unsigned int maxAdj = static_cast<Column&>(sorted.front()).getWidth();
+        for (Column &col : sorted) {
+            const unsigned int w = col.getWidth();
+            if (w != maxAdj) {
+                maxAdj -= w;
+                break;
+            }
+            widest.push_back(col);
+        }
+
+        // Reversed order of visiting to ensure that ordering invariant is
+        // intact: last visited element can be reduced by smaller amount, which
+        // will leave it the biggest.  Actually it doesn't matter because we
+        // reach target width at the same time, still it might matter later.
+        for (Column &col : boost::adaptors::reverse(widest)) {
+            const unsigned int by = std::min(maxAdj, toReduce);
+            col.reduceWidthBy(by);
+            toReduce -= by;
+        }
+
+        // We could exhaust possibilities to reduce column width and all that's
+        // left is padding between columns.
+        if (maxAdj == 0) {
+            break;
+        }
+
+        // Update current width of the table.
+        realWidth = maxWidth + toReduce;
+    }
+
+    return realWidth <= maxWidth;
+}
+
+void
+ItemTable::printTableHeader(std::ostream &os)
+{
     for (Column &col : cols) {
         decorate(os, nullptr)
            << std::setw(col.getWidth()) << std::left << col.getHeading()
@@ -193,8 +312,11 @@ ItemTable::print(std::ostream &os)
         }
     }
     os << '\n';
+}
 
-    // Print table lines.
+void
+ItemTable::printTableRows(std::ostream &os)
+{
     for (unsigned int i = 0, n = items.size(); i < n; ++i) {
         decorate(os, &items[i].get());
         for (Column &col : cols) {
@@ -262,11 +384,15 @@ operator<<(std::ostream &os, const std::vector<ColorRule::decoration> &decors)
  * @param str String to split into substrings.
  * @param with Character to split at.
  *
- * @returns Array of results.
+ * @returns Array of results, empty on empty string.
  */
 static std::vector<std::string>
 split(const std::string &str, char with)
 {
+    if (str.empty()) {
+        return {};
+    }
+
     std::vector<std::string> results;
     boost::split(results, str, boost::is_from_range(with, with));
     return std::move(results);
