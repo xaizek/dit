@@ -1,4 +1,5 @@
 # build artefacts
+/coverage/
 /debug/
 /release/
 *.d

@@ -20,21 +20,27 @@ pos = $(strip $(eval T := ) \
 # determine output directory and build target; "." is the directory by default
 # or "release"/"debug" for corresponding targets
 ifneq ($(call pos,release,$(MAKECMDGOALS)),-1)
-    out_dir := release
-    target  := release
-
     EXTRA_CXXFLAGS := -O3
     EXTRA_LDFLAGS  := -Wl,--strip-all
+
+    out_dir := release
+    target  := release
 else
+    EXTRA_CXXFLAGS := -O0 -g
+    EXTRA_LDFLAGS  := -g
+
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
     else
-        out_dir := .
+        ifneq ($(call pos,coverage,$(MAKECMDGOALS)),-1)
+            out_dir := coverage
+            EXTRA_CXXFLAGS += --coverage
+            EXTRA_LDFLAGS  += --coverage
+        else
+            out_dir := .
+        endif
     endif
     target := debug
-
-    EXTRA_CXXFLAGS := -O0 -g
-    EXTRA_LDFLAGS  := -g
 endif
 
 # traverse directories ($1) recursively looking for a pattern ($2) to make list
@@ -56,9 +62,16 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
+.PHONY: check clean coverage debug release
+
 debug release: $(out_dir)/$(bin)
 
-.PHONY: clean check
+coverage: check $(out_dir)/$(bin)
+	lcov --directory $(out_dir)/src/ --base-directory src/ --capture \
+	     --output-file $(out_dir)/lcov.info --config-file lcovrc \
+	     --test-name unit_tests --quiet
+	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
+	     --config-file lcovrc --demangle-cpp --show-details
 
 $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
@@ -81,7 +94,7 @@ $(out_dirs):
 	mkdir -p $@
 
 clean:
-	-$(RM) -r debug/ release/
+	-$(RM) -r coverage/ debug/ release/
 	-$(RM) $(bin_objects) $(bin_depends) $(tests_objects) $(tests_depends) \
            $(out_dir)/$(bin) $(out_dir)/tests/tests
 
