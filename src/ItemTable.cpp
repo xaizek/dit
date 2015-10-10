@@ -186,7 +186,7 @@ ItemTable::print(std::ostream &os)
     for (Column &col : cols) {
         decorate(os, nullptr)
            << std::setw(col.getWidth()) << std::left << col.getHeading()
-           << decor::def;
+           << (colorRules.empty() ? decor::none : decor::def);
 
         if (&col != &cols.back()) {
             os << gap;
@@ -203,7 +203,8 @@ ItemTable::print(std::ostream &os)
                 os << gap;
             }
         }
-        os << decor::def << '\n';
+        os << (colorRules.empty() ? decor::none : decor::def)
+           << '\n';
     }
 }
 
