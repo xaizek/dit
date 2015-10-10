@@ -186,8 +186,11 @@ ItemTable::print(std::ostream &os)
     for (Column &col : cols) {
         decorate(os, nullptr)
            << std::setw(col.getWidth()) << std::left << col.getHeading()
-           << decor::def
-           << gap;
+           << decor::def;
+
+        if (&col != &cols.back()) {
+            os << gap;
+        }
     }
     os << '\n';
 
