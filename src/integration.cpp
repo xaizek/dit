@@ -17,6 +17,10 @@
 
 #include "integration.hpp"
 
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <unistd.h>
+
 #include <fstream>
 #include <iterator>
 #include <limits>
@@ -122,4 +126,15 @@ readEditedValue(const std::string &path)
 
     boost::trim_if(value, [](char c) { return std::isspace(c) || c == '\n'; } );
     return std::move(value);
+}
+
+unsigned int
+getTerminalWidth()
+{
+    winsize ws;
+    if (ioctl(STDIN_FILENO, TIOCGWINSZ, &ws) != 0) {
+        return std::numeric_limits<unsigned int>::max();
+    }
+
+    return ws.ws_col;
 }
