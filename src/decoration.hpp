@@ -36,6 +36,14 @@ namespace decor {
  */
 
 /**
+ * @brief Convenient attribute that does nothing.
+ *
+ * @param os Stream to operate on.
+ *
+ * @returns @p os
+ */
+std::ostream & none(std::ostream &os);
+/**
  * @brief Enables bold attribute.
  *
  * @param os Stream to operate on.

@@ -43,11 +43,12 @@ public:
      * @param fmt Format specification: <field>|<field>...
      * @param colorSpec Colorization specification: <dec>... <cond>... ; ...
      * @param sort Multi-key sorting specification: <field>|<field>...
+     * @param maxWidth Maximum allowed table width.
      *
      * @throws std::runtime_error On failed parsing of @p colorSpec.
      */
     ItemTable(const std::string &fmt, const std::string &colorSpec,
-              std::string sort);
+              std::string sort, unsigned int maxWidth);
     /**
      * @brief To emit destructing code in corresponding source file.
      */
@@ -69,6 +70,32 @@ public:
 
 private:
     /**
+     * @brief Ensures that items are in correct order.
+     */
+    void sortItems();
+    /**
+     * @brief Populates columns with items' data.
+     */
+    void fillColumns();
+    /**
+     * @brief Ensures that columns fit into required width limit.
+     *
+     * @returns @c true on successful shrinking or @c false on failure.
+     */
+    bool adjustColumnsWidths();
+    /**
+     * @brief Print table heading.
+     *
+     * @param os Output stream.
+     */
+    void printTableHeader(std::ostream &os);
+    /**
+     * @brief Prints table lines.
+     *
+     * @param os Output stream.
+     */
+    void printTableRows(std::ostream &os);
+    /**
      * @brief Applies item/structure-specific decorators to a stream.
      *
      * @param os Stream to be decorated.
@@ -84,6 +111,10 @@ private:
      * @brief Sorting specification.
      */
     const std::string sort;
+    /**
+     * @brief Maximum allowed table width.
+     */
+    const unsigned int maxWidth;
     /**
      * @brief List of columns of the table (built from the format).
      */

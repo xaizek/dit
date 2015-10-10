@@ -27,6 +27,7 @@
 
 #include <boost/range/adaptor/reversed.hpp>
 
+#include "utils/Passkey.hpp"
 #include "Change.hpp"
 #include "Storage.hpp"
 #include "parsing.hpp"
@@ -49,8 +50,14 @@ Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
     return true;
 }
 
-Item::Item(Storage &storage, std::string id, bool exists)
+Item::Item(Storage &storage, std::string id, bool exists, pk<Storage>)
     : LazyLoadable<Item>(!exists), storage(storage), id(std::move(id)),
+      changed(false)
+{
+}
+
+Item::Item(std::string id, pk<Tests>)
+    : LazyLoadable<Item>(true), storage(storage), id(std::move(id)),
       changed(false)
 {
 }
@@ -96,7 +103,7 @@ Item::listRecordNames()
 void
 Item::load()
 {
-    storage.fill(*this);
+    storage.fill(*this, {});
 
     for (int i = 0, c = changes.size(); i < c - 1; ++i) {
         if (changes[i].getTimestamp() > changes[i + 1].getTimestamp()) {

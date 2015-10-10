@@ -35,4 +35,11 @@ boost::optional<std::string> editValue(const std::string &key,
                                        const std::string &value,
                                        const std::string &current);
 
+/**
+ * @brief Retrieves terminal width.
+ *
+ * @returns Actual terminal width, or maximum possible value allowed by type.
+ */
+unsigned int getTerminalWidth();
+
 #endif // SCRIBE__INTEGRATION_HPP__

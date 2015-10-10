@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "utils/Passkey.hpp"
 #include "IdGenerator.hpp"
 #include "LazyLoadable.hpp"
 
@@ -88,7 +89,7 @@ public:
      *
      * @throws std::runtime_error On missing item data.
      */
-    void fill(Item &item);
+    void fill(Item &item, pk<Item>);
     /**
      * @brief Stores changed items.
      *

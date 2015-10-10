@@ -22,10 +22,12 @@
 #include <string>
 #include <vector>
 
+#include "utils/Passkey.hpp"
 #include "LazyLoadable.hpp"
 
 class Change;
 class Storage;
+class Tests;
 
 /**
  * @brief Single item to take care of.
@@ -36,7 +38,6 @@ class Storage;
 class Item : private LazyLoadable<Item>
 {
     friend class LazyLoadable<Item>;
-    friend class Storage;
 
 public:
     /**
@@ -51,7 +52,7 @@ public:
     static bool isValidKeyName(const std::string &name, bool forWrite,
                                std::string &error);
 
-private:
+public:
     /**
      * @brief Constructs new item.
      * @see Storage
@@ -60,7 +61,13 @@ private:
      * @param id Id of the item.
      * @param exists Whether this item is a dummy until loaded.
      */
-    Item(Storage &storage, std::string id, bool exists = true);
+    Item(Storage &storage, std::string id, bool exists, pk<Storage>);
+    /**
+     * @brief Constructs new item for testing purposes.
+     *
+     * @param id Id of the item.
+     */
+    Item(std::string id, pk<Tests>);
 
 public:
     /**
@@ -127,6 +134,24 @@ public:
      * @returns @c true if so, @c false otherwise.
      */
     bool wasChanged() const;
+    /**
+     * @brief Retrieves set of changes of the item.
+     *
+     * @returns List of item changes.
+     */
+    std::vector<Change> & getChanges(pk<Storage>)
+    {
+        return changes;
+    }
+    /**
+     * @brief Retrieves immutable set of changes of the item.
+     *
+     * @returns Constant list of item changes.
+     */
+    const std::vector<Change> & getChanges(pk<Storage>) const
+    {
+        return changes;
+    }
 
 private:
     /**

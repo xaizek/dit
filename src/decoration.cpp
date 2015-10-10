@@ -73,6 +73,7 @@ private:
 // Shorten type name to fit into 80 columns limit.
 using ostr = std::ostream;
 
+ostr & decor::none (ostr &os) { return os; }
 ostr & decor::bold (ostr &os) { return os << C.bold(); }
 ostr & decor::inv  (ostr &os) { return os << C.inv(); }
 ostr & decor::def  (ostr &os) { return os << C.def(); }

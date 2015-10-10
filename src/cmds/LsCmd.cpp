@@ -28,6 +28,7 @@
 #include "ItemTable.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "integration.hpp"
 
 /**
  * @brief Usage message for "ls" command.
@@ -93,7 +94,7 @@ LsCmd::run(Project &project, const std::vector<std::string> &args)
                                        "fg-cyan inv bold !heading");
     std::string sort = config.get("ui.ls.sort", "title|_id");
 
-    ItemTable table(fmt, colorSpec, sort);
+    ItemTable table(fmt, colorSpec, sort, getTerminalWidth());
     ItemFilter filter(args);
 
     for (Item &item : project.getStorage().list()) {
