@@ -98,4 +98,4 @@ clean:
 	-$(RM) $(bin_objects) $(bin_depends) $(tests_objects) $(tests_depends) \
            $(out_dir)/$(bin) $(out_dir)/tests/tests
 
-include $(wildcard $(bin_depends))
+include $(wildcard $(bin_depends) $(tests_depends))
