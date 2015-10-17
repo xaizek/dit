@@ -20,6 +20,7 @@
 #include <cassert>
 
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -46,6 +47,12 @@ Storage::Storage(Project &project)
 {
 }
 
+Storage::Storage(Project &project, pk<Project>)
+    : LazyLoadable<Storage>(true), project(project),
+      idGenerator(project.getConfig())
+{
+}
+
 Item &
 Storage::create()
 {
@@ -62,6 +69,15 @@ Storage::create()
     idGenerator.advanceId();
 
     return it->second;
+}
+
+void
+Storage::put(Item item, pk<Tests>)
+{
+    bool inserted;
+    std::tie(std::ignore, inserted) = items.emplace(item.getId(),
+                                                    std::move(item));
+    assert(inserted && "Duplicated item id");
 }
 
 Item &

@@ -22,9 +22,16 @@
 
 #include "Change.hpp"
 #include "Item.hpp"
+#include "Storage.hpp"
 
 Item
 Tests::makeItem(std::string id)
 {
     return Item(std::move(id), {});
+}
+
+void
+Tests::storeItem(Storage &storage, Item item)
+{
+    storage.put(std::move(item), {});
 }

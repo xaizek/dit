@@ -20,8 +20,11 @@
 
 #include <string>
 
+#include "utils/Passkey.hpp"
 #include "Config.hpp"
 #include "Storage.hpp"
+
+class Tests;
 
 /**
  * @brief Project, parent of items.
@@ -46,6 +49,13 @@ public:
      * @param globalConfig Global application configuration.
      */
     explicit Project(std::string rootDir, Config *globalConfig = nullptr);
+    /**
+     * @brief Same as normal ctor, but marks associated storage as loaded.
+     *
+     * @param rootDir Root directory of the project.
+     * @param globalConfig Global application configuration.
+     */
+    explicit Project(std::string rootDir, Config *globalConfig, pk<Tests>);
     /**
      * @brief Emit destructor in the corresponding source file.
      */

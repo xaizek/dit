@@ -33,6 +33,7 @@ namespace boost { namespace filesystem {
 
 class Item;
 class Project;
+class Tests;
 
 /**
  * @brief Storage for a set of items.
@@ -56,6 +57,12 @@ public:
      * @param project Project, which is parent of the storage.
      */
     Storage(Project &project);
+    /**
+     * @brief Creates storage for the @p project, which is marked as loaded.
+     *
+     * @param project Project, which is parent of the storage.
+     */
+    Storage(Project &project, pk<Project>);
 
 public:
     /**
@@ -64,6 +71,12 @@ public:
      * @returns Reference to newly created item.
      */
     Item & create();
+    /**
+     * @brief Inserts the item into the storage.
+     *
+     * @param item Item to insert.
+     */
+    void put(Item item, pk<Tests>);
     /**
      * @brief Retrieves item by its id.
      *

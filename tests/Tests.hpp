@@ -21,6 +21,7 @@
 #include <string>
 
 class Item;
+class Storage;
 
 /**
  * @brief Attorney for accessing testing interface of the application classes.
@@ -38,6 +39,13 @@ public:
      * @returns The item.
      */
     static Item makeItem(std::string id);
+    /**
+     * @brief Inserts the item into the storage.
+     *
+     * @param storage Storage to place @p item into.
+     * @param item Item to put into the storage.
+     */
+    static void storeItem(Storage &storage, Item item);
 };
 
 #endif // SCRIBE__TESTS_HPP__
