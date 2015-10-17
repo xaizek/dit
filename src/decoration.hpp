@@ -20,6 +20,10 @@
 
 #include <iosfwd>
 
+#include "utils/Passkey.hpp"
+
+class Tests;
+
 /**
  * @brief Terminal control manipulators for output streams.
  *
@@ -211,6 +215,20 @@ std::ostream & cyan_bg(std::ostream &os);
  * @returns @p os
  */
 std::ostream & white_bg(std::ostream &os);
+
+/**
+ * @}
+ *
+ * @{
+ * @name Control
+ */
+
+/**
+ * @brief Controls state of decorations.
+ *
+ * @param enabled Whether decorations should be enabled or do nothing.
+ */
+void setEnabled(bool enabled, pk<Tests>);
 
 /**
  * @}

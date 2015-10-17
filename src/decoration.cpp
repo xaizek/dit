@@ -26,6 +26,11 @@
 namespace {
 
 /**
+ * @brief Whether decorations are enabled.
+ */
+static bool isEnabled = true;
+
+/**
  * @brief Actual implementation of color attributes.
  */
 class Colors
@@ -34,38 +39,44 @@ public:
     /**
      * @brief Constructs the class checking whether stdout is a terminal.
      */
-    Colors() : ascii(isatty(fileno(stdout)))
+    Colors() : isAscii(isatty(fileno(stdout)))
     {
     }
 
 public:
-    const char * bold () { return ascii ? "\033[1m" : ""; }
-    const char * inv  () { return ascii ? "\033[7m" : ""; }
-    const char * def  () { return ascii ? "\033[1m\033[0m" : ""; }
+    const char * bold () { return active() ? "\033[1m" : ""; }
+    const char * inv  () { return active() ? "\033[7m" : ""; }
+    const char * def  () { return active() ? "\033[1m\033[0m" : ""; }
 
-    const char * black_fg   () { return ascii ? "\033[30m" : ""; }
-    const char * red_fg     () { return ascii ? "\033[31m" : ""; }
-    const char * green_fg   () { return ascii ? "\033[32m" : ""; }
-    const char * yellow_fg  () { return ascii ? "\033[33m" : ""; }
-    const char * blue_fg    () { return ascii ? "\033[34m" : ""; }
-    const char * magenta_fg () { return ascii ? "\033[35m" : ""; }
-    const char * cyan_fg    () { return ascii ? "\033[36m" : ""; }
-    const char * white_fg   () { return ascii ? "\033[37m" : ""; }
+    const char * black_fg   () { return active() ? "\033[30m" : ""; }
+    const char * red_fg     () { return active() ? "\033[31m" : ""; }
+    const char * green_fg   () { return active() ? "\033[32m" : ""; }
+    const char * yellow_fg  () { return active() ? "\033[33m" : ""; }
+    const char * blue_fg    () { return active() ? "\033[34m" : ""; }
+    const char * magenta_fg () { return active() ? "\033[35m" : ""; }
+    const char * cyan_fg    () { return active() ? "\033[36m" : ""; }
+    const char * white_fg   () { return active() ? "\033[37m" : ""; }
 
-    const char * black_bg   () { return ascii ? "\033[40m" : ""; }
-    const char * red_bg     () { return ascii ? "\033[41m" : ""; }
-    const char * green_bg   () { return ascii ? "\033[42m" : ""; }
-    const char * yellow_bg  () { return ascii ? "\033[43m" : ""; }
-    const char * blue_bg    () { return ascii ? "\033[44m" : ""; }
-    const char * magenta_bg () { return ascii ? "\033[45m" : ""; }
-    const char * cyan_bg    () { return ascii ? "\033[46m" : ""; }
-    const char * white_bg   () { return ascii ? "\033[47m" : ""; }
+    const char * black_bg   () { return active() ? "\033[40m" : ""; }
+    const char * red_bg     () { return active() ? "\033[41m" : ""; }
+    const char * green_bg   () { return active() ? "\033[42m" : ""; }
+    const char * yellow_bg  () { return active() ? "\033[43m" : ""; }
+    const char * blue_bg    () { return active() ? "\033[44m" : ""; }
+    const char * magenta_bg () { return active() ? "\033[45m" : ""; }
+    const char * cyan_bg    () { return active() ? "\033[46m" : ""; }
+    const char * white_bg   () { return active() ? "\033[47m" : ""; }
+
+private:
+    bool active() const
+    {
+        return isAscii && isEnabled;
+    }
 
 private:
     /**
      * @brief Whether outputting of ASCII escape sequences is enabled.
      */
-    const bool ascii;
+    const bool isAscii;
 } C;
 
 }
@@ -95,3 +106,9 @@ ostr & decor::blue_bg    (ostr &os) { return os << C.blue_bg(); }
 ostr & decor::magenta_bg (ostr &os) { return os << C.magenta_bg(); }
 ostr & decor::cyan_bg    (ostr &os) { return os << C.cyan_bg(); }
 ostr & decor::white_bg   (ostr &os) { return os << C.white_bg(); }
+
+void
+decor::setEnabled(bool enabled, pk<Tests>)
+{
+    isEnabled = enabled;
+}
