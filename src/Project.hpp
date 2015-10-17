@@ -57,6 +57,12 @@ public:
      */
     explicit Project(std::string rootDir, Config *globalConfig, pk<Tests>);
     /**
+     * @brief Move constructor.
+     *
+     * @param rhs Object to steal data from.
+     */
+    Project(Project &&rhs);
+    /**
      * @brief Emit destructor in the corresponding source file.
      */
     ~Project();

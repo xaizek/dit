@@ -59,6 +59,12 @@ Project::Project(std::string rootDir, Config *globalConfig, pk<Tests>)
     dataDir = getSubRootPath(this->rootDir, "items");
 }
 
+Project::Project(Project &&rhs)
+    : storage(std::move(rhs.storage)), config(std::move(rhs.config)),
+      rootDir(std::move(rhs.rootDir)), dataDir(std::move(rhs.dataDir))
+{
+}
+
 Project::~Project()
 {
 }

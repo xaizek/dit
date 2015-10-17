@@ -18,9 +18,11 @@
 #ifndef SCRIBE__TESTS_HPP__
 #define SCRIBE__TESTS_HPP__
 
+#include <iosfwd>
 #include <string>
 
 class Item;
+class Project;
 class Storage;
 
 /**
@@ -31,6 +33,26 @@ class Storage;
 class Tests
 {
 public:
+    /**
+     * @brief Disables adding escape sequences to output.
+     */
+    static void disableDecorations();
+
+    /**
+     * @brief Set custom streams for command output.
+     *
+     * @param out Output stream.
+     * @param err Error stream.
+     */
+    static void setStreams(std::ostream &out, std::ostream &err);
+
+    /**
+     * @brief Makes an instance of @c Project.
+     *
+     * @returns The instance.
+     */
+    static Project makeProject();
+
     /**
      * @brief Makes an instance of @c Item, which is not creatable otherwise.
      *

@@ -21,8 +21,29 @@
 #include <utility>
 
 #include "Change.hpp"
+#include "Command.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
+#include "decoration.hpp"
+
+void
+Tests::disableDecorations()
+{
+    decor::setEnabled(false, {});
+}
+
+void
+Tests::setStreams(std::ostream &out, std::ostream &err)
+{
+    Command::setStreams(out, err, {});
+}
+
+Project
+Tests::makeProject()
+{
+    return Project("/fake/project/root/for/tests", nullptr, {});
+}
 
 Item
 Tests::makeItem(std::string id)

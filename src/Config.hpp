@@ -50,6 +50,12 @@ public:
      */
     Config(const Config &rhs) = delete;
     /**
+     * @brief Moving is allowed.
+     *
+     * @param rhs Source object for moving.
+     */
+    Config(Config &&rhs) = default;
+    /**
      * @brief Assigning is forbidden.
      *
      * @param rhs Unused source object.
