@@ -17,9 +17,19 @@
 
 #include "Command.hpp"
 
+#include <functional>
 #include <iostream>
 #include <string>
 #include <utility>
+
+/**
+ * @brief Stream for regular output.
+ */
+static std::reference_wrapper<std::ostream> out = std::cout;
+/**
+ * @brief Stream for error messages.
+ */
+static std::reference_wrapper<std::ostream> err = std::cerr;
 
 Command::Command(std::string name, std::string descr, std::string help)
     : name(std::move(name)), descr(std::move(descr)), help(std::move(help))
@@ -68,14 +78,21 @@ Command::complete(Project &, const std::vector<std::string> &)
     return {};
 }
 
+void
+Command::setStreams(std::ostream &out, std::ostream &err, pk<Tests>)
+{
+    ::out = out;
+    ::err = err;
+}
+
 std::ostream &
 Command::out()
 {
-    return std::cout;
+    return ::out.get();
 }
 
 std::ostream &
 Command::err()
 {
-    return std::cerr << getName() << ": ";
+    return ::err.get() << getName() << ": ";
 }

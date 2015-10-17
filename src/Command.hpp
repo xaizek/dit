@@ -24,8 +24,11 @@
 
 #include <boost/optional.hpp>
 
+#include "utils/Passkey.hpp"
+
 class Project;
 class Scribe;
+class Tests;
 
 /**
  * @brief Base class for sub-commands.
@@ -91,6 +94,7 @@ public:
      */
     virtual boost::optional<int> run(Project &project,
                                      const std::vector<std::string> &args);
+
     /**
      * @brief Asks for generic command (no project) argument completion.
      *
@@ -113,6 +117,15 @@ public:
      */
     virtual boost::optional<int> complete(Project &project,
                                           const std::vector<std::string> &args);
+
+public:
+    /**
+     * @brief Sets streams to be returned by @c out() and @c err() methods.
+     *
+     * @param out Stream to use for regular output.
+     * @param err Stream to use for error messages.
+     */
+    static void setStreams(std::ostream &out, std::ostream &err, pk<Tests>);
 
 protected:
     /**
