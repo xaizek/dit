@@ -31,8 +31,12 @@ class Passkey
 private:
     /**
      * @brief Only T should be able to instantiate this class.
+     *
+     * This must not be defaulted as compiler will treat this class as an
+     * aggregate and allow construction with {} even with constructor being
+     * private.
      */
-    Passkey() = default;
+    Passkey() {}
 
 public:
     /**
