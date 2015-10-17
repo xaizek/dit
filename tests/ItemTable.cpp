@@ -26,7 +26,7 @@
 
 #include "Tests.hpp"
 
-TEST_CASE("No columns result in no output.", "[item-table/format]")
+TEST_CASE("No columns result in no output.", "[item-table][format]")
 {
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
@@ -40,7 +40,7 @@ TEST_CASE("No columns result in no output.", "[item-table/format]")
     REQUIRE(oss.str() == std::string());
 }
 
-TEST_CASE("Longer column gets shortened first.", "[item-table/sizing]")
+TEST_CASE("Longer column gets shortened first.", "[item-table][sizing]")
 {
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
@@ -56,7 +56,7 @@ TEST_CASE("Longer column gets shortened first.", "[item-table/sizing]")
     REQUIRE(oss.str() == expected);
 }
 
-TEST_CASE("Zero terminal size results in no output.", "[item-table/sizing]")
+TEST_CASE("Zero terminal size results in no output.", "[item-table][sizing]")
 {
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");

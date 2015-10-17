@@ -23,7 +23,7 @@
 #include "parsing.hpp"
 
 TEST_CASE("Assign-like pairs with invalid keys are ignored.",
-          "[parsing/colon-style-pairs]")
+          "[parsing][colon-style-pairs]")
 {
     const std::vector<std::string> input = {
         "url:",
@@ -36,7 +36,7 @@ TEST_CASE("Assign-like pairs with invalid keys are ignored.",
     REQUIRE(parsed[0] == "url=http://some.url/?show=#");
 }
 
-TEST_CASE("No argument alias is expanded.", "[parsing/invocation/aliases/args]")
+TEST_CASE("No argument alias is expanded.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -54,8 +54,7 @@ TEST_CASE("No argument alias is expanded.", "[parsing/invocation/aliases/args]")
     REQUIRE(args[1] == "arg");
 }
 
-TEST_CASE("Single argument alias is expanded.",
-          "[parsing/invocation/aliases/args]")
+TEST_CASE("Single argument alias is expanded.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -72,8 +71,7 @@ TEST_CASE("Single argument alias is expanded.",
     REQUIRE(args[0] == "arg");
 }
 
-TEST_CASE("Multiple argument alias is expanded.",
-          "[parsing/invocation/aliases/args]")
+TEST_CASE("Multiple argument alias is expanded.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -91,8 +89,7 @@ TEST_CASE("Multiple argument alias is expanded.",
     REQUIRE(args[1] == "arg2");
 }
 
-TEST_CASE("Unused arguments are appended.",
-          "[parsing/invocation/aliases/args]")
+TEST_CASE("Unused arguments are appended.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -111,7 +108,7 @@ TEST_CASE("Unused arguments are appended.",
     REQUIRE(args[2] == "arg3");
 }
 
-TEST_CASE("Arguments can repeat.", "[parsing/invocation/aliases/args]")
+TEST_CASE("Arguments can repeat.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -129,8 +126,7 @@ TEST_CASE("Arguments can repeat.", "[parsing/invocation/aliases/args]")
     REQUIRE(args[1] == "arg");
 }
 
-TEST_CASE("Invalid argument syntax is unchanged.",
-          "[parsing/invocation/aliases/args]")
+TEST_CASE("Invalid argument syntax is unchanged.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -150,8 +146,7 @@ TEST_CASE("Invalid argument syntax is unchanged.",
     REQUIRE(args[3] == "a${3}");
 }
 
-TEST_CASE("Arguments can non-sequential.",
-          "[parsing/invocation/aliases/args]")
+TEST_CASE("Arguments can non-sequential.", "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -170,7 +165,7 @@ TEST_CASE("Arguments can non-sequential.",
 }
 
 TEST_CASE("Absent arguments are expanded to empty strings.",
-          "[parsing/invocation/aliases/args]")
+          "[parsing][aliases]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {
@@ -189,7 +184,7 @@ TEST_CASE("Absent arguments are expanded to empty strings.",
 }
 
 TEST_CASE("Completion stops after last argument is inserted.",
-          "[parsing/invocation/aliases/args/completion]")
+          "[parsing][aliases][completion]")
 {
     auto aliasResolver = [](const std::string &name) -> std::string {
         if (name == "alias") {

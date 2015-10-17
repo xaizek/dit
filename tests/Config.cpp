@@ -19,7 +19,7 @@
 
 #include "Config.hpp"
 
-TEST_CASE("Absent values are taken from parent", "[config/parent-child]")
+TEST_CASE("Absent values are taken from parent", "[config][parent-child]")
 {
     Config parent("parent");
     parent.set("key", "value");
