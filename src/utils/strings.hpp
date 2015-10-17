@@ -20,7 +20,11 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 #include <utility>
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 /**
  * @brief Splits string in two parts at the leftmost delimiter.
@@ -41,6 +45,26 @@ splitAt(const std::string &s, char delim)
     }
 
     return { s.substr(0, pos), s.substr(pos + 1U) };
+}
+
+/**
+ * @brief Splits string in a range-for loop friendly way.
+ *
+ * @param str String to split into substrings.
+ * @param with Character to split at.
+ *
+ * @returns Array of results, empty on empty string.
+ */
+inline std::vector<std::string>
+split(const std::string &str, char with)
+{
+    if (str.empty()) {
+        return {};
+    }
+
+    std::vector<std::string> results;
+    boost::split(results, str, boost::is_from_range(with, with));
+    return std::move(results);
 }
 
 #endif // SCRIBE__UTILS__STRINGS_HPP__

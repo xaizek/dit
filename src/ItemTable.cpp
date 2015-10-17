@@ -28,11 +28,10 @@
 #include <vector>
 
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
+#include "utils/strings.hpp"
 #include "Item.hpp"
 #include "ItemFilter.hpp"
 #include "decoration.hpp"
@@ -40,7 +39,6 @@
 
 static std::ostream & operator<<(std::ostream &os,
                               const std::vector<ColorRule::decoration> &decors);
-static std::vector<std::string> split(const std::string &str, char with);
 
 /**
  * @brief Helper class that represents single column of a table.
@@ -376,24 +374,4 @@ operator<<(std::ostream &os, const std::vector<ColorRule::decoration> &decors)
         os << decor;
     }
     return os;
-}
-
-/**
- * @brief Splits string in a range-for loop friendly way.
- *
- * @param str String to split into substrings.
- * @param with Character to split at.
- *
- * @returns Array of results, empty on empty string.
- */
-static std::vector<std::string>
-split(const std::string &str, char with)
-{
-    if (str.empty()) {
-        return {};
-    }
-
-    std::vector<std::string> results;
-    boost::split(results, str, boost::is_from_range(with, with));
-    return std::move(results);
 }
