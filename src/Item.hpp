@@ -18,6 +18,9 @@
 #ifndef SCRIBE__ITEM_HPP__
 #define SCRIBE__ITEM_HPP__
 
+#include <ctime>
+
+#include <functional>
 #include <set>
 #include <string>
 #include <vector>
@@ -152,6 +155,12 @@ public:
     {
         return changes;
     }
+    /**
+     * @brief Sets timestamp provider.
+     *
+     * @param getTime Function to use or empty object to reset to defaults.
+     */
+    static void setTimeSource(std::function<std::time_t()> getTime, pk<Tests>);
 
 private:
     /**

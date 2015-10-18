@@ -17,11 +17,13 @@
 
 #include "Item.hpp"
 
-#include <cstddef>
 #include <ctime>
 
+#include <functional>
+#include <sstream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -31,6 +33,22 @@
 #include "Change.hpp"
 #include "Storage.hpp"
 #include "parsing.hpp"
+
+/**
+ * @brief std::put_time emulation with a tuple (available since GCC 5.0).
+ */
+using put_time = std::tuple<const std::tm *, const char *>;
+
+static std::string timeToString(std::time_t t);
+static std::ostream & operator<<(std::ostream &os, const put_time &pt);
+
+/**
+ * @brief Function used to obtain current timestamp.
+ */
+static std::function<std::time_t()> getTime =
+    [](){
+        return std::time(nullptr);
+    };
 
 bool
 Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
@@ -80,12 +98,56 @@ Item::getValue(const std::string &key)
         throw std::runtime_error(error);
     }
 
+    // Handle pseudo fields.
     if (key == "_id") {
         return getId();
+    } else if(key == "_created") {
+        if (changes.empty()) {
+            return std::string();
+        }
+
+        return timeToString(changes.front().getTimestamp());
+    } else if(key == "_changed") {
+        if (changes.empty()) {
+            return std::string();
+        }
+
+        return timeToString(changes.back().getTimestamp());
     }
 
     const Change *const change = getLatestChange(key);
     return (change != nullptr) ? change->getValue() : std::string();
+}
+
+/**
+ * @brief Converts time since epoch into local time in ISO 8601 format.
+ *
+ * @param t Time to convert into string.
+ *
+ * @returns String representation of @p t.
+ */
+static std::string
+timeToString(std::time_t t)
+{
+    std::ostringstream oss;
+    oss << put_time(std::localtime(&t), "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
+/**
+ * @brief Expands put_time data into a string and prints it out.
+ *
+ * @param os Stream to print formated time onto.
+ * @param pt put_time manipulator emulation.
+ *
+ * @returns @p os.
+ */
+static std::ostream &
+operator<<(std::ostream &os, const put_time &pt)
+{
+    char buf[128];
+    std::strftime(buf, sizeof(buf), std::get<1>(pt), std::get<0>(pt));
+    return os << buf;
 }
 
 std::set<std::string>
@@ -120,7 +182,7 @@ Item::setValue(const std::string &key, const std::string &value)
         throw std::runtime_error(error);
     }
 
-    const std::time_t timestamp = std::time(NULL);
+    const std::time_t timestamp = getTime();
 
     if (Change *const change = getLatestChange(key)) {
         if (change->getValue() == value) {
@@ -175,4 +237,14 @@ bool
 Item::wasChanged() const
 {
     return changed;
+}
+
+void
+Item::setTimeSource(std::function<std::time_t()> getTime, pk<Tests>)
+{
+    if (!getTime) {
+        ::getTime = [](){ return std::time(nullptr); };
+    } else {
+        ::getTime = getTime;
+    }
 }

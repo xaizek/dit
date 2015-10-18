@@ -17,6 +17,9 @@
 
 #include "Tests.hpp"
 
+#include <ctime>
+
+#include <functional>
 #include <string>
 #include <utility>
 
@@ -37,6 +40,18 @@ void
 Tests::setStreams(std::ostream &out, std::ostream &err)
 {
     Command::setStreams(out, err, {});
+}
+
+void
+Tests::setTimeSource(std::function<std::time_t()> getTime)
+{
+    Item::setTimeSource(getTime, {});
+}
+
+void
+Tests::resetTimeSource()
+{
+    Item::setTimeSource({}, {});
 }
 
 Project

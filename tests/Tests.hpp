@@ -18,6 +18,9 @@
 #ifndef SCRIBE__TESTS_HPP__
 #define SCRIBE__TESTS_HPP__
 
+#include <ctime>
+
+#include <functional>
 #include <iosfwd>
 #include <string>
 
@@ -45,6 +48,17 @@ public:
      * @param err Error stream.
      */
     static void setStreams(std::ostream &out, std::ostream &err);
+
+    /**
+     * @brief Sets timestamp provider for Item and Change objects.
+     *
+     * @param getTime New provider.
+     */
+    static void setTimeSource(std::function<std::time_t()> getTime);
+    /**
+     * @brief Resets timestamp provider to its default value.
+     */
+    static void resetTimeSource();
 
     /**
      * @brief Makes an instance of @c Project.
