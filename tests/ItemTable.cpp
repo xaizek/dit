@@ -69,3 +69,25 @@ TEST_CASE("Zero terminal size results in no output.", "[item-table][sizing]")
 
     REQUIRE(oss.str() == std::string());
 }
+
+TEST_CASE("Sorting is performed.", "[item-table][sorting]")
+{
+    Item itemA = Tests::makeItem("aaa");
+    Item itemB = Tests::makeItem("bbb");
+    Item itemC = Tests::makeItem("ccc");
+
+    ItemTable table("_id", std::string(), std::string("_id"), 80);
+    table.append(itemC);
+    table.append(itemA);
+    table.append(itemB);
+
+    std::ostringstream oss;
+    table.print(oss);
+
+    const std::string expected =
+        "ID \n"
+        "aaa\n"
+        "bbb\n"
+        "ccc\n";
+    REQUIRE(oss.str() == expected);
+}
