@@ -17,16 +17,21 @@
 
 #include <cstdlib>
 
+#include <algorithm>
 #include <ostream>
 #include <string>
 #include <vector>
 
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
 #include "decoration.hpp"
+
+template <typename C>
+static inline bool contains(const C &c, const typename C::value_type &what);
 
 namespace {
 
@@ -54,6 +59,15 @@ public:
     virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
+
+private:
+    /**
+     * @brief Prints out single record.
+     *
+     * @param name Name of the record (e.g. "type").
+     * @param val Value of the record (e.g. "bug").
+     */
+    void printRecord(const std::string &name, const std::string &val);
 };
 
 REGISTER_COMMAND(ShowCmd);
@@ -72,17 +86,54 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
+    Config &config = project.getConfig();
+    const std::string order = config.get("ui.show.order", "title");
+
+    const std::vector<std::string> ordering = split(order, '|');
+
     const std::string &id = args[0];
     Item &item = project.getStorage().get(id);
 
+    // Print known fields in specified order first.
+    for (const std::string &field : ordering) {
+        const std::string &v = item.getValue(field);
+        if (!v.empty()) {
+            printRecord(field, v);
+        }
+    }
+
+    // Print out the rest of the fields.
     for (const std::string &c : item.listRecordNames()) {
-        const std::string &v = item.getValue(c);
-        out() << decor::bold << c << decor::def
-            << (v.find('\n') == std::string::npos ? ": " : ":\n")
-            << v << '\n';
+        if (!contains(ordering, c)) {
+            printRecord(c, item.getValue(c));;
+        }
     }
 
     return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Checks whether container contains given item.
+ *
+ * @tparam C Type of the container.
+ * @param c Container to examine.
+ * @param what Item to look up in the container.
+ *
+ * @returns @c true when item is found, @c false otherwise.
+ */
+template <typename C>
+static inline bool
+contains(const C &c, const typename C::value_type &what)
+{
+    return std::find(c.cbegin(), c.cend(), what) != c.cend();
+}
+
+void
+ShowCmd::printRecord(const std::string &name, const std::string &val)
+{
+    out() << decor::bold << name << decor::def
+          << (val.find('\n') == std::string::npos ? ": " : ":\n")
+          << val<< '\n';
 }
 
 boost::optional<int>

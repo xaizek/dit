@@ -56,6 +56,9 @@ TEST_CASE("Values are displayed in alphabetical order by default.",
     Command *const cmd = Commands::get("show");
     Project prj = Tests::makeProject();
     Storage &storage = prj.getStorage();
+    Config &cfg = prj.getConfig();
+
+    cfg.set("ui.show.order", "wrongfieldname");
 
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
@@ -71,8 +74,45 @@ TEST_CASE("Values are displayed in alphabetical order by default.",
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
-    const std::string expectedOut = "bug_number: 22\n"
-                                    "title: title\n";
+    const std::string expectedOut =
+        "bug_number: 22\n"
+        "title: title\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
+{
+    Tests::disableDecorations();
+
+    Command *const cmd = Commands::get("show");
+    Project prj = Tests::makeProject();
+    Storage &storage = prj.getStorage();
+    Config &cfg = prj.getConfig();
+
+    cfg.set("ui.show.order", "title|comment");
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+    item.setValue("comment", "something");
+    item.setValue("bug_number", "22");
+    item.setValue("additional", "information");
+
+    Tests::storeItem(storage, std::move(item));
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->run(prj, { "id" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        "title: title\n"
+        "comment: something\n"
+        "additional: information\n"
+        "bug_number: 22\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }
