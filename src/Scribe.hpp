@@ -103,7 +103,7 @@ private:
      *
      * @returns Right-hand side of the alias.
      */
-    std::string resolveAlias(const std::string &name);
+    std::string resolveAlias(const std::string &name) const;
 
 private:
     /**

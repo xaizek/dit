@@ -167,7 +167,7 @@ Scribe::complete(Project &project, std::vector<std::string> args)
 }
 
 std::string
-Scribe::resolveAlias(const std::string &name)
+Scribe::resolveAlias(const std::string &name) const
 {
     return config->get("alias." + name, std::string());
 }
