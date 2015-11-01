@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 class Config;
@@ -96,6 +97,15 @@ private:
      * @brief Initializes configuration.
      */
     void initConfig();
+    /**
+     * @brief Makes standalone configuration for a project.
+     *
+     * @param path Path to real configuration file.
+     *
+     * @returns Pair of proxy (unsaved) and real configuration.
+     */
+    std::pair<Config, std::unique_ptr<Config>>
+    makeConfig(const std::string &path) const;
     /**
      * @brief Maps alias name to its right-hand side.
      *

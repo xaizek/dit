@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
+#include "utils/memory.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
@@ -125,8 +127,9 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    Project project((fs::path(projectsDir)/prjName).string(),
-                    globalConfig.get());
+    auto makeConfig = std::bind(std::mem_fn(&Scribe::makeConfig), this,
+                                std::placeholders::_1);
+    Project project((fs::path(projectsDir)/prjName).string(), makeConfig);
     if (!project.exists()) {
         std::cerr << "Project does not exist: " << prjName << std::endl;
         return EXIT_FAILURE;
@@ -143,6 +146,15 @@ Scribe::run()
 
     assert(false && "Command has no or broken implementation.");
     return EXIT_FAILURE;
+}
+
+std::pair<Config, std::unique_ptr<Config>>
+Scribe::makeConfig(const std::string &path) const
+{
+    auto prjCfg = make_unique<Config>(path, globalConfig.get());
+    Config cfgProxy(std::string(), prjCfg.get());
+
+    return { std::move(cfgProxy), std::move(prjCfg) };
 }
 
 int

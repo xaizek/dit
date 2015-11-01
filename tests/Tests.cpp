@@ -57,7 +57,7 @@ Tests::resetTimeSource()
 Project
 Tests::makeProject()
 {
-    return Project("/fake/project/root/for/tests", nullptr, {});
+    return Project("/fake/project/root/for/tests", {}, {});
 }
 
 Item

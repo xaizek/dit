@@ -18,6 +18,8 @@
 #ifndef SCRIBE__PROJECT_HPP__
 #define SCRIBE__PROJECT_HPP__
 
+#include <functional>
+#include <memory>
 #include <string>
 
 #include "utils/Passkey.hpp"
@@ -43,19 +45,40 @@ public:
 
 public:
     /**
+     * @brief Type of function that should create project configurations.
+     *
+     * The argument is a path to real configuration file.
+     *
+     * Return value is a pair of proxy (unsaved) and real configuration.
+     */
+    using mkConfig =
+        std::function<std::pair<Config,
+                                std::unique_ptr<Config>>(std::string path)>;
+
+    /**
+     * @brief Creates an instance of particular project.
+     *
+     * The configuration is created standalone.
+     *
+     * @param rootDir Root directory of the project.
+     */
+    explicit Project(std::string rootDir);
+    /**
      * @brief Creates an instance of particular project.
      *
      * @param rootDir Root directory of the project.
-     * @param globalConfig Global application configuration.
+     * @param makeConfig Function that opens configuration by path.
      */
-    explicit Project(std::string rootDir, Config *globalConfig = nullptr);
+    Project(std::string rootDir, mkConfig makeConfig);
     /**
      * @brief Same as normal ctor, but marks associated storage as loaded.
      *
+     * @p makeConfig can be empty.
+     *
      * @param rootDir Root directory of the project.
-     * @param globalConfig Global application configuration.
+     * @param makeConfig Function that opens configuration by path.
      */
-    explicit Project(std::string rootDir, Config *globalConfig, pk<Tests>);
+    Project(std::string rootDir, mkConfig makeConfig, pk<Tests>);
     /**
      * @brief Move constructor.
      *
@@ -89,9 +112,11 @@ public:
     /**
      * @brief Retrieves configuration of the project.
      *
-     * @returns The configuration.
+     * @param proxy Whether retrieve proxy or real configuration.
+     *
+     * @returns The configuration, which state is never saved.
      */
-    Config & getConfig();
+    Config & getConfig(bool proxy = true);
     /**
      * @brief Retrieves path to directory where items are stored.
      *
@@ -113,8 +138,11 @@ private:
     Storage storage;
     /**
      * @brief Configuration of the project.
+     *
+     * First element is a proxy that is not saved.
+     * Second one is real configuration.
      */
-    Config config;
+    std::pair<Config, std::unique_ptr<Config>> configs;
     /**
      * @brief Path to root directory of the project.
      */
