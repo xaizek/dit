@@ -90,18 +90,18 @@ Scribe::initConfig()
     projectsDir = (configHomePath/"projects").string();
 
     std::string configPath = (configHomePath/"config").string();
-    config.reset(new Config(configPath));
+    globalConfig.reset(new Config(configPath));
 }
 
 int
 Scribe::run()
 {
     if (prjName.empty()) {
-        prjName = config->get("core.defprj", "");
+        prjName = globalConfig->get("core.defprj", "");
     }
 
     if (args.empty()) {
-        args = breakIntoArgs(config->get("core.defcmd", "ls"));
+        args = breakIntoArgs(globalConfig->get("core.defcmd", "ls"));
     }
     auto aliasResolver = std::bind(std::mem_fn(&Scribe::resolveAlias), this,
                                    std::placeholders::_1);
@@ -115,7 +115,7 @@ Scribe::run()
 
     if (boost::optional<int> exitCode = cmd->run(*this, args)) {
         if (*exitCode == EXIT_SUCCESS) {
-            config->save();
+            globalConfig->save();
         }
         return *exitCode;
     }
@@ -125,7 +125,8 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    Project project((fs::path(projectsDir)/prjName).string(), config.get());
+    Project project((fs::path(projectsDir)/prjName).string(),
+                    globalConfig.get());
     if (!project.exists()) {
         std::cerr << "Project does not exist: " << prjName << std::endl;
         return EXIT_FAILURE;
@@ -134,7 +135,7 @@ Scribe::run()
     if (boost::optional<int> exitCode = cmd->run(project, args)) {
         if (*exitCode == EXIT_SUCCESS) {
             project.save();
-            config->save();
+            globalConfig->save();
         }
 
         return *exitCode;
@@ -169,13 +170,13 @@ Scribe::complete(Project &project, std::vector<std::string> args)
 std::string
 Scribe::resolveAlias(const std::string &name) const
 {
-    return config->get("alias." + name, std::string());
+    return globalConfig->get("alias." + name, std::string());
 }
 
 Config &
 Scribe::getConfig()
 {
-    return *config;
+    return *globalConfig;
 }
 
 const std::string &

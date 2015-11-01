@@ -119,7 +119,7 @@ private:
     /**
      * @brief Holds global configuration.
      */
-    std::unique_ptr<Config> config;
+    std::unique_ptr<Config> globalConfig;
     /**
      * @brief Root directory of all projects.
      */
