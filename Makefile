@@ -70,7 +70,7 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
-.PHONY: check clean coverage show-coverage debug release
+.PHONY: check clean coverage show-coverage reset-coverage debug release
 
 debug release: $(out_dir)/$(bin)
 
@@ -84,10 +84,15 @@ coverage: check $(out_dir)/$(bin)
 show-coverage: coverage
 	$$BROWSER coverage/data/index.html
 
+reset-coverage:
+ifneq ($(with_cov),0)
+	lcov --directory $(out_dir)/ --zerocounters
+endif
+
 $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
 
-check: $(target) $(out_dir)/tests/tests
+check: $(target) $(out_dir)/tests/tests reset-coverage
 	@$(out_dir)/tests/tests
 
 # work around parenthesis warning in tests somehow caused by ccache
