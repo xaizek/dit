@@ -121,9 +121,13 @@ private:
      */
     std::string prjName;
     /**
+     * @brief Key-value pairs of configuration overrides.
+     */
+    std::vector<std::pair<std::string, std::string>> confs;
+    /**
      * @brief Arguments passed to the application.
      *
-     * Does not include project name and changes over time.
+     * Does not include project name or configuration and changes over time.
      */
     std::vector<std::string> args;
     /**

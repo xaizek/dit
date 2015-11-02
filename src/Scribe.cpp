@@ -26,12 +26,15 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
+#include "utils/containers.hpp"
 #include "utils/memory.hpp"
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
@@ -69,7 +72,18 @@ Scribe::initArgs(int argc, const char *const argv[])
         prjName = &argv[1][1];
         ++offset;
     }
-    std::copy(argv + offset, argv + argc, std::back_inserter(args));
+
+    std::vector<std::string> assigns;
+    std::tie(assigns, args) = span(std::vector<std::string>(argv + offset,
+                                                            argv + argc),
+                                   [](const std::string &s){
+                                      return s.find('=') != std::string::npos;
+                                   });
+
+    confs.reserve(assigns.size());
+    for (const std::string &assign : assigns) {
+        confs.emplace_back(splitAt(assign, '='));
+    }
 }
 
 void
@@ -153,6 +167,10 @@ Scribe::makeConfig(const std::string &path) const
 {
     auto prjCfg = make_unique<Config>(path, globalConfig.get());
     Config cfgProxy(std::string(), prjCfg.get());
+
+    for (const std::pair<std::string, std::string> &conf : confs) {
+        cfgProxy.set(conf.first, conf.second);
+    }
 
     return { std::move(cfgProxy), std::move(prjCfg) };
 }
