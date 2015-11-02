@@ -32,7 +32,15 @@ else
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
     else
+        with_cov := 0
         ifneq ($(call pos,coverage,$(MAKECMDGOALS)),-1)
+            with_cov := 1
+        endif
+        ifneq ($(call pos,show-coverage,$(MAKECMDGOALS)),-1)
+            with_cov := 1
+        endif
+
+        ifneq ($(with_cov),0)
             out_dir := coverage
             EXTRA_CXXFLAGS += --coverage
             EXTRA_LDFLAGS  += --coverage
@@ -62,7 +70,7 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
-.PHONY: check clean coverage debug release
+.PHONY: check clean coverage show-coverage debug release
 
 debug release: $(out_dir)/$(bin)
 
@@ -72,6 +80,9 @@ coverage: check $(out_dir)/$(bin)
 	     --test-name unit_tests --quiet
 	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
 	     --config-file lcovrc --demangle-cpp --show-details
+
+show-coverage: coverage
+	$$BROWSER coverage/data/index.html
 
 $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS)
