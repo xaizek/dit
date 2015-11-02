@@ -75,7 +75,7 @@ out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 debug release: $(out_dir)/$(bin)
 
 coverage: check $(out_dir)/$(bin)
-	lcov --directory $(out_dir)/src/ --base-directory src/ --capture \
+	lcov --directory $(out_dir)/ --base-directory src/ --capture \
 	     --output-file $(out_dir)/lcov.info --config-file lcovrc \
 	     --test-name unit_tests --quiet
 	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
