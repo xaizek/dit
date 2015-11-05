@@ -74,10 +74,42 @@ private:
  *
  * @returns Object suitable to be used in range for loop.
  */
-template <class C> inline detail::Sorted<C>
+template <typename C>
+inline detail::Sorted<C>
 sorted(C &&c)
 {
     return detail::Sorted<C>(std::move(c));
+}
+
+/**
+ * @brief Splits container into ("start matching predicate", "the rest").
+ *
+ * @tparam C Type of container to split.
+ * @tparam P Predicate to use for the split.
+ * @param c Container instance to split.
+ * @param p Splitting predicate.
+ *
+ * @returns Pair of the split.
+ */
+template <typename C, typename P>
+inline std::pair<C, C>
+span(const C &c, P p)
+{
+    C left, right;
+
+    auto begin = std::begin(c);
+    auto end = std::end(c);
+
+    while (begin != end && p(*begin)) {
+        left.push_back(*begin);
+        ++begin;
+    }
+    while (begin != end) {
+        right.push_back(*begin);
+        ++begin;
+    }
+
+    return { std::move(left), std::move(right) };
 }
 
 #endif // SCRIBE__UTILS__CONTAINERS_HPP__

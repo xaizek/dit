@@ -152,7 +152,7 @@ ConfigCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 boost::optional<int>
 ConfigCmd::run(Project &project, const std::vector<std::string> &args)
 {
-    return run(project.getConfig(), args);
+    return run(project.getConfig(false), args);
 }
 
 int

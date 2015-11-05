@@ -20,6 +20,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 class Config;
@@ -97,13 +98,22 @@ private:
      */
     void initConfig();
     /**
+     * @brief Makes standalone configuration for a project.
+     *
+     * @param path Path to real configuration file.
+     *
+     * @returns Pair of proxy (unsaved) and real configuration.
+     */
+    std::pair<Config, std::unique_ptr<Config>>
+    makeConfig(const std::string &path) const;
+    /**
      * @brief Maps alias name to its right-hand side.
      *
      * @param name Name of an alias.
      *
      * @returns Right-hand side of the alias.
      */
-    std::string resolveAlias(const std::string &name);
+    std::string resolveAlias(const std::string &name) const;
 
 private:
     /**
@@ -111,15 +121,19 @@ private:
      */
     std::string prjName;
     /**
+     * @brief Key-value pairs of configuration overrides.
+     */
+    std::vector<std::pair<std::string, std::string>> confs;
+    /**
      * @brief Arguments passed to the application.
      *
-     * Does not include project name and changes over time.
+     * Does not include project name or configuration and changes over time.
      */
     std::vector<std::string> args;
     /**
      * @brief Holds global configuration.
      */
-    std::unique_ptr<Config> config;
+    std::unique_ptr<Config> globalConfig;
     /**
      * @brief Root directory of all projects.
      */

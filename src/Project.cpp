@@ -17,18 +17,21 @@
 
 #include "Project.hpp"
 
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
 
 #include <boost/filesystem.hpp>
 
+#include "utils/memory.hpp"
 #include "Config.hpp"
 #include "Item.hpp"
 #include "Storage.hpp"
 
 namespace fs = boost::filesystem;
 
+static std::pair<Config, std::unique_ptr<Config>> makeConfig(std::string path);
 static std::string getSubRootPath(const fs::path &rootPath,
                                   const std::string &subPath);
 
@@ -44,23 +47,46 @@ Project::init(const std::string &rootDir)
     prj.save();
 }
 
-Project::Project(std::string rootDir, Config *globalConfig)
-    : storage(*this), config(getSubRootPath(rootDir, "config"), globalConfig),
+Project::Project(std::string rootDir)
+    : Project(std::move(rootDir), &makeConfig)
+{
+    dataDir = getSubRootPath(this->rootDir, "items");
+}
+
+Project::Project(std::string rootDir, mkConfig makeConfig)
+    : storage(*this),
+      configs(makeConfig(getSubRootPath(rootDir, "config"))),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");
 }
 
-Project::Project(std::string rootDir, Config *globalConfig, pk<Tests>)
-    : storage(*this, {}), config(getSubRootPath(rootDir, "config"),
-                                 globalConfig),
+Project::Project(std::string rootDir, mkConfig makeConfig, pk<Tests>)
+    : storage(*this, {}),
+      configs((makeConfig ? makeConfig : &::makeConfig)
+              (getSubRootPath(rootDir, "config"))),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");
+}
+
+/**
+ * @brief Makes standalone configuration for a project.
+ *
+ * @param path Path to real configuration file.
+ *
+ * @returns Pair of proxy (unsaved) and real configuration.
+ */
+static std::pair<Config, std::unique_ptr<Config>>
+makeConfig(std::string path)
+{
+    auto prjCfg = make_unique<Config>(path);
+    Config cfgProxy("<proxy>", prjCfg.get());
+    return { std::move(cfgProxy), std::move(prjCfg) };
 }
 
 Project::Project(Project &&rhs)
-    : storage(std::move(rhs.storage)), config(std::move(rhs.config)),
+    : storage(std::move(rhs.storage)), configs(std::move(rhs.configs)),
       rootDir(std::move(rhs.rootDir)), dataDir(std::move(rhs.dataDir))
 {
 }
@@ -99,9 +125,9 @@ Project::getStorage()
 }
 
 Config &
-Project::getConfig()
+Project::getConfig(bool proxy)
 {
-    return config;
+    return proxy ? configs.first : *configs.second;
 }
 
 const std::string &
@@ -115,5 +141,5 @@ Project::save()
 {
     // Since storage uses config, order here matters.
     storage.save();
-    config.save();
+    configs.second->save();
 }
