@@ -26,7 +26,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include <boost/filesystem.hpp>
@@ -34,56 +33,34 @@
 
 #include "utils/containers.hpp"
 #include "utils/memory.hpp"
-#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
+#include "Invocation.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "parsing.hpp"
 
 namespace fs = boost::filesystem;
 
-/**
- * @brief Character in front of project name on command-line.
- */
-const char PROJECT_PREFIX_CHAR = '.';
-
 Scribe::Scribe(int argc, const char *const argv[])
-{
-    initArgs(argc, argv);
-    initConfig();
-}
-
-Scribe::~Scribe()
-{
-}
-
-void
-Scribe::initArgs(int argc, const char *const argv[])
 {
     if (argc < 1) {
         throw std::runtime_error("Broken argument list.");
     }
 
-    // TODO: come up with better parsing code.
-    int offset = 1;
-    if (argc > 1 && argv[1][0] == PROJECT_PREFIX_CHAR) {
-        prjName = &argv[1][1];
-        ++offset;
-    }
+    initConfig();
 
-    std::vector<std::string> assigns;
-    std::tie(assigns, args) = span(std::vector<std::string>(argv + offset,
-                                                            argv + argc),
-                                   [](const std::string &s){
-                                      return s.find('=') != std::string::npos;
-                                   });
+    invocation.setCmdLine({ &argv[1], &argv[argc] });
+    invocation.setDefCmdLine(globalConfig->get("core.defcmd", "ls"));
+    invocation.setDefPrjName(globalConfig->get("core.defprj", ""));
+    invocation.setAliasResolver([this](const std::string &name) {
+        return globalConfig->get("alias." + name, std::string());
+    });
+}
 
-    confs.reserve(assigns.size());
-    for (const std::string &assign : assigns) {
-        confs.emplace_back(splitAt(assign, '='));
-    }
+Scribe::~Scribe()
+{
 }
 
 void
@@ -112,16 +89,9 @@ Scribe::initConfig()
 int
 Scribe::run()
 {
-    if (prjName.empty()) {
-        prjName = globalConfig->get("core.defprj", "");
-    }
-
-    if (args.empty()) {
-        args = breakIntoArgs(globalConfig->get("core.defcmd", "ls"));
-    }
-    auto aliasResolver = std::bind(std::mem_fn(&Scribe::resolveAlias), this,
-                                   std::placeholders::_1);
-    std::string cmdName = parseInvocation(args, aliasResolver, false);
+    invocation.parse();
+    const std::string cmdName = invocation.getCmdName();
+    const std::vector<std::string> cmdArgs = invocation.getCmdArgs();
 
     Command *const cmd = Commands::get(cmdName);
     if (cmd == nullptr) {
@@ -129,13 +99,14 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    if (boost::optional<int> exitCode = cmd->run(*this, args)) {
+    if (boost::optional<int> exitCode = cmd->run(*this, cmdArgs)) {
         if (*exitCode == EXIT_SUCCESS) {
             globalConfig->save();
         }
         return *exitCode;
     }
 
+    const std::string prjName = invocation.getPrjName();
     if (prjName.empty()) {
         std::cerr << "No project specified" << std::endl;
         return EXIT_FAILURE;
@@ -149,7 +120,7 @@ Scribe::run()
         return EXIT_FAILURE;
     }
 
-    if (boost::optional<int> exitCode = cmd->run(project, args)) {
+    if (boost::optional<int> exitCode = cmd->run(project, cmdArgs)) {
         if (*exitCode == EXIT_SUCCESS) {
             project.save();
             globalConfig->save();
@@ -168,7 +139,8 @@ Scribe::makeConfig(const std::string &path) const
     auto prjCfg = make_unique<Config>(path, globalConfig.get());
     Config cfgProxy(std::string(), prjCfg.get());
 
-    for (const std::pair<std::string, std::string> &conf : confs) {
+    using confType = std::pair<std::string, std::string>;
+    for (const confType &conf : invocation.getConfs()) {
         cfgProxy.set(conf.first, conf.second);
     }
 
@@ -178,11 +150,10 @@ Scribe::makeConfig(const std::string &path) const
 int
 Scribe::complete(Project &project, std::vector<std::string> args)
 {
-    auto aliasResolver = std::bind(std::mem_fn(&Scribe::resolveAlias), this,
-                                   std::placeholders::_1);
-    const std::string &cmdName = parseInvocation(args, aliasResolver, true);
+    invocation.setCmdLine(std::move(args));
+    invocation.parse(true);
 
-    Command *const cmd = Commands::get(cmdName);
+    Command *const cmd = Commands::get(invocation.getCmdName());
     if (cmd == nullptr) {
         return EXIT_FAILURE;
     }
@@ -197,12 +168,6 @@ Scribe::complete(Project &project, std::vector<std::string> args)
     return EXIT_FAILURE;
 }
 
-std::string
-Scribe::resolveAlias(const std::string &name) const
-{
-    return globalConfig->get("alias." + name, std::string());
-}
-
 Config &
 Scribe::getConfig()
 {
@@ -215,8 +180,8 @@ Scribe::getProjectsDir() const
     return projectsDir;
 }
 
-const std::string &
+std::string
 Scribe::getPrj() const
 {
-    return prjName;
+    return invocation.getPrjName();
 }
