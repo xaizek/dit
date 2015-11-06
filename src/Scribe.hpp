@@ -23,6 +23,8 @@
 #include <utility>
 #include <vector>
 
+#include "Invocation.hpp"
+
 class Config;
 class Project;
 
@@ -81,18 +83,9 @@ public:
      *
      * @returns The name or empty string.
      */
-    const std::string & getPrj() const;
+    std::string getPrj() const;
 
 private:
-    /**
-     * @brief Initializes arguments.
-     *
-     * @param argc Number of application arguments.
-     * @param argv Application arguments.
-     *
-     * @throws std::runtime_error on broken argument list.
-     */
-    void initArgs(int argc, const char *const argv[]);
     /**
      * @brief Initializes configuration.
      */
@@ -106,30 +99,12 @@ private:
      */
     std::pair<Config, std::unique_ptr<Config>>
     makeConfig(const std::string &path) const;
-    /**
-     * @brief Maps alias name to its right-hand side.
-     *
-     * @param name Name of an alias.
-     *
-     * @returns Right-hand side of the alias.
-     */
-    std::string resolveAlias(const std::string &name) const;
 
 private:
     /**
-     * @brief Name of the project to operate on.
+     * @brief Parses command-line into components.
      */
-    std::string prjName;
-    /**
-     * @brief Key-value pairs of configuration overrides.
-     */
-    std::vector<std::pair<std::string, std::string>> confs;
-    /**
-     * @brief Arguments passed to the application.
-     *
-     * Does not include project name or configuration and changes over time.
-     */
-    std::vector<std::string> args;
+    Invocation invocation;
     /**
      * @brief Holds global configuration.
      */
