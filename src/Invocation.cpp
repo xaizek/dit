@@ -35,16 +35,11 @@ static std::vector<std::string> applyAlias(
     const std::vector<std::string> &alias, const std::vector<std::string> &args,
     bool completion);
 
-/**
- * @brief Character in front of project name on command-line.
- */
-const char PROJECT_PREFIX_CHAR = '.';
-
 void
 Invocation::setCmdLine(std::vector<std::string> args)
 {
-    if (!args.empty() && args[0].front() == PROJECT_PREFIX_CHAR) {
-        prjName = args[0];
+    if (!args.empty() && !args[0].empty() && args[0].front() == '.') {
+        prjName = args[0].substr(1);
         args.erase(args.begin());
     }
 
@@ -82,22 +77,37 @@ Invocation::setAliasResolver(aliasResolverFunc resolver)
 void
 Invocation::parse(bool completion)
 {
+    if (cmdLine.empty()) {
+        cmdLine = breakIntoArgs(defCmdLine);
+    }
+
+    std::string composition;
     if (!cmdLine.empty()) {
-        cmdName = cmdLine[0];
+        composition = cmdLine[0];
+        cmdName = composition;
         cmdLine.erase(cmdLine.begin());
     }
 
-    const std::string aliasRHS = aliasResolver(cmdName);
-    if (!aliasRHS.empty()) {
-        const std::vector<std::string> &alias = breakIntoArgs(aliasRHS);
-        cmdLine = applyAlias(alias, cmdLine, completion);
-
-        if (cmdLine.empty()) {
-            cmdName.clear();
-        } else {
-            cmdName = cmdLine[0];
-            cmdLine.erase(cmdLine.begin());
+    // break composition by a '.' and apply aliases from right to left, commands
+    // that are not aliases are just prepended to current command-line
+    namespace adaptors = boost::adaptors;
+    const std::vector<std::string> names = split(composition, '.');
+    for (const std::string &name : adaptors::reverse(names)) {
+        const std::string rhsString = aliasResolver(name);
+        if (rhsString.empty()) {
+            cmdLine.insert(cmdLine.begin(), name);
+            continue;
         }
+
+        const std::vector<std::string> &rhs = breakIntoArgs(rhsString);
+        setCmdLine(applyAlias(rhs, cmdLine, completion));
+    }
+
+    if (cmdLine.empty()) {
+        cmdName.clear();
+    } else {
+        cmdName = cmdLine[0];
+        cmdLine.erase(cmdLine.begin());
     }
 }
 
