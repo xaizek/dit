@@ -158,6 +158,7 @@ Scribe::complete(Project &project, std::vector<std::string> args)
         return EXIT_FAILURE;
     }
 
+    args = invocation.getCmdArgs();
     if (boost::optional<int> exitCode = cmd->complete(*this, args)) {
         return *exitCode;
     }
