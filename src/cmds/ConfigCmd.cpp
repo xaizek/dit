@@ -20,7 +20,6 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include <boost/program_options.hpp>
@@ -196,7 +195,7 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
 boost::optional<int>
 ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    Config &config = project.getConfig();
+    Config &config = project.getConfig(false);
 
     if (!args.empty() && args.back().find('=') != std::string::npos) {
         std::string last = args.back();
@@ -205,7 +204,7 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
         return EXIT_SUCCESS;
     }
 
-    std::unordered_set<std::string> keys;
+    std::set<std::string> keys;
     {
         std::vector<std::string> allKeys = config.list();
         keys.insert(allKeys.cbegin(), allKeys.cend());
