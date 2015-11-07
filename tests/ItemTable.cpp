@@ -45,7 +45,7 @@ TEST_CASE("Longer column gets shortened first.", "[item-table][sizing]")
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
 
-    ItemTable table("_id|title", std::string(), std::string(), 8);
+    ItemTable table("_id,title", std::string(), std::string(), 8);
     table.append(item);
 
     std::ostringstream oss;
@@ -61,7 +61,7 @@ TEST_CASE("Zero terminal size results in no output.", "[item-table][sizing]")
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
 
-    ItemTable table("_id|title", std::string(), std::string(), 0);
+    ItemTable table("_id,title", std::string(), std::string(), 0);
     table.append(item);
 
     std::ostringstream oss;

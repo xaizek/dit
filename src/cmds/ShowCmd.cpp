@@ -89,7 +89,7 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
     Config &config = project.getConfig();
     const std::string order = config.get("ui.show.order", "title");
 
-    const std::vector<std::string> ordering = split(order, '|');
+    const std::vector<std::string> ordering = split(order, ',');
 
     const std::string &id = args[0];
     Item &item = project.getStorage().get(id);

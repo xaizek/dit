@@ -169,7 +169,7 @@ ItemTable::ItemTable(const std::string &fmt, const std::string &colorSpec,
                      std::string sort, unsigned int maxWidth)
     : sort(std::move(sort)), maxWidth(maxWidth)
 {
-    for (std::string key : split(fmt, '|')) {
+    for (std::string key : split(fmt, ',')) {
         std::string heading = key;
         boost::algorithm::to_upper(heading);
         boost::algorithm::trim_left_if(heading, boost::is_from_range('_', '_'));
@@ -211,7 +211,7 @@ ItemTable::print(std::ostream &os)
 void
 ItemTable::sortItems()
 {
-    const std::vector<std::string> keys = split(sort, '|');
+    const std::vector<std::string> keys = split(sort, ',');
     for (const std::string &key : boost::adaptors::reverse(keys)) {
         std::stable_sort(items.begin(), items.end(),
                          [&key](Item &a, Item &b) {

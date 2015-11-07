@@ -90,7 +90,7 @@ TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
     Storage &storage = prj.getStorage();
     Config &cfg = prj.getConfig();
 
-    cfg.set("ui.show.order", "title|comment");
+    cfg.set("ui.show.order", "title,comment");
 
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
