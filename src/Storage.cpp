@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include <boost/filesystem.hpp>
 
@@ -51,6 +52,14 @@ Storage::Storage(Project &project, pk<Project>)
     : LazyLoadable<Storage>(true), project(project),
       idGenerator(project.getConfig())
 {
+}
+
+Storage::Storage(Storage &&rhs)
+    : project(std::move(rhs.project)), items(std::move(rhs.items)),
+      idGenerator(std::move(rhs.idGenerator))
+{
+    // We pass *this to Items, so allow moving only uninitialized storage.
+    assert(!isLoaded() && "Moving already loaded storage is forbidden!");
 }
 
 Item &
@@ -109,10 +118,10 @@ Storage::list()
 void
 Storage::load()
 {
-    const std::string &dataDir = project.getDataDir();
+    const std::string &dataDir = project.get().getDataDir();
 
     // Suppress throwing exceptions if project doesn't have any items.
-    if (project.exists() && !fs::is_directory(dataDir)) {
+    if (project.get().exists() && !fs::is_directory(dataDir)) {
         return;
     }
 
@@ -139,7 +148,7 @@ Storage::fill(Item &item, pk<Item>)
 {
     const std::string &id = item.getId();
     const fs::path path =
-        fs::path(project.getDataDir())/id.substr(0, 1)/id.substr(1);
+        fs::path(project.get().getDataDir())/id.substr(0, 1)/id.substr(1);
 
     std::ifstream file(path.string());
     if (!file) {
@@ -159,7 +168,8 @@ Storage::save()
 
         const std::string &id = e.second.getId();
 
-        const fs::path dirPath = fs::path(project.getDataDir())/id.substr(0, 1);
+        const fs::path dirPath =
+            fs::path(project.get().getDataDir())/id.substr(0, 1);
 
         if (!fs::exists(dirPath)) {
             fs::create_directories(dirPath);
@@ -176,4 +186,10 @@ Storage::save()
     }
 
     idGenerator.save();
+}
+
+void
+Storage::relinkProject(Project &project)
+{
+    this->project = project;
 }

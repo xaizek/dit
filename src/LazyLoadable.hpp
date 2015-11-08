@@ -50,6 +50,15 @@ protected:
             loaded = true;
         }
     }
+    /**
+     * @brief Checks whether host is already loaded.
+     *
+     * @returns @c true if so, @c false otherwise.
+     */
+    bool isLoaded() const
+    {
+        return loaded;
+    }
 
 private:
     /**

@@ -89,6 +89,8 @@ Project::Project(Project &&rhs)
     : storage(std::move(rhs.storage)), configs(std::move(rhs.configs)),
       rootDir(std::move(rhs.rootDir)), dataDir(std::move(rhs.dataDir))
 {
+    // Storage saves pointer to project, which must be updated after a move.
+    storage.relinkProject(*this);
 }
 
 Project::~Project()

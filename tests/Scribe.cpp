@@ -27,7 +27,56 @@
 
 #include "Tests.hpp"
 
-TEST_CASE("Completion of projects works", "[app][completion]")
+TEST_CASE("Running commands", "[app]")
+{
+    Tests::disableDecorations();
+
+    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    SECTION("Projects")
+    {
+        Scribe scribe({ "app", "projects" });
+
+        std::ostringstream out;
+        std::ostringstream err;
+        Tests::setStreams(out, err);
+
+        boost::optional<int> exitCode = scribe.run();
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut =
+            " first\n"
+            " second\n"
+            "*tests\n"
+            " third\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Ls")
+    {
+        Scribe scribe({ "app", "ls" });
+
+        std::ostringstream out;
+        std::ostringstream err;
+        Tests::setStreams(out, err);
+
+        boost::optional<int> exitCode = scribe.run();
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut = "ID  TITLE\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+}
+
+TEST_CASE("Completion of projects", "[app][completion]")
 {
     Tests::disableDecorations();
 
@@ -57,7 +106,7 @@ TEST_CASE("Completion of projects works", "[app][completion]")
     REQUIRE(err.str() == std::string());
 }
 
-TEST_CASE("Completion of commands works", "[app][completion]")
+TEST_CASE("Completion of commands", "[app][completion]")
 {
     Tests::disableDecorations();
 
