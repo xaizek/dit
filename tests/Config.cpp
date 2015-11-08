@@ -36,3 +36,10 @@ TEST_CASE("Absent values are taken from parent", "[config][parent-child]")
         REQUIRE(child.get("key") == "value");
     }
 }
+
+TEST_CASE("For unknown path empty list is returned", "[config][list]")
+{
+    Config cfg("cfg");
+
+    REQUIRE(cfg.list("path") == std::vector<std::string>());
+}

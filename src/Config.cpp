@@ -66,8 +66,14 @@ Config::list(const std::string &path)
 {
     ensureLoaded();
 
+    boost::optional<boost::property_tree::ptree &> subtree =
+        props.get_child_optional(path);
+    if (!subtree) {
+        return {};
+    }
+
     std::vector<std::string> list;
-    for (const std::string &propName : propsRange(props.get_child(path))) {
+    for (const std::string &propName : propsRange(*subtree)) {
         const std::string &fullPath = path.empty()
                                     ? propName
                                     : path + '.' + propName;
