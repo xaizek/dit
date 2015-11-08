@@ -74,8 +74,7 @@ boost::optional<int>
 CompleteCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 {
     std::ostringstream estream;
-    int exitCode = scribe.complete({ args.begin() + 1, args.end() },
-                                   out(), estream);
+    int exitCode = scribe.complete(args, out(), estream);
     if (!estream.str().empty()) {
         err() << estream.str();
     }

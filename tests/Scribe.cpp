@@ -37,13 +37,13 @@ TEST_CASE("Running commands", "[app]")
     putenv(xdg_env);
     putenv(home_env);
 
-    SECTION("Projects")
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    SECTION("projects")
     {
         Scribe scribe({ "app", "projects" });
-
-        std::ostringstream out;
-        std::ostringstream err;
-        Tests::setStreams(out, err);
 
         boost::optional<int> exitCode = scribe.run();
         REQUIRE(exitCode);
@@ -58,13 +58,9 @@ TEST_CASE("Running commands", "[app]")
         REQUIRE(err.str() == std::string());
     }
 
-    SECTION("Ls")
+    SECTION("ls")
     {
         Scribe scribe({ "app", "ls" });
-
-        std::ostringstream out;
-        std::ostringstream err;
-        Tests::setStreams(out, err);
 
         boost::optional<int> exitCode = scribe.run();
         REQUIRE(exitCode);
@@ -72,6 +68,19 @@ TEST_CASE("Running commands", "[app]")
 
         const std::string expectedOut = "ID  TITLE\n";
         REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("complete")
+    {
+        Scribe scribe({ "app", "complete", ".first", "config",
+                        "ui.::cursor::" });
+
+        boost::optional<int> exitCode = scribe.run();
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        REQUIRE(out.str() == std::string());
         REQUIRE(err.str() == std::string());
     }
 }
