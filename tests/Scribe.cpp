@@ -27,7 +27,37 @@
 
 #include "Tests.hpp"
 
-TEST_CASE("Completion for sub-commands works", "[app][completion]")
+TEST_CASE("Completion of projects works", "[app][completion]")
+{
+    Tests::disableDecorations();
+
+    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Scribe scribe({ "app" });
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = scribe.complete({ ".::cursor::" },
+                                                    out, err);
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        ".first\n"
+        ".second\n"
+        ".tests\n"
+        ".third\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Completion of commands works", "[app][completion]")
 {
     Tests::disableDecorations();
 
@@ -39,23 +69,94 @@ TEST_CASE("Completion for sub-commands works", "[app][completion]")
 
     Scribe scribe({ "app" });
 
-    Project prj = Tests::makeProject();
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
 
-    Config &cfg = prj.getConfig(false);
-    cfg.set("ui.ls", "ls-value");
-    cfg.set("ui.show", "show-value");
+    SECTION("No prefix")
+    {
+        boost::optional<int> exitCode = scribe.complete({ "::cursor::" },
+                                                        out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut =
+            "add\n"
+            "complete\n"
+            "config\n";
+        REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Composition")
+    {
+        boost::optional<int> exitCode = scribe.complete({ "add.::cursor::" },
+                                                        out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut =
+            "add.add\n"
+            "add.complete\n"
+            "add.config\n";
+        REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+}
+
+TEST_CASE("Completion of sub-commands", "[app][completion]")
+{
+    Tests::disableDecorations();
+
+    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Scribe scribe({ "app" });
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = scribe.complete(prj, { "config", "ui." });
-    REQUIRE(exitCode);
-    REQUIRE(*exitCode == EXIT_SUCCESS);
+    SECTION("Works")
+    {
+        boost::optional<int> exitCode = scribe.complete({ "config",
+                                                          "ui.::cursor::" },
+                                                        out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
 
-    const std::string expectedOut =
-        "ui.ls:\n"
-        "ui.show:\n";
-    REQUIRE(out.str() == expectedOut);
-    REQUIRE(err.str() == std::string());
+        const std::string expectedOut =
+            "ui.ls:\n"
+            "ui.show:\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Works for value completion")
+    {
+        boost::optional<int> exitCode = scribe.complete({ "config",
+                                                          "ui.ls=::cursor::" },
+                                                        out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut = "'ls-value'\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Uses specified project")
+    {
+        boost::optional<int> exitCode = scribe.complete({ ".first", "config",
+                                                          "ui.::cursor::" },
+                                                        out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        REQUIRE(out.str() == std::string());
+        REQUIRE(err.str() == std::string());
+    }
 }

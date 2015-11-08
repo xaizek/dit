@@ -45,14 +45,12 @@ public:
      * @param args List of all the arguments (*without* application name).
      */
     void setCmdLine(std::vector<std::string> args);
-
     /**
      * @brief Sets project name to use by default (if none supplied).
      *
      * @param prjName Name of default project.
      */
     void setDefPrjName(std::string prjName);
-
     /**
      * @brief Sets default command-line to use by default (on empty input).
      *
@@ -61,7 +59,6 @@ public:
      * @param cmdLine Default command-line.
      */
     void setDefCmdLine(std::string cmdLine);
-
     /**
      * @brief Sets function that resolves RHS of an alias by its name.
      *
@@ -90,21 +87,24 @@ public:
      * @returns The name.
      */
     std::string getPrjName() const;
-
     /**
      * @brief Retrieves name of the command to execute.
      *
      * @returns The name.
      */
     std::string getCmdName() const;
-
+    /**
+     * @brief Retrieves unexpanded composition of the commands.
+     *
+     * @returns The composition.
+     */
+    std::string getComposition() const;
     /**
      * @brief Retrieves arguments of the command (@c getCmdName()).
      *
      * @returns Arguments of command.
      */
     std::vector<std::string> getCmdArgs() const;
-
     /**
      * @brief Retrieves configuration override.
      *
@@ -125,6 +125,10 @@ private:
      * @brief Actual name of the command to be executed.
      */
     std::string cmdName;
+    /**
+     * @brief Unexpanded composition of command names.
+     */
+    std::string composition;
     /**
      * @brief Arguments of the application.
      */

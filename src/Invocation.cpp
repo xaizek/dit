@@ -81,7 +81,6 @@ Invocation::parse(bool completion)
         cmdLine = breakIntoArgs(defCmdLine);
     }
 
-    std::string composition;
     if (!cmdLine.empty()) {
         composition = cmdLine[0];
         cmdName = composition;
@@ -190,6 +189,12 @@ std::string
 Invocation::getCmdName() const
 {
     return cmdName;
+}
+
+std::string
+Invocation::getComposition() const
+{
+    return composition;
 }
 
 std::vector<std::string>

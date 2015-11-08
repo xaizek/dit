@@ -20,6 +20,7 @@
 
 #include <functional>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -36,15 +37,7 @@ namespace fs = boost::filesystem;
 /**
  * @brief Usage message for "ls" command.
  */
-const char *const USAGE = R"(Usage: complete what
-
-Where <what> is one of:
-
-    args ...  --  last argument of command line for a command
-    commands  --  list of commands and aliases
-    projects  --  list of available projects
-
-Output is not sorted.)";
+const char *const USAGE = "Usage: complete <regular args>";
 
 namespace {
 
@@ -66,42 +59,6 @@ public:
     virtual boost::optional<int> run(
         Scribe &scribe,
         const std::vector<std::string> &args) override;
-    /**
-     * @copydoc Command::run()
-     */
-    virtual boost::optional<int> run(
-        Project &project,
-        const std::vector<std::string> &args) override;
-    /**
-     * @copydoc Command::complete()
-     */
-    virtual boost::optional<int> complete(
-        Scribe &scribe,
-        const std::vector<std::string> &args) override;
-
-private:
-    /**
-     * @brief Lists all projects.
-     *
-     * @param projectsDir Base directory for projects.
-     *
-     * @returns Exit code to be returned by run.
-     */
-    int listProjects(const std::string &projectsDir);
-    /**
-     * @brief Lists all commands.
-     *
-     * @param config Configuration to get aliases from.
-     *
-     * @returns Exit code to be returned by run.
-     */
-    int listCommands(Config &config);
-
-private:
-    /**
-     * @brief Storage for the pointer between calls of @c run().
-     */
-    Scribe *scribe;
 };
 
 REGISTER_COMMAND(CompleteCmd);
@@ -109,78 +66,18 @@ REGISTER_COMMAND(CompleteCmd);
 }
 
 CompleteCmd::CompleteCmd()
-    : Command("complete", "provides completion lists", USAGE), scribe(nullptr)
+    : Command("complete", "command-line completion helper", USAGE)
 {
 }
 
 boost::optional<int>
 CompleteCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 {
-    this->scribe = &scribe;
-
-    if (args.size() == 0 || (args.size() > 1 && args[0] != "args")) {
-        err() << "Wrong number of arguments.\n";
-        return EXIT_FAILURE;
+    std::ostringstream estream;
+    int exitCode = scribe.complete({ args.begin() + 1, args.end() },
+                                   out(), estream);
+    if (!estream.str().empty()) {
+        err() << estream.str();
     }
-
-    const std::string &what = args[0];
-
-    if (what == "args") {
-        return {};
-    } else if (what == "commands") {
-        return listCommands(scribe.getConfig());
-    } else if (what == "projects") {
-        return listProjects(scribe.getProjectsDir());
-    } else {
-        err() << "Unknown argument: " << what << '\n';
-        return EXIT_FAILURE;
-    }
-}
-
-boost::optional<int>
-CompleteCmd::run(Project &project, const std::vector<std::string> &args)
-{
-    assert(args[0] == "args" && "Incorrect arguments for this overload.");
-
-    return scribe->complete(project, std::vector<std::string>(args.begin() + 1,
-                                                              args.end()));
-}
-
-boost::optional<int>
-CompleteCmd::complete(Scribe &, const std::vector<std::string> &args)
-{
-    if (args.size() > 1) {
-        return EXIT_FAILURE;
-    }
-
-    out() << "args\n";
-    out() << "commands\n";
-    out() << "projects\n";
-
-    return EXIT_SUCCESS;
-}
-
-int
-CompleteCmd::listProjects(const std::string &projectsDir)
-{
-    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
-        if (Project(e.path().string()).exists()) {
-            out() << '.' << e.path().filename().string() << '\n';
-        }
-    }
-    return EXIT_SUCCESS;
-}
-
-int
-CompleteCmd::listCommands(Config &config)
-{
-    for (Command &cmd : Commands::list()) {
-        out() << cmd.getName() << '\n';
-    }
-
-    for (const std::string &alias : config.list("alias")) {
-        out() << alias << '\n';
-    }
-
-    return EXIT_SUCCESS;
+    return exitCode;
 }

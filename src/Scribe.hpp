@@ -18,10 +18,13 @@
 #ifndef SCRIBE__SCRIBE_HPP__
 #define SCRIBE__SCRIBE_HPP__
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <boost/optional.hpp>
 
 #include "Invocation.hpp"
 
@@ -55,16 +58,16 @@ public:
      */
     int run();
     /**
-     * @brief Completes command-line.
+     * @brief Performs command-line completion.
      *
-     * Always the last argument is completed.
-     *
-     * @param project Active project for completion.
      * @param args Arguments to complete.
+     * @param out Output stream.
+     * @param err Error stream.
      *
      * @returns Exit status of the application (to be returned by @c main()).
      */
-    int complete(Project &project, std::vector<std::string> args);
+    int complete(std::vector<std::string> args, std::ostream &out,
+                 std::ostream &err);
     /**
      * @brief Retrieves global configuration object.
      *
@@ -89,6 +92,25 @@ private:
      * @brief Initializes configuration.
      */
     void initConfig();
+    /**
+     * @brief Completes command-line for a sub-command.
+     *
+     * Uses current state of @c invocation.  Always the last argument is
+     * completed.
+     *
+     * @returns Exit status of the application (to be returned by @c main()).
+     */
+    int completeCmd();
+    /**
+     * @brief Looks up a project by its name.
+     *
+     * @param name Name of the project to look up.
+     * @param error Error message on failed look up.
+     *
+     * @returns The project or nothing setting @p error to a message.
+     */
+    boost::optional<Project> openProject(const std::string &name,
+                                         std::string &error);
     /**
      * @brief Makes standalone configuration for a project.
      *

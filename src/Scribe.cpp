@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
@@ -42,6 +43,14 @@
 #include "parsing.hpp"
 
 namespace fs = boost::filesystem;
+
+static std::vector<std::string> listProjects(const std::string &projectsDir);
+static std::vector<std::string> listCommands(Config &config);
+
+/**
+ * @brief Mark of a cursor position during completion.
+ */
+const std::string COMPL_CURSOR_MARK = "::cursor::";
 
 Scribe::Scribe(std::vector<std::string> args)
 {
@@ -107,22 +116,16 @@ Scribe::run()
     }
 
     const std::string prjName = invocation.getPrjName();
-    if (prjName.empty()) {
-        std::cerr << "No project specified" << std::endl;
+    std::string error;
+    boost::optional<Project> prj = openProject(prjName, error);
+    if (!prj) {
+        std::cerr << error << std::endl;
         return EXIT_FAILURE;
     }
 
-    auto makeConfig = std::bind(std::mem_fn(&Scribe::makeConfig), this,
-                                std::placeholders::_1);
-    Project project((fs::path(projectsDir)/prjName).string(), makeConfig);
-    if (!project.exists()) {
-        std::cerr << "Project does not exist: " << prjName << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    if (boost::optional<int> exitCode = cmd->run(project, cmdArgs)) {
+    if (boost::optional<int> exitCode = cmd->run(*prj, cmdArgs)) {
         if (*exitCode == EXIT_SUCCESS) {
-            project.save();
+            prj->save();
             globalConfig->save();
         }
 
@@ -131,6 +134,135 @@ Scribe::run()
 
     assert(false && "Command has no or broken implementation.");
     return EXIT_FAILURE;
+}
+
+int
+Scribe::complete(std::vector<std::string> args, std::ostream &out,
+                 std::ostream &)
+{
+    invocation.setCmdLine(std::move(args));
+    invocation.parse(true);
+
+    std::vector<std::string> names;
+
+    std::string composition = invocation.getComposition();
+
+    if (boost::ends_with(invocation.getPrjName(), COMPL_CURSOR_MARK)) {
+        names = listProjects(projectsDir);
+    } else if (boost::ends_with(composition, COMPL_CURSOR_MARK)) {
+        names = listCommands(*globalConfig);
+        if (composition.find('.') != std::string::npos) {
+            const std::string prefix =
+                composition.substr(0, composition.rfind('.') + 1);
+            for (std::string &name : names) {
+                name = prefix + name;
+            }
+        }
+    } else {
+        return completeCmd();
+    }
+
+    for (const std::string &name : sorted(std::move(names))) {
+        out << name << '\n';
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int
+Scribe::completeCmd()
+{
+    const std::string prjName = invocation.getPrjName();
+    std::string error;
+    boost::optional<Project> prj = openProject(prjName, error);
+    if (!prj) {
+        std::cerr << error << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::vector<std::string> args = invocation.getCmdArgs();
+    if (!args.empty()) {
+        std::string &last = args.back();
+        last = last.substr(0, last.length() - COMPL_CURSOR_MARK.length());
+    }
+
+    Command *const cmd = Commands::get(invocation.getCmdName());
+    if (cmd == nullptr) {
+        return EXIT_FAILURE;
+    }
+
+    if (boost::optional<int> exitCode = cmd->complete(*this, args)) {
+        return *exitCode;
+    }
+    if (boost::optional<int> exitCode = cmd->complete(*prj, args)) {
+        return *exitCode;
+    }
+
+    return EXIT_FAILURE;
+}
+
+
+/**
+ * @brief Lists all projects.
+ *
+ * @param projectsDir Base directory for projects.
+ *
+ * @returns Names of discovered projects with prepended dot (.).
+ */
+static std::vector<std::string>
+listProjects(const std::string &projectsDir)
+{
+    std::vector<std::string> names;
+
+    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
+        if (Project(e.path().string()).exists()) {
+            names.push_back('.' + e.path().filename().string());
+        }
+    }
+
+    return std::move(names);
+}
+
+/**
+ * @brief Lists all commands.
+ *
+ * @param config Configuration to get aliases from.
+ *
+ * @returns Names of discovered commands.
+ */
+static std::vector<std::string>
+listCommands(Config &config)
+{
+    std::vector<std::string> names;
+
+    for (Command &cmd : Commands::list()) {
+        names.push_back(cmd.getName());
+    }
+
+    for (const std::string &alias : config.list("alias")) {
+        names.push_back(alias);
+    }
+
+    return std::move(names);
+}
+
+boost::optional<Project>
+Scribe::openProject(const std::string &name, std::string &error)
+{
+    if (name.empty()) {
+        error = "No project specified";
+        return {};
+    }
+
+    auto makeConfig = std::bind(std::mem_fn(&Scribe::makeConfig), this,
+                                std::placeholders::_1);
+    Project project((fs::path(projectsDir)/name).string(), makeConfig);
+    if (!project.exists()) {
+        error = "Project does not exist: " + name;
+        return {};
+    }
+
+    return std::move(project);
 }
 
 std::pair<Config, std::unique_ptr<Config>>
@@ -145,28 +277,6 @@ Scribe::makeConfig(const std::string &path) const
     }
 
     return { std::move(cfgProxy), std::move(prjCfg) };
-}
-
-int
-Scribe::complete(Project &project, std::vector<std::string> args)
-{
-    invocation.setCmdLine(std::move(args));
-    invocation.parse(true);
-
-    Command *const cmd = Commands::get(invocation.getCmdName());
-    if (cmd == nullptr) {
-        return EXIT_FAILURE;
-    }
-
-    args = invocation.getCmdArgs();
-    if (boost::optional<int> exitCode = cmd->complete(*this, args)) {
-        return *exitCode;
-    }
-    if (boost::optional<int> exitCode = cmd->complete(project, args)) {
-        return *exitCode;
-    }
-
-    return EXIT_FAILURE;
 }
 
 Config &
