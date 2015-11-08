@@ -37,12 +37,11 @@ public:
     /**
      * @brief Constructs main application class.
      *
-     * @param argc Number of application arguments.
-     * @param argv Application arguments.
+     * @param args Application arguments.
      *
      * @throws std::runtime_error on broken argument list.
      */
-    Scribe(int argc, const char *const argv[]);
+    Scribe(std::vector<std::string> args);
     /**
      * @brief Emit field destruction locally.
      */

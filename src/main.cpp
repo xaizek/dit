@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 #include "Scribe.hpp"
 
@@ -26,7 +27,7 @@ int
 main(int argc, char *argv[])
 {
     try {
-        return Scribe(argc, argv).run();
+        return Scribe({ argv, argv + argc }).run();
     } catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return EXIT_FAILURE;

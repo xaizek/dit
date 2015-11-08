@@ -43,15 +43,15 @@
 
 namespace fs = boost::filesystem;
 
-Scribe::Scribe(int argc, const char *const argv[])
+Scribe::Scribe(std::vector<std::string> args)
 {
-    if (argc < 1) {
+    if (args.empty()) {
         throw std::runtime_error("Broken argument list.");
     }
 
     initConfig();
 
-    invocation.setCmdLine({ &argv[1], &argv[argc] });
+    invocation.setCmdLine({ args.begin() + 1, args.end() });
     invocation.setDefCmdLine(globalConfig->get("core.defcmd", "ls"));
     invocation.setDefPrjName(globalConfig->get("core.defprj", ""));
     invocation.setAliasResolver([this](const std::string &name) {

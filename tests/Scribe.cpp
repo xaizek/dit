@@ -31,14 +31,13 @@ TEST_CASE("Completion for sub-commands works", "[app][completion]")
 {
     Tests::disableDecorations();
 
-    const char *const args[] = { "app" };
     char xdg_env[] = "XDG_CONFIG_HOME=";
     char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
 
-    Scribe scribe(1, args);
+    Scribe scribe({ "app" });
 
     Project prj = Tests::makeProject();
 
