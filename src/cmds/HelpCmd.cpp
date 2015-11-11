@@ -123,6 +123,14 @@ HelpCmd::listCommands()
     return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Compares two commands by their names.
+ *
+ * @param l First command to compare.
+ * @param r Second command to compare.
+ *
+ * @returns @c true if @p l is "less than" @p r, otherwise @c false is returned.
+ */
 static bool
 operator<(const Command &l, const Command &r)
 {

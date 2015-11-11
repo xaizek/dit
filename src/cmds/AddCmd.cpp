@@ -99,12 +99,6 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     return EXIT_SUCCESS;
 }
 
-bool
-operator<(const Command &l, const Command &r)
-{
-    return l.getName() < r.getName();
-}
-
 boost::optional<int>
 AddCmd::complete(Project &project, const std::vector<std::string> &args)
 {
