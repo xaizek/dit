@@ -80,12 +80,6 @@ public:
      */
     Project(std::string rootDir, mkConfig makeConfig, pk<Tests>);
     /**
-     * @brief Move constructor.
-     *
-     * @param rhs Object to steal data from.
-     */
-    Project(Project &&rhs);
-    /**
      * @brief Emit destructor in the corresponding source file.
      */
     ~Project();
@@ -133,16 +127,16 @@ public:
 
 private:
     /**
-     * @brief Storage of the project.
-     */
-    Storage storage;
-    /**
      * @brief Configuration of the project.
      *
      * First element is a proxy that is not saved.
      * Second one is real configuration.
      */
     std::pair<Config, std::unique_ptr<Config>> configs;
+    /**
+     * @brief Storage of the project.
+     */
+    Storage storage;
     /**
      * @brief Path to root directory of the project.
      */

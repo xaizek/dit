@@ -54,17 +54,17 @@ Project::Project(std::string rootDir)
 }
 
 Project::Project(std::string rootDir, mkConfig makeConfig)
-    : storage(*this),
-      configs(makeConfig(getSubRootPath(rootDir, "config"))),
+    : configs(makeConfig(getSubRootPath(rootDir, "config"))),
+      storage(*this),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");
 }
 
 Project::Project(std::string rootDir, mkConfig makeConfig, pk<Tests>)
-    : storage(*this, {}),
-      configs((makeConfig ? makeConfig : &::makeConfig)
+    : configs((makeConfig ? makeConfig : &::makeConfig)
               (getSubRootPath(rootDir, "config"))),
+      storage(*this, {}),
       rootDir(std::move(rootDir))
 {
     dataDir = getSubRootPath(this->rootDir, "items");
@@ -83,14 +83,6 @@ makeConfig(std::string path)
     auto prjCfg = make_unique<Config>(path);
     Config cfgProxy("<proxy>", prjCfg.get());
     return { std::move(cfgProxy), std::move(prjCfg) };
-}
-
-Project::Project(Project &&rhs)
-    : storage(std::move(rhs.storage)), configs(std::move(rhs.configs)),
-      rootDir(std::move(rhs.rootDir)), dataDir(std::move(rhs.dataDir))
-{
-    // Storage saves pointer to project, which must be updated after a move.
-    storage.relinkProject(*this);
 }
 
 Project::~Project()

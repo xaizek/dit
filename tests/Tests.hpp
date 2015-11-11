@@ -22,6 +22,7 @@
 
 #include <functional>
 #include <iosfwd>
+#include <memory>
 #include <string>
 
 class Item;
@@ -65,7 +66,7 @@ public:
      *
      * @returns The instance.
      */
-    static Project makeProject();
+    static std::unique_ptr<Project> makeProject();
 
     /**
      * @brief Makes an instance of @c Item, which is not creatable otherwise.

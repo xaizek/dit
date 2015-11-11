@@ -24,8 +24,6 @@
 #include <utility>
 #include <vector>
 
-#include <boost/optional.hpp>
-
 #include "Invocation.hpp"
 
 class Config;
@@ -109,7 +107,7 @@ private:
      *
      * @returns The project or nothing setting @p error to a message.
      */
-    boost::optional<Project> openProject(const std::string &name,
+    std::unique_ptr<Project> openProject(const std::string &name,
                                          std::string &error);
     /**
      * @brief Makes standalone configuration for a project.

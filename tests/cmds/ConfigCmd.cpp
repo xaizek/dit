@@ -34,16 +34,16 @@ TEST_CASE("Config value completion on trailing =", "[cmds][config][completion]")
 
     Command *const cmd = Commands::get("config");
 
-    Project prj = Tests::makeProject();
+    std::unique_ptr<Project> prj = Tests::makeProject();
 
-    Config &cfg = prj.getConfig(false);
+    Config &cfg = prj->getConfig(false);
     cfg.set("ui.ls", "ls-value");
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->complete(prj, { "ui.ls=" });
+    boost::optional<int> exitCode = cmd->complete(*prj, { "ui.ls=" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 

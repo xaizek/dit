@@ -34,13 +34,13 @@
 TEST_CASE("Too few args cause error.", "[cmds][show][args]")
 {
     Command *const cmd = Commands::get("show");
-    Project prj = Tests::makeProject();
+    std::unique_ptr<Project> prj = Tests::makeProject();
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->run(prj, { });
+    boost::optional<int> exitCode = cmd->run(*prj, { });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_FAILURE);
 
@@ -54,9 +54,9 @@ TEST_CASE("Values are displayed in alphabetical order by default.",
     Tests::disableDecorations();
 
     Command *const cmd = Commands::get("show");
-    Project prj = Tests::makeProject();
-    Storage &storage = prj.getStorage();
-    Config &cfg = prj.getConfig();
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+    Config &cfg = prj->getConfig();
 
     cfg.set("ui.show.order", "wrongfieldname");
 
@@ -70,7 +70,7 @@ TEST_CASE("Values are displayed in alphabetical order by default.",
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->run(prj, { "id" });
+    boost::optional<int> exitCode = cmd->run(*prj, { "id" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -86,9 +86,9 @@ TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
     Tests::disableDecorations();
 
     Command *const cmd = Commands::get("show");
-    Project prj = Tests::makeProject();
-    Storage &storage = prj.getStorage();
-    Config &cfg = prj.getConfig();
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+    Config &cfg = prj->getConfig();
 
     cfg.set("ui.show.order", "title,comment");
 
@@ -104,7 +104,7 @@ TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->run(prj, { "id" });
+    boost::optional<int> exitCode = cmd->run(*prj, { "id" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 

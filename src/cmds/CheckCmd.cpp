@@ -17,7 +17,8 @@
 
 // * Check that all sequences are of equal size.
 // * Check that number of items equals "count" in configuration.
-// * Generate sequence for "count" items and name sure they match ids of
+// * Generate sequence for "count" items and make sure they match ids of
 //   existing items.
+// * Order in which items were created should match the sequence.
 // * Validate contents of items (timestamps, duplicates, redundancy, conflicts).
 // * Validate names of items fields.

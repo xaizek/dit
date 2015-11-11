@@ -117,7 +117,7 @@ Scribe::run()
 
     const std::string prjName = invocation.getPrjName();
     std::string error;
-    boost::optional<Project> prj = openProject(prjName, error);
+    std::unique_ptr<Project> prj = openProject(prjName, error);
     if (!prj) {
         std::cerr << error << std::endl;
         return EXIT_FAILURE;
@@ -174,7 +174,7 @@ Scribe::completeCmd()
 {
     const std::string prjName = invocation.getPrjName();
     std::string error;
-    boost::optional<Project> prj = openProject(prjName, error);
+    std::unique_ptr<Project> prj = openProject(prjName, error);
     if (!prj) {
         std::cerr << error << std::endl;
         return EXIT_FAILURE;
@@ -246,7 +246,7 @@ listCommands(Config &config)
     return std::move(names);
 }
 
-boost::optional<Project>
+std::unique_ptr<Project>
 Scribe::openProject(const std::string &name, std::string &error)
 {
     if (name.empty()) {
@@ -256,8 +256,9 @@ Scribe::openProject(const std::string &name, std::string &error)
 
     auto makeConfig = std::bind(std::mem_fn(&Scribe::makeConfig), this,
                                 std::placeholders::_1);
-    Project project((fs::path(projectsDir)/name).string(), makeConfig);
-    if (!project.exists()) {
+    auto project = make_unique<Project>((fs::path(projectsDir)/name).string(),
+                                        makeConfig);
+    if (!project->exists()) {
         error = "Project does not exist: " + name;
         return {};
     }

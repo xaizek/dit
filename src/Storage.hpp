@@ -63,12 +63,6 @@ public:
      * @param project Project, which is parent of the storage.
      */
     Storage(Project &project, pk<Project>);
-    /**
-     * @brief Move constructor.
-     *
-     * @param rhs Object to steal data from.
-     */
-    Storage(Storage &&rhs);
 
 public:
     /**
@@ -117,15 +111,6 @@ public:
      */
     void save();
 
-    /**
-     * @brief Updates stored link to parent project.
-     *
-     * A helper for fixing up storage after a move.
-     *
-     * @param project New project object location.
-     */
-    void relinkProject(Project &project);
-
 private:
     /**
      * @brief Actually loads storage from physical source, first level.
@@ -146,7 +131,7 @@ private:
     /**
      * @brief Project this storage belongs to.
      */
-    std::reference_wrapper<Project> project;
+    Project &project;
     /**
      * @brief Items known to the storage.
      */

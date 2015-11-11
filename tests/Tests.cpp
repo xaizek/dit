@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 
+#include "utils/memory.hpp"
 #include "Change.hpp"
 #include "Command.hpp"
 #include "Item.hpp"
@@ -54,10 +55,11 @@ Tests::resetTimeSource()
     Item::setTimeSource({}, {});
 }
 
-Project
+std::unique_ptr<Project>
 Tests::makeProject()
 {
-    return Project("/fake/project/root/for/tests", {}, {});
+    return std::unique_ptr<Project>(new Project("/fake/project/root/for/tests",
+                                                {}, {}));
 }
 
 Item
