@@ -274,7 +274,14 @@ Scribe::makeConfig(const std::string &path) const
 
     using confType = std::pair<std::string, std::string>;
     for (const confType &conf : invocation.getConfs()) {
-        cfgProxy.set(conf.first, conf.second);
+        std::string key = conf.first;
+        std::string value = conf.second;
+
+        if (!key.empty() && key.back() == '+') {
+            key.pop_back();
+            value = cfgProxy.get(key, std::string()) + value;
+        }
+        cfgProxy.set(key, value);
     }
 
     return { std::move(cfgProxy), std::move(prjCfg) };

@@ -320,7 +320,7 @@ TEST_CASE("Alias composition configuration is collected.",
             return "a=1 ls ${1}";
         }
         if (name == "alias2") {
-            return "a=2";
+            return "a+=2";
         }
         return {};
     };
@@ -343,5 +343,5 @@ TEST_CASE("Alias composition configuration is collected.",
     REQUIRE(args[3] == "arg3");
     REQUIRE(confs.size() == 2);
     REQUIRE(confs[0] == conf("a", "1"));
-    REQUIRE(confs[1] == conf("a", "2"));
+    REQUIRE(confs[1] == conf("a+", "2"));
 }

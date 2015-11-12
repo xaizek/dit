@@ -83,6 +83,19 @@ TEST_CASE("Running commands", "[app]")
         REQUIRE(out.str() == std::string());
         REQUIRE(err.str() == std::string());
     }
+
+    SECTION("Configuration override set and append")
+    {
+        Scribe scribe({ "app", "ui.ls.fmt=_id", "ui.ls.fmt+=,more", "ls" });
+
+        boost::optional<int> exitCode = scribe.run();
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut = "ID  MORE\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
 }
 
 TEST_CASE("Completion of projects", "[app][completion]")
