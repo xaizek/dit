@@ -44,7 +44,7 @@ namespace {
 /**
  * @brief Implementation of "complete" command, which helps with completion.
  */
-class CompleteCmd : public Command
+class CompleteCmd : public AutoRegisteredCommand<CompleteCmd>
 {
 public:
     /**
@@ -61,12 +61,10 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(CompleteCmd);
-
 }
 
 CompleteCmd::CompleteCmd()
-    : Command("complete", "command-line completion helper", USAGE)
+    : parent("complete", "command-line completion helper", USAGE)
 {
 }
 

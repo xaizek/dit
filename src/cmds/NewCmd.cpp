@@ -35,7 +35,7 @@ namespace {
 /**
  * @brief Implementation of "new" command, which creates projects.
  */
-class NewCmd : public Command
+class NewCmd : public AutoRegisteredCommand<NewCmd>
 {
 public:
     /**
@@ -52,11 +52,9 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(NewCmd);
-
 }
 
-NewCmd::NewCmd() : Command("new", "creates projects", "Usage: new project-name")
+NewCmd::NewCmd() : parent("new", "creates projects", "Usage: new project-name")
 {
 }
 

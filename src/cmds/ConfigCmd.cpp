@@ -41,7 +41,7 @@ namespace {
 /**
  * @brief Implementation of "config" command, which gets/sets configuration.
  */
-class ConfigCmd : public Command
+class ConfigCmd : public AutoRegisteredCommand<ConfigCmd>
 {
 public:
     /**
@@ -98,13 +98,11 @@ private:
     void printKey(Config &config, const std::string &key);
 };
 
-REGISTER_COMMAND(ConfigCmd);
-
 }
 
 ConfigCmd::ConfigCmd()
-    : Command("config", "read/update configuration",
-              "Usage: config [key[=val]...]")
+    : parent("config", "read/update configuration",
+             "Usage: config [key[=val]...]")
 {
 }
 

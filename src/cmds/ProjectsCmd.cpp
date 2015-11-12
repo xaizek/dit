@@ -52,7 +52,7 @@ namespace {
 /**
  * @brief Implementation of "projects" command, which lists projects.
  */
-class ProjectsCmd : public Command
+class ProjectsCmd : public AutoRegisteredCommand<ProjectsCmd>
 {
 public:
     /**
@@ -69,12 +69,9 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(ProjectsCmd);
-
 }
 
-ProjectsCmd::ProjectsCmd()
-    : Command("projects", "lists projects", USAGE)
+ProjectsCmd::ProjectsCmd() : parent("projects", "lists projects", USAGE)
 {
 }
 

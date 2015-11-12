@@ -37,7 +37,7 @@ namespace {
 /**
  * @brief Implementation of "add" command, which sets item information.
  */
-class AddCmd : public Command
+class AddCmd : public AutoRegisteredCommand<AddCmd>
 {
 public:
     /**
@@ -60,11 +60,9 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(AddCmd);
-
 }
 
-AddCmd::AddCmd() : Command("add", "add new item", "Usage: add key=value")
+AddCmd::AddCmd() : parent("add", "add new item", "Usage: add key=value")
 {
 }
 

@@ -54,7 +54,7 @@ namespace {
 /**
  * @brief Implementation of "ls" command, which lists items.
  */
-class LsCmd : public Command
+class LsCmd : public AutoRegisteredCommand<LsCmd>
 {
 public:
     /**
@@ -77,11 +77,9 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(LsCmd);
-
 }
 
-LsCmd::LsCmd() : Command("ls", "lists items", USAGE)
+LsCmd::LsCmd() : parent("ls", "lists items", USAGE)
 {
 }
 

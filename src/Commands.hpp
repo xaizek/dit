@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-class Command;
+#include "Command.hpp"
 
 /**
  * @brief Keeps track of all sub-commands.
@@ -40,7 +40,7 @@ private:
 public:
     /**
      * @brief Registers command.
-     * @see REGISTER_COMMAND
+     * @see AutoRegisteredCommand
      *
      * @param cmd An instance of the command.
      *
@@ -78,17 +78,42 @@ private:
 };
 
 /**
- * @brief Helper macro that auto-registers Command-class in Commands-list.
+ * @brief Helper class that auto-registers its derivative in Commands-list.
  *
- * @param className Name of the class derived from @c Command.
+ * @tparam C Derived class (as per CRTP).
  */
-#define REGISTER_COMMAND(className) \
-    static int \
-    doReg ## className() \
-    { \
-        Commands::add(std::unique_ptr<Command>(new className())); \
-        return 0; \
-    } \
-    const int reg ## className = doReg ## className();
+template <class C>
+class AutoRegisteredCommand : public Command
+{
+public:
+    /**
+     * @brief Pull in parent constructor.
+     */
+    using Command::Command;
+
+protected:
+    /**
+     * @brief Handy typedef for derived classes to ease parent construction.
+     */
+    using parent = AutoRegisteredCommand;
+
+private:
+    /**
+     * @brief Static initialization of this variable performs the registration.
+     */
+    static const bool invokeRegister;
+
+private:
+    /**
+     * @brief Purpose of this field it to make @c invokeRegister used.
+     */
+    const bool forceRegistration = invokeRegister;
+};
+
+template <class C>
+const bool AutoRegisteredCommand<C>::invokeRegister = []() {
+    Commands::add(std::unique_ptr<Command>(new C()));
+    return true;
+}();
 
 #endif // SCRIBE__COMMANDS_HPP__

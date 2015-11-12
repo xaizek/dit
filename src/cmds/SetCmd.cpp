@@ -53,7 +53,7 @@ namespace {
 /**
  * @brief Implementation of "set" command, which sets item information.
  */
-class SetCmd : public Command
+class SetCmd : public AutoRegisteredCommand<SetCmd>
 {
 public:
     /**
@@ -76,11 +76,9 @@ public:
         const std::vector<std::string> &args) override;
 };
 
-REGISTER_COMMAND(SetCmd);
-
 }
 
-SetCmd::SetCmd() : Command("set", "changes items", USAGE)
+SetCmd::SetCmd() : parent("set", "changes items", USAGE)
 {
 }
 

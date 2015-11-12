@@ -38,7 +38,7 @@ namespace {
 /**
  * @brief Implementation of "show" command, which displays item information.
  */
-class ShowCmd : public Command
+class ShowCmd : public AutoRegisteredCommand<ShowCmd>
 {
 public:
     /**
@@ -70,11 +70,9 @@ private:
     void printRecord(const std::string &name, const std::string &val);
 };
 
-REGISTER_COMMAND(ShowCmd);
-
 }
 
-ShowCmd::ShowCmd() : Command("show", "displays items", "Usage: show id")
+ShowCmd::ShowCmd() : parent("show", "displays items", "Usage: show id")
 {
 }
 

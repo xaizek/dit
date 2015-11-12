@@ -33,7 +33,7 @@ namespace {
 /**
  * @brief Implementation of "help" command, which sets item information.
  */
-class HelpCmd : public Command
+class HelpCmd : public AutoRegisteredCommand<HelpCmd>
 {
 public:
     /**
@@ -72,12 +72,10 @@ private:
     int commandHelp(const std::string &cmdName);
 };
 
-REGISTER_COMMAND(HelpCmd);
-
 }
 
 HelpCmd::HelpCmd()
-    : Command("help", "help information", "Usage: help [command]")
+    : parent("help", "help information", "Usage: help [command]")
 {
 }
 
