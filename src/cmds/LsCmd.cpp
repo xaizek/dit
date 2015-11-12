@@ -89,10 +89,9 @@ boost::optional<int>
 LsCmd::run(Project &project, const std::vector<std::string> &args)
 {
     Config &config = project.getConfig();
-    std::string fmt = config.get("ui.ls.fmt", "_id,title");
-    std::string colorSpec = config.get("ui.ls.color",
-                                       "fg-cyan inv bold !heading");
-    std::string sort = config.get("ui.ls.sort", "title,_id");
+    std::string fmt = config.get("ui.ls.fmt");
+    std::string colorSpec = config.get("ui.ls.color");
+    std::string sort = config.get("ui.ls.sort");
 
     ItemTable table(fmt, colorSpec, sort, getTerminalWidth());
     ItemFilter filter(args);

@@ -44,6 +44,7 @@
 
 namespace fs = boost::filesystem;
 
+static Config & getDefaultConfig();
 static std::vector<std::string> listProjects(const std::string &projectsDir);
 static std::vector<std::string> listCommands(Config &config);
 
@@ -61,8 +62,8 @@ Scribe::Scribe(std::vector<std::string> args)
     initConfig();
 
     invocation.setCmdLine({ args.begin() + 1, args.end() });
-    invocation.setDefCmdLine(globalConfig->get("core.defcmd", "ls"));
-    invocation.setDefPrjName(globalConfig->get("core.defprj", ""));
+    invocation.setDefCmdLine(globalConfig->get("core.defcmd"));
+    invocation.setDefPrjName(globalConfig->get("core.defprj"));
     invocation.setAliasResolver([this](const std::string &name) {
         return globalConfig->get("alias." + name, std::string());
     });
@@ -92,7 +93,31 @@ Scribe::initConfig()
     projectsDir = (configHomePath/"projects").string();
 
     std::string configPath = (configHomePath/"config").string();
-    globalConfig.reset(new Config(configPath));
+    globalConfig.reset(new Config(configPath, &getDefaultConfig()));
+}
+
+/**
+ * @brief Retrieves default configuration.
+ *
+ * @returns Configuration filled by global defaults.
+ */
+static Config &
+getDefaultConfig()
+{
+    static Config defCfg((std::string()));
+    static bool inited;
+    if (!inited) {
+        inited = true;
+
+        defCfg.set("core.defcmd", "ls");
+        defCfg.set("core.defprj", std::string());
+        defCfg.set("ui.ls.fmt", "_id,title");
+        defCfg.set("ui.ls.sort", "title,_id");
+        defCfg.set("ui.ls.color", "fg-cyan inv bold !heading");
+        defCfg.set("ui.show.order", "title");
+    }
+
+    return defCfg;
 }
 
 int
