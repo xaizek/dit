@@ -78,3 +78,16 @@ TEST_CASE("_changed pseudo field is updated correctly.", "[item][pseudo-field]")
 
     Tests::resetTimeSource();
 }
+
+TEST_CASE("Empty values are not listed", "[item]")
+{
+    std::time_t t = std::time(nullptr);
+    std::function<std::time_t()> timeSource = [&t](){ return t++; };
+    Tests::setTimeSource(timeSource);
+
+    Item item = Tests::makeItem("aaa");
+    item.setValue("title", "some title");
+    REQUIRE(item.listRecordNames() == std::set<std::string>{"title"});
+    item.setValue("title", std::string());
+    REQUIRE(item.listRecordNames() == std::set<std::string>{});
+}

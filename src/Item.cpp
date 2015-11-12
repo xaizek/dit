@@ -157,7 +157,11 @@ Item::listRecordNames()
 
     std::set<std::string> names;
     for (const Change &c : changes) {
-        names.insert(c.getKey());
+        if (!c.getValue().empty()) {
+            names.insert(c.getKey());
+        } else {
+            names.erase(c.getKey());
+        }
     }
     return names;
 }
