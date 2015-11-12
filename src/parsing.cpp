@@ -255,12 +255,6 @@ parsePairedArgs(const std::vector<std::string> &args)
         }
 
         if (arg.size() > 1U && arg.back() == ':') {
-            if (state == State::FIRST) {
-                // Remove trailing '=' from item so that its value is not
-                // erased.
-                parsed.back().pop_back();
-            }
-
             parsed.emplace_back(arg.begin(), --arg.end());
             parsed.back() += '=';
             state = State::FIRST;
@@ -272,12 +266,6 @@ parsePairedArgs(const std::vector<std::string> &args)
         } else {
             parsed.emplace_back(arg);
         }
-    }
-
-    if (state == State::FIRST) {
-        // Remove trailing '=' from item so that its value is not
-        // erased.
-        parsed.back().pop_back();
     }
 
     return std::move(parsed);

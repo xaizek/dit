@@ -35,3 +35,14 @@ TEST_CASE("Assign-like pairs with invalid keys are ignored.",
     REQUIRE(parsed.size() == 1);
     REQUIRE(parsed[0] == "url=http://some.url/?show=#");
 }
+
+TEST_CASE("Trailing colon-assignment", "[parsing][colon-style-pairs]")
+{
+    const std::vector<std::string> input = { "title:", "title", "comment:" };
+
+    const std::vector<std::string> parsed = parsePairedArgs(input);
+
+    REQUIRE(parsed.size() == 2);
+    REQUIRE(parsed[0] == "title=title");
+    REQUIRE(parsed[1] == "comment=");
+}
