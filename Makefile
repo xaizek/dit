@@ -85,7 +85,7 @@ show-coverage: coverage
 	$$BROWSER coverage/data/index.html
 
 reset-coverage:
-ifneq ($(with_cov),0)
+ifeq ($(with_cov),1)
 	lcov --directory $(out_dir)/ --zerocounters
 endif
 
