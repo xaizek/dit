@@ -25,6 +25,7 @@
 #include "Commands.hpp"
 #include "Config.hpp"
 #include "Project.hpp"
+#include "Scribe.hpp"
 
 #include "Tests.hpp"
 
@@ -75,6 +76,47 @@ TEST_CASE("Config completes options", "[cmds][config][completion]")
         "--help\n"
         "--global\n"
         "ui.ls:\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Config completes global config", "[cmds][config][completion]")
+{
+    Tests::disableDecorations();
+
+    Command *const cmd = Commands::get("config");
+
+    std::unique_ptr<Project> prj = Tests::makeProject();
+
+    // This shouldn't appear in completion results.
+    Config &cfg = prj->getConfig(false);
+    cfg.set("ui.ls", "ls-value");
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Scribe scribe({ "app", "projects" });
+
+    boost::optional<int> exitCode;
+
+    exitCode = cmd->complete(scribe, { "--global", "" });
+    REQUIRE(!exitCode);
+
+    exitCode = cmd->complete(*prj, { "--global", "" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        "--help\n"
+        "--global\n"
+        "core.defprj:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }

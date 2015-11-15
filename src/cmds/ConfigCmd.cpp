@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with scribe.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <cassert>
 #include <cstdlib>
 
 #include <ostream>
@@ -67,6 +68,12 @@ public:
      * @copydoc Command::complete()
      */
     virtual boost::optional<int> complete(
+        Scribe &scribe,
+        const std::vector<std::string> &args) override;
+    /**
+     * @copydoc Command::complete()
+     */
+    virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
 
@@ -108,6 +115,10 @@ private:
 
 private:
     /**
+     * @brief Saved pointer to global configuration.
+     */
+    Config *globalCfg;
+    /**
      * @brief User-visible options of the command.
      */
     po::options_description visibleOpts;
@@ -118,6 +129,7 @@ private:
 ConfigCmd::ConfigCmd()
     : parent("config", "read/update configuration",
              "Usage: config [key[=val]...]"),
+      globalCfg(nullptr),
       visibleOpts("config sub-command options")
 {
     visibleOpts.add_options()
@@ -191,9 +203,19 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
 }
 
 boost::optional<int>
+ConfigCmd::complete(Scribe &scribe, const std::vector<std::string> &/*args*/)
+{
+    globalCfg = &scribe.getConfig();
+    return { };
+}
+
+boost::optional<int>
 ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    Config &config = project.getConfig(false);
+    assert(globalCfg != nullptr && "Global completion handler wasn't called.");
+
+    po::variables_map vm = parseOpts(args);
+    Config &config = vm.count("global") ? *globalCfg : project.getConfig(false);
 
     if (!args.empty() && args.back().find('=') != std::string::npos) {
         std::string last = args.back();
