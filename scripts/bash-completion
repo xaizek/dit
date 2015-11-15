@@ -6,9 +6,10 @@ complete -F _scribe scribe
 # generate real completion list
 function _scribe()
 {
-    local cur="${COMP_WORDS[$COMP_CWORD]}"
     local args=( ${COMP_LINE:0:$COMP_POINT}::cursor:: )
     unset args[0]
+    local cur="${args[-1]}"
+    cur="${cur:0:-10}"
 
     if [ "${COMP_LINE:$(( $COMP_POINT - 1 ))}" = '=' ]; then
         # try to fix issues related to use of = as a word separator (this is
@@ -18,8 +19,7 @@ function _scribe()
 
     # obtain completion from the application
     local compl="$(scribe $project complete ${args[@]})"
-    local IFS=$'\n'
-    COMPREPLY=( $( compgen -W "$compl" -- "$cur" ) )
+    COMPREPLY=( $( IFS=$'\n' compgen -W "$compl" -- "$cur" ) )
 
     # try to properly escape completion results
     # almost unchanged from from: http://stackoverflow.com/a/1146716/1535516
