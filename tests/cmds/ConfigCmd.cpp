@@ -51,3 +51,30 @@ TEST_CASE("Config value completion on trailing =", "[cmds][config][completion]")
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }
+
+TEST_CASE("Config completes options", "[cmds][config][completion]")
+{
+    Tests::disableDecorations();
+
+    Command *const cmd = Commands::get("config");
+
+    std::unique_ptr<Project> prj = Tests::makeProject();
+
+    Config &cfg = prj->getConfig(false);
+    cfg.set("ui.ls", "ls-value");
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->complete(*prj, { "-" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        "--help\n"
+        "--global\n"
+        "ui.ls:\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}

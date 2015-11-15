@@ -226,7 +226,6 @@ Scribe::completeCmd()
     return EXIT_FAILURE;
 }
 
-
 /**
  * @brief Lists all projects.
  *

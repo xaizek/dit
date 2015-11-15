@@ -20,6 +20,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/program_options.hpp>
@@ -80,6 +81,14 @@ private:
      */
     int run(Config &config, const std::vector<std::string> &args);
     /**
+     * @brief Parses command-specific options.
+     *
+     * @param args List of options.
+     *
+     * @returns Mapping of options into actually passed values.
+     */
+    po::variables_map parseOpts(const std::vector<std::string> &args) const;
+    /**
      * @brief Lists configuration keys along with their values.
      *
      * Builtin keys are not listed.
@@ -96,42 +105,33 @@ private:
      * @param key Name of key to print.
      */
     void printKey(Config &config, const std::string &key);
+
+private:
+    /**
+     * @brief User-visible options of the command.
+     */
+    po::options_description visibleOpts;
 };
 
 }
 
 ConfigCmd::ConfigCmd()
     : parent("config", "read/update configuration",
-             "Usage: config [key[=val]...]")
+             "Usage: config [key[=val]...]"),
+      visibleOpts("config sub-command options")
 {
+    visibleOpts.add_options()
+        ("help", "display help message")
+        ("global", "use global configuration");
 }
 
 boost::optional<int>
 ConfigCmd::run(Scribe &scribe, const std::vector<std::string> &args)
 {
-    po::options_description visible("config sub-command options");
-    visible.add_options()
-        ("help", "display help message")
-        ("global", "use global configuration");
-
-    po::options_description hidden;
-    hidden.add_options()
-        ("expressions", po::value<std::vector<std::string>>(),
-            "assigns/displays values");
-
-    po::options_description all;
-    all.add(visible).add(hidden);
-
-    po::positional_options_description p;
-    p.add("expressions", -1);
-
-    po::variables_map vm;
-    po::store(po::command_line_parser(args).options(all).positional(p).run(),
-              vm);
-    po::notify(vm);
+    po::variables_map vm = parseOpts(args);
 
     if (vm.count("help")) {
-        out() << visible;
+        out() << visibleOpts;
         return EXIT_SUCCESS;
     }
 
@@ -221,6 +221,11 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
         }
     }
 
+    using opt_t = boost::shared_ptr<po::option_description>;
+    for (const opt_t &opt : visibleOpts.options()) {
+        out() << opt->format_name() << '\n';
+    }
+
     // Due to implicitly added space after completion match colon form is easier
     // to type.
     for (const std::string &key : keys) {
@@ -228,6 +233,27 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
     }
 
     return EXIT_SUCCESS;
+}
+
+po::variables_map
+ConfigCmd::parseOpts(const std::vector<std::string> &args) const
+{
+    po::options_description hiddenOpts;
+    hiddenOpts.add_options()
+        ("expressions", po::value<std::vector<std::string>>(),
+            "assigns/displays values");
+
+    po::options_description all;
+    all.add(visibleOpts).add(hiddenOpts);
+
+    po::positional_options_description p;
+    p.add("expressions", -1);
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(args).options(all).positional(p).run(),
+              vm);
+    po::notify(vm);
+    return std::move(vm);
 }
 
 int
