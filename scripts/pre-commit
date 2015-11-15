@@ -74,11 +74,6 @@ function check_odd_whitespace()
     fi
 }
 
-function file_changed()
-{
-    ! git diff --quiet --cached "$1"
-}
-
 # check for odd whitespace before build
 check_odd_whitespace --cached
 
