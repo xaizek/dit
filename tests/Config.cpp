@@ -37,6 +37,27 @@ TEST_CASE("Absent values are taken from parent", "[config][parent-child]")
     }
 }
 
+TEST_CASE("\"Deleted\" values are taken from parent",
+          "[config][parent-child][deletion]")
+{
+    Config parent("parent");
+    parent.set("key", "value");
+
+    Config child("child", &parent);
+    child.set("key", "child-value");
+    child.set("key", std::string());
+
+    SECTION("Without default value.")
+    {
+        REQUIRE(child.get("key", "v") == "value");
+    }
+
+    SECTION("With default value.")
+    {
+        REQUIRE(child.get("key") == "value");
+    }
+}
+
 TEST_CASE("For unknown path empty list is returned", "[config][list]")
 {
     Config cfg("cfg");

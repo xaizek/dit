@@ -40,14 +40,19 @@ Config::get(const std::string &key)
 {
     ensureLoaded();
 
+    std::string val;
     try {
-        return props.get<std::string>(key);
+        val = props.get<std::string>(key);
     } catch (boost::property_tree::ptree_bad_path &) {
         if (parent == nullptr) {
             throw;
         }
 
         // Do nothing, just execute the code below.
+    }
+
+    if (parent == nullptr || !val.empty()) {
+        return std::move(val);
     }
     return parent->get(key);
 }
@@ -58,7 +63,7 @@ Config::get(const std::string &key, const std::string &def)
     ensureLoaded();
     std::string actualDef = (parent == nullptr) ? def : parent->get(key, def);
     std::string val = props.get<std::string>(key, actualDef);
-    return val.empty() ? actualDef : std::move(val);
+    return val.empty() ? std::move(actualDef) : std::move(val);
 }
 
 std::vector<std::string>
