@@ -2,8 +2,7 @@
 
 complete -F _scribe scribe
 
-# main completion function, dispatches command line and picks function that will
-# generate real completion list
+# arguments completion function
 function _scribe()
 {
     local args=( ${COMP_LINE:0:$COMP_POINT}::cursor:: )
