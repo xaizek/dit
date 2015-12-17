@@ -1,19 +1,19 @@
 // Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
 //
-// This file is part of scribe.
+// This file is part of dit.
 //
-// scribe is free software: you can redistribute it and/or modify
+// dit is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// scribe is distributed in the hope that it will be useful,
+// dit is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with scribe.  If not, see <http://www.gnu.org/licenses/>.
+// along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 
@@ -28,8 +28,8 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
+#include "Dit.hpp"
 #include "Project.hpp"
-#include "Scribe.hpp"
 #include "decoration.hpp"
 
 namespace fs = boost::filesystem;
@@ -65,7 +65,7 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
-        Scribe &scribe,
+        Dit &dit,
         const std::vector<std::string> &args) override;
 };
 
@@ -76,14 +76,14 @@ ProjectsCmd::ProjectsCmd() : parent("projects", "lists projects", USAGE)
 }
 
 boost::optional<int>
-ProjectsCmd::run(Scribe &scribe, const std::vector<std::string> &args)
+ProjectsCmd::run(Dit &dit, const std::vector<std::string> &args)
 {
     if (!args.empty()) {
         err() << "Expected no arguments.\n";
         return EXIT_FAILURE;
     }
 
-    const std::string &projectsDir = scribe.getProjectsDir();
+    const std::string &projectsDir = dit.getProjectsDir();
 
     std::vector<std::pair<std::string, std::string>> infos;
 
@@ -102,7 +102,7 @@ ProjectsCmd::run(Scribe &scribe, const std::vector<std::string> &args)
     std::sort(infos.begin(), infos.end());
 
     // Display.
-    const std::string &prj = scribe.getPrj();
+    const std::string &prj = dit.getPrj();
     for (const std::pair<std::string, std::string> &info : infos) {
         out() << decor::bold
               << (info.first == prj ? '*' : ' ')

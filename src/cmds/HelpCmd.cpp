@@ -1,19 +1,19 @@
 // Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
 //
-// This file is part of scribe.
+// This file is part of dit.
 //
-// scribe is free software: you can redistribute it and/or modify
+// dit is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// scribe is distributed in the hope that it will be useful,
+// dit is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with scribe.  If not, see <http://www.gnu.org/licenses/>.
+// along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 
@@ -46,13 +46,13 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
-        Scribe &scribe,
+        Dit &dit,
         const std::vector<std::string> &args) override;
     /**
      * @copydoc Command::complete()
      */
     virtual boost::optional<int> complete(
-        Scribe &scribe,
+        Dit &dit,
         const std::vector<std::string> &args) override;
 
 private:
@@ -80,7 +80,7 @@ HelpCmd::HelpCmd()
 }
 
 boost::optional<int>
-HelpCmd::run(Scribe &, const std::vector<std::string> &args)
+HelpCmd::run(Dit &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
         err() << "Expected at most one argument.\n";
@@ -96,7 +96,7 @@ HelpCmd::run(Scribe &, const std::vector<std::string> &args)
 }
 
 boost::optional<int>
-HelpCmd::complete(Scribe &, const std::vector<std::string> &args)
+HelpCmd::complete(Dit &, const std::vector<std::string> &args)
 {
     if (args.size() > 1) {
         return EXIT_FAILURE;

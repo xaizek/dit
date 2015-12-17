@@ -56,7 +56,7 @@ endif
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) \
                                         $(filter $(subst *,%,$2),$d))
 
-bin := scribe$(bin_suffix)
+bin := dit$(bin_suffix)
 
 bin_sources := $(call rwildcard, src/, *.cpp)
 bin_sources := $(wildcard $(bin_sources))

@@ -1,21 +1,21 @@
 // Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
 //
-// This file is part of scribe.
+// This file is part of dit.
 //
-// scribe is free software: you can redistribute it and/or modify
+// dit is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// scribe is distributed in the hope that it will be useful,
+// dit is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with scribe.  If not, see <http://www.gnu.org/licenses/>.
+// along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "Scribe.hpp"
+#include "Dit.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -53,7 +53,7 @@ static std::vector<std::string> listCommands(Config &config);
  */
 const std::string COMPL_CURSOR_MARK = "::cursor::";
 
-Scribe::Scribe(std::vector<std::string> args)
+Dit::Dit(std::vector<std::string> args)
 {
     if (args.empty()) {
         throw std::runtime_error("Broken argument list.");
@@ -69,12 +69,12 @@ Scribe::Scribe(std::vector<std::string> args)
     });
 }
 
-Scribe::~Scribe()
+Dit::~Dit()
 {
 }
 
 void
-Scribe::initConfig()
+Dit::initConfig()
 {
     fs::path home;
     if (const char *const home_env = std::getenv("HOME")) {
@@ -85,9 +85,9 @@ Scribe::initConfig()
 
     fs::path configHomePath;
     if (const char *const config_home_env = std::getenv("XDG_CONFIG_HOME")) {
-        configHomePath = fs::path(config_home_env)/"scribe";
+        configHomePath = fs::path(config_home_env)/"dit";
     } else {
-        configHomePath = home/".config/scribe";
+        configHomePath = home/".config/dit";
     }
 
     projectsDir = (configHomePath/"projects").string();
@@ -121,7 +121,7 @@ getDefaultConfig()
 }
 
 int
-Scribe::run()
+Dit::run()
 {
     invocation.parse();
     const std::string cmdName = invocation.getCmdName();
@@ -162,8 +162,7 @@ Scribe::run()
 }
 
 int
-Scribe::complete(std::vector<std::string> args, std::ostream &out,
-                 std::ostream &)
+Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
 {
     invocation.setCmdLine(std::move(args));
     invocation.parse(true);
@@ -195,7 +194,7 @@ Scribe::complete(std::vector<std::string> args, std::ostream &out,
 }
 
 int
-Scribe::completeCmd()
+Dit::completeCmd()
 {
     const std::string prjName = invocation.getPrjName();
     std::string error;
@@ -271,14 +270,14 @@ listCommands(Config &config)
 }
 
 std::unique_ptr<Project>
-Scribe::openProject(const std::string &name, std::string &error)
+Dit::openProject(const std::string &name, std::string &error)
 {
     if (name.empty()) {
         error = "No project specified";
         return {};
     }
 
-    auto makeConfig = std::bind(std::mem_fn(&Scribe::makeConfig), this,
+    auto makeConfig = std::bind(std::mem_fn(&Dit::makeConfig), this,
                                 std::placeholders::_1);
     auto project = make_unique<Project>((fs::path(projectsDir)/name).string(),
                                         makeConfig);
@@ -291,7 +290,7 @@ Scribe::openProject(const std::string &name, std::string &error)
 }
 
 std::pair<Config, std::unique_ptr<Config>>
-Scribe::makeConfig(const std::string &path) const
+Dit::makeConfig(const std::string &path) const
 {
     auto prjCfg = make_unique<Config>(path, globalConfig.get());
     Config cfgProxy(std::string(), prjCfg.get());
@@ -312,19 +311,19 @@ Scribe::makeConfig(const std::string &path) const
 }
 
 Config &
-Scribe::getConfig()
+Dit::getConfig()
 {
     return *globalConfig;
 }
 
 const std::string &
-Scribe::getProjectsDir() const
+Dit::getProjectsDir() const
 {
     return projectsDir;
 }
 
 std::string
-Scribe::getPrj() const
+Dit::getPrj() const
 {
     return invocation.getPrjName();
 }

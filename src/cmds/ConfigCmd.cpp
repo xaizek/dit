@@ -1,19 +1,19 @@
 // Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
 //
-// This file is part of scribe.
+// This file is part of dit.
 //
-// scribe is free software: you can redistribute it and/or modify
+// dit is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// scribe is distributed in the hope that it will be useful,
+// dit is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with scribe.  If not, see <http://www.gnu.org/licenses/>.
+// along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cassert>
 #include <cstdlib>
@@ -30,8 +30,8 @@
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
+#include "Dit.hpp"
 #include "Project.hpp"
-#include "Scribe.hpp"
 #include "decoration.hpp"
 #include "integration.hpp"
 #include "parsing.hpp"
@@ -56,7 +56,7 @@ public:
      * @copydoc Command::run()
      */
     virtual boost::optional<int> run(
-        Scribe &scribe,
+        Dit &dit,
         const std::vector<std::string> &args) override;
     /**
      * @copydoc Command::run()
@@ -68,7 +68,7 @@ public:
      * @copydoc Command::complete()
      */
     virtual boost::optional<int> complete(
-        Scribe &scribe,
+        Dit &dit,
         const std::vector<std::string> &args) override;
     /**
      * @copydoc Command::complete()
@@ -138,7 +138,7 @@ ConfigCmd::ConfigCmd()
 }
 
 boost::optional<int>
-ConfigCmd::run(Scribe &scribe, const std::vector<std::string> &args)
+ConfigCmd::run(Dit &dit, const std::vector<std::string> &args)
 {
     po::variables_map vm = parseOpts(args);
 
@@ -148,7 +148,7 @@ ConfigCmd::run(Scribe &scribe, const std::vector<std::string> &args)
     }
 
     if (vm.count("global")) {
-        Config &config = scribe.getConfig();
+        Config &config = dit.getConfig();
         if (vm.count("expressions")) {
             return run(config,
                        vm["expressions"].as<std::vector<std::string>>());
@@ -203,9 +203,9 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
 }
 
 boost::optional<int>
-ConfigCmd::complete(Scribe &scribe, const std::vector<std::string> &/*args*/)
+ConfigCmd::complete(Dit &dit, const std::vector<std::string> &/*args*/)
 {
-    globalCfg = &scribe.getConfig();
+    globalCfg = &dit.getConfig();
     return { };
 }
 

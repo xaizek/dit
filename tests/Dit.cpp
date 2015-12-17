@@ -1,19 +1,19 @@
 // Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
 //
-// This file is part of scribe.
+// This file is part of dit.
 //
-// scribe is free software: you can redistribute it and/or modify
+// dit is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// scribe is distributed in the hope that it will be useful,
+// dit is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with scribe.  If not, see <http://www.gnu.org/licenses/>.
+// along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Catch/catch.hpp"
 
@@ -22,8 +22,8 @@
 #include <sstream>
 
 #include "Config.hpp"
+#include "Dit.hpp"
 #include "Project.hpp"
-#include "Scribe.hpp"
 
 #include "Tests.hpp"
 
@@ -43,9 +43,9 @@ TEST_CASE("Running commands", "[app]")
 
     SECTION("projects")
     {
-        Scribe scribe({ "app", "projects" });
+        Dit dit({ "app", "projects" });
 
-        boost::optional<int> exitCode = scribe.run();
+        boost::optional<int> exitCode = dit.run();
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -60,9 +60,9 @@ TEST_CASE("Running commands", "[app]")
 
     SECTION("ls")
     {
-        Scribe scribe({ "app", "ls" });
+        Dit dit({ "app", "ls" });
 
-        boost::optional<int> exitCode = scribe.run();
+        boost::optional<int> exitCode = dit.run();
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -73,10 +73,9 @@ TEST_CASE("Running commands", "[app]")
 
     SECTION("complete")
     {
-        Scribe scribe({ "app", "complete", ".first", "config",
-                        "ui.::cursor::" });
+        Dit dit({ "app", "complete", ".first", "config", "ui.::cursor::" });
 
-        boost::optional<int> exitCode = scribe.run();
+        boost::optional<int> exitCode = dit.run();
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -90,9 +89,9 @@ TEST_CASE("Running commands", "[app]")
 
     SECTION("Configuration override append to default")
     {
-        Scribe scribe({ "app", "ui.ls.fmt+=,more", "ls" });
+        Dit dit({ "app", "ui.ls.fmt+=,more", "ls" });
 
-        boost::optional<int> exitCode = scribe.run();
+        boost::optional<int> exitCode = dit.run();
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -103,9 +102,9 @@ TEST_CASE("Running commands", "[app]")
 
     SECTION("Configuration override set and append")
     {
-        Scribe scribe({ "app", "ui.ls.fmt=_id", "ui.ls.fmt+=,more", "ls" });
+        Dit dit({ "app", "ui.ls.fmt=_id", "ui.ls.fmt+=,more", "ls" });
 
-        boost::optional<int> exitCode = scribe.run();
+        boost::optional<int> exitCode = dit.run();
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -125,14 +124,13 @@ TEST_CASE("Completion of projects", "[app][completion]")
     putenv(xdg_env);
     putenv(home_env);
 
-    Scribe scribe({ "app" });
+    Dit dit({ "app" });
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = scribe.complete({ ".::cursor::" },
-                                                    out, err);
+    boost::optional<int> exitCode = dit.complete({ ".::cursor::" }, out, err);
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -155,7 +153,7 @@ TEST_CASE("Completion of commands", "[app][completion]")
     putenv(xdg_env);
     putenv(home_env);
 
-    Scribe scribe({ "app" });
+    Dit dit({ "app" });
 
     std::ostringstream out;
     std::ostringstream err;
@@ -163,8 +161,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
 
     SECTION("No prefix")
     {
-        boost::optional<int> exitCode = scribe.complete({ "::cursor::" },
-                                                        out, err);
+        boost::optional<int> exitCode = dit.complete({ "::cursor::" },
+                                                     out, err);
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -178,8 +176,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
 
     SECTION("Composition")
     {
-        boost::optional<int> exitCode = scribe.complete({ "add.::cursor::" },
-                                                        out, err);
+        boost::optional<int> exitCode = dit.complete({ "add.::cursor::" },
+                                                     out, err);
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -202,7 +200,7 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
     putenv(xdg_env);
     putenv(home_env);
 
-    Scribe scribe({ "app" });
+    Dit dit({ "app" });
 
     std::ostringstream out;
     std::ostringstream err;
@@ -210,9 +208,9 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 
     SECTION("Works")
     {
-        boost::optional<int> exitCode = scribe.complete({ "config",
-                                                          "ui.::cursor::" },
-                                                        out, err);
+        boost::optional<int> exitCode = dit.complete({ "config",
+                                                       "ui.::cursor::" },
+                                                     out, err);
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -227,9 +225,9 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 
     SECTION("Works for value completion")
     {
-        boost::optional<int> exitCode = scribe.complete({ "config",
-                                                          "ui.ls=::cursor::" },
-                                                        out, err);
+        boost::optional<int> exitCode = dit.complete({ "config",
+                                                       "ui.ls=::cursor::" },
+                                                     out, err);
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -240,9 +238,9 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 
     SECTION("Uses specified project")
     {
-        boost::optional<int> exitCode = scribe.complete({ ".first", "config",
-                                                          "ui.::cursor::" },
-                                                        out, err);
+        boost::optional<int> exitCode = dit.complete({ ".first", "config",
+                                                       "ui.::cursor::" },
+                                                     out, err);
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 

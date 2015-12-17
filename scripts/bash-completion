@@ -1,9 +1,9 @@
 #!/bin/bash
 
-complete -F _scribe scribe
+complete -F _dit dit
 
 # arguments completion function
-function _scribe()
+function _dit()
 {
     local args=( ${COMP_LINE:0:$COMP_POINT}::cursor:: )
     unset args[0]
@@ -17,7 +17,7 @@ function _scribe()
     fi
 
     # obtain completion from the application
-    local compl="$(scribe $project complete ${args[@]})"
+    local compl="$(dit $project complete ${args[@]})"
     COMPREPLY=( $( IFS=$'\n' compgen -W "$compl" -- "$cur" ) )
 
     # try to properly escape completion results
