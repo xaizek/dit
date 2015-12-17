@@ -64,3 +64,13 @@ TEST_CASE("For unknown path empty list is returned", "[config][list]")
 
     REQUIRE(cfg.list("path") == std::vector<std::string>());
 }
+
+TEST_CASE("Empty settings are not listed", "[config][parent-child][list]")
+{
+    Config parent("parent");
+
+    Config child("child", &parent);
+    child.set("alias.name", std::string());
+
+    REQUIRE(child.list("alias") == std::vector<std::string>());
+}

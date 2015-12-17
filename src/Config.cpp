@@ -82,7 +82,7 @@ Config::list(const std::string &path)
         const std::string &fullPath = path.empty()
                                     ? propName
                                     : path + '.' + propName;
-        if (propName[0] != '!' && !get(fullPath).empty()) {
+        if (propName[0] != '!' && !get(fullPath, std::string()).empty()) {
             list.push_back(propName);
         }
     }
