@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 
+#include <map>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -93,6 +94,8 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
     const std::string &id = args[0];
     Item &item = project.getStorage().get(id);
 
+    std::map<std::string, std::string> fields;
+
     for (const std::string &a : parsePairedArgs({ args.cbegin() + 1,
                                                   args.cend() })) {
         std::string key, value;
@@ -106,25 +109,33 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
 
         std::string error;
         if (!Item::isValidKeyName(key, true, error)) {
-            out() << "Wrong key name \"" << key << "\": " << error << '\n';
+            err() << "Wrong key name \"" << key << "\": " << error << '\n';
             return EXIT_FAILURE;
         }
 
-        const std::string current = append ? std::string() : item.getValue(key);
+        if (fields.find(key) == fields.end()) {
+            fields[key] = item.getValue(key);
+        }
+
+        const std::string current = append ? std::string() : fields[key];
         if (boost::optional<std::string> v = editValue(key, value, current)) {
             value = std::move(*v);
         }
 
         if (append) {
-            std::string current = item.getValue(key);
+            std::string current = fields[key];
             if (!current.empty()) {
-                // XXX: should be add new line if value is empty?
+                // XXX: should we add new line if `value` is empty?
                 current += '\n';
             }
-            item.setValue(key, current + value);
+            fields[key] = current + value;
         } else {
-            item.setValue(key, value);
+            fields[key] = value;
         }
+    }
+
+    for (auto field : fields) {
+        item.setValue(field.first, field.second);
     }
 
     return EXIT_SUCCESS;

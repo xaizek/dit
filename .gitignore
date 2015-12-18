@@ -4,5 +4,5 @@
 /release/
 *.d
 *.o
-/scribe
+/dit
 /tests/tests

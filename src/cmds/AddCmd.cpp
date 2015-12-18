@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 
+#include <map>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -75,7 +76,7 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
-    Item &item = project.getStorage().create();
+    std::map<std::string, std::string> fields;
 
     for (const std::string &a : parsePairedArgs(args)) {
         std::string key, value;
@@ -83,16 +84,20 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
 
         std::string error;
         if (!Item::isValidKeyName(key, true, error)) {
-            out() << "Wrong key name \"" << key << "\": " << error << '\n';
+            err() << "Wrong key name \"" << key << "\": " << error << '\n';
             return EXIT_FAILURE;
         }
 
         if (boost::optional<std::string> v = editValue(key, value, {})) {
             value = std::move(*v);
         }
-        item.setValue(key, value);
+        fields[key] = value;
     }
 
+    Item &item = project.getStorage().create();
+    for (auto field : fields) {
+        item.setValue(field.first, field.second);
+    }
     out() << "Created item: " << item.getId() << '\n';
 
     return EXIT_SUCCESS;

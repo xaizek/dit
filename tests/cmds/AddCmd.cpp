@@ -31,6 +31,68 @@
 
 #include "Tests.hpp"
 
+TEST_CASE("Add fails on wrong invocation", "[cmds][add][invocation]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Command *const cmd = Commands::get("add");
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode;
+
+    SECTION("No arguments")
+    {
+        exitCode = cmd->run(*prj, {});
+    }
+
+    SECTION("Malformed key name")
+    {
+        exitCode = cmd->run(*prj, { "!@$=a" });
+    }
+
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(out.str() == std::string());
+    REQUIRE(err.str() != std::string());
+}
+
+TEST_CASE("Add allows external editing", "[cmds][add][integration]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Config &cfg = prj->getConfig(false);
+
+    cfg.set("!ids.sequences.first",
+            "BWlupmoqXJwfSsRzgFvMEDtUOjTnePYrGbxANhVLcIQyKkidHZCa");
+    cfg.set("!ids.sequences.second",
+            "MYgRHkGujvoawZnJhLdNciFxPKmACQEeWUtDBTXVOzIpSyrlqfsb");
+    cfg.set("!ids.sequences.third",
+            "PIxFYDACivrWKVpSLMRmzuTHNGwktZOcBXldJjhygnQbEeqUfoas");
+    cfg.set("!ids.count", "64");
+    cfg.set("!ids.next", "fYP");
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    char editor_env[] = "EDITOR=echo new-value >>";
+    putenv(editor_env);
+
+    Command *const cmd = Commands::get("add");
+    boost::optional<int> exitCode = cmd->run(*prj, { "title=-" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    REQUIRE(out.str() != std::string());
+    REQUIRE(err.str() == std::string());
+
+    REQUIRE(storage.get("fYP").getValue("title") == "new-value");
+}
+
 TEST_CASE("New item is added successfully", "[cmds][add]")
 {
     Command *const cmd = Commands::get("add");
