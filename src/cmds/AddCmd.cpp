@@ -19,6 +19,7 @@
 
 #include <ostream>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -100,5 +101,18 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
 boost::optional<int>
 AddCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    return completeKeys(project.getStorage(), out(), args);
+    Storage &storage = project.getStorage();
+
+    std::vector<std::string> parsedArgs = parsePairedArgs(args);
+
+    if (!args.empty() && parsedArgs.back().find('=') != std::string::npos) {
+        std::string key, value;
+        std::tie(key, value) = splitAt(parsedArgs.back(), '=');
+
+        if (value.empty() || value == args.back()) {
+            return completeValues(storage, out(), key);
+        }
+    }
+
+    return completeKeys(storage, out(), args);
 }

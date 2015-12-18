@@ -111,7 +111,7 @@ public:
      *
      * @returns The value or empty string if it doesn't exist.
      *
-     * @throws std::runtime_error On wrong key name.
+     * @throws std::runtime_error On malformed key name.
      */
     std::string getValue(const std::string &key);
     /**

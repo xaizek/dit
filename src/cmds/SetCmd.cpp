@@ -143,17 +143,14 @@ SetCmd::complete(Project &project, const std::vector<std::string> &args)
         return EXIT_SUCCESS;
     }
 
-    // Complete value.
-    if (args.back().find('=') != std::string::npos) {
-        std::string key = args.back();
-        key.pop_back();
+    // Complete values.
+    std::vector<std::string> parsedArgs = parsePairedArgs(args);
+    if (!args.empty() && parsedArgs.back().find('=') != std::string::npos) {
+        std::string key, value;
+        std::tie(key, value) = splitAt(parsedArgs.back(), '=');
 
-        try {
-            Item &item = storage.get(args[0]);
-            out() << "'" << item.getValue(key) << "'\n";
-            return EXIT_SUCCESS;
-        } catch (std::runtime_error &) {
-            return EXIT_FAILURE;
+        if (value.empty() || value == args.back()) {
+            return completeValues(storage, out(), key);
         }
     }
 

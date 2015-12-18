@@ -23,6 +23,7 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "Item.hpp"
@@ -56,6 +57,25 @@ completeKeys(Storage &storage, std::ostream &os,
     // to type.
     for (const std::string &key : keys) {
         os << key << ":\n";
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int
+completeValues(Storage &storage, std::ostream &os, const std::string &key)
+{
+    std::set<std::string> values;
+
+    for (Item &item : storage.list()) {
+        std::string value = item.getValue(key);
+        if (!value.empty()) {
+            values.insert(std::move(value));
+        }
+    }
+
+    for (const std::string &value : values) {
+        os << value << '\n';
     }
 
     return EXIT_SUCCESS;

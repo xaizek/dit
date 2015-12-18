@@ -31,34 +31,7 @@
 
 #include "Tests.hpp"
 
-TEST_CASE("New item is added successfully", "[cmds][add]")
-{
-    Command *const cmd = Commands::get("add");
-    std::unique_ptr<Project> prj = Tests::makeProject();
-    Config &cfg = prj->getConfig(false);
-
-    cfg.set("!ids.sequences.first",
-            "BWlupmoqXJwfSsRzgFvMEDtUOjTnePYrGbxANhVLcIQyKkidHZCa");
-    cfg.set("!ids.sequences.second",
-            "MYgRHkGujvoawZnJhLdNciFxPKmACQEeWUtDBTXVOzIpSyrlqfsb");
-    cfg.set("!ids.sequences.third",
-            "PIxFYDACivrWKVpSLMRmzuTHNGwktZOcBXldJjhygnQbEeqUfoas");
-    cfg.set("!ids.count", "64");
-    cfg.set("!ids.next", "fYP");
-
-    std::ostringstream out;
-    std::ostringstream err;
-    Tests::setStreams(out, err);
-
-    boost::optional<int> exitCode = cmd->run(*prj, { "title:", "title" });
-    REQUIRE(exitCode);
-    REQUIRE(*exitCode == EXIT_SUCCESS);
-
-    REQUIRE(out.str() == "Created item: fYP\n");
-    REQUIRE(err.str() == std::string());
-}
-
-TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
+TEST_CASE("Item is changed successfully", "[cmds][set]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();
     Storage &storage = prj->getStorage();
@@ -69,13 +42,40 @@ TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
 
     Tests::storeItem(storage, std::move(item));
 
-    Command *const cmd = Commands::get("add");
+    Command *const cmd = Commands::get("set");
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->complete(*prj, { "ti" });
+    boost::optional<int> exitCode = cmd->run(*prj, { "id", "bug_number=33" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    REQUIRE(out.str() == std::string());
+    REQUIRE(err.str() == std::string());
+
+    REQUIRE(storage.get("id").getValue("bug_number") == "33");
+}
+
+TEST_CASE("Completion of first key name on set", "[cmds][set][completion]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+    item.setValue("bug_number", "22");
+
+    Tests::storeItem(storage, std::move(item));
+
+    Command *const cmd = Commands::get("set");
+
+    std::ostringstream out;
+    std::ostringstream err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->complete(*prj, { "id", "ti" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -86,7 +86,7 @@ TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
     REQUIRE(err.str() == std::string());
 }
 
-TEST_CASE("Completion of next key name on addition", "[cmds][add][completion]")
+TEST_CASE("Completion of next key name on set", "[cmds][set][completion]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();
     Storage &storage = prj->getStorage();
@@ -97,13 +97,14 @@ TEST_CASE("Completion of next key name on addition", "[cmds][add][completion]")
 
     Tests::storeItem(storage, std::move(item));
 
-    Command *const cmd = Commands::get("add");
+    Command *const cmd = Commands::get("set");
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->complete(*prj, { "title:", "t", "b" });
+    boost::optional<int> exitCode = cmd->complete(*prj,
+                                                  { "id", "title:", "t", "b" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
@@ -112,7 +113,7 @@ TEST_CASE("Completion of next key name on addition", "[cmds][add][completion]")
     REQUIRE(err.str() == std::string());
 }
 
-TEST_CASE("Completion of a value on addition", "[cmds][add][completion]")
+TEST_CASE("Completion of a value on set", "[cmds][set][completion]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();
     Storage &storage = prj->getStorage();
@@ -123,13 +124,13 @@ TEST_CASE("Completion of a value on addition", "[cmds][add][completion]")
 
     Tests::storeItem(storage, std::move(item));
 
-    Command *const cmd = Commands::get("add");
+    Command *const cmd = Commands::get("set");
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    boost::optional<int> exitCode = cmd->complete(*prj, { "title=" });
+    boost::optional<int> exitCode = cmd->complete(*prj, { "id", "title=" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 

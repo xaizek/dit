@@ -25,7 +25,7 @@
 class Storage;
 
 /**
- * @brief Implementation of completion of item keys in the storage.
+ * @brief Completes item keys in the storage.
  *
  * @param storage Source of the keys (taken from all the elements).
  * @param os Stream to output completion.
@@ -35,5 +35,16 @@ class Storage;
  */
 int completeKeys(Storage &storage, std::ostream &os,
                  const std::vector<std::string> &args);
+
+/**
+ * @brief Completes key values.
+ *
+ * @param storage Source of the keys (taken from all the elements).
+ * @param os Stream to output completion.
+ * @param key Key, whose values to be completed.
+ *
+ * @returns Application exit code.
+ */
+int completeValues(Storage &storage, std::ostream &os, const std::string &key);
 
 #endif // DIT__COMPLETION_HPP__
