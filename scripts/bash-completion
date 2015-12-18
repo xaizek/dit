@@ -18,14 +18,16 @@ function _dit()
 
     # obtain completion from the application
     local compl="$(dit $project complete ${args[@]})"
-    COMPREPLY=( $( IFS=$'\n' compgen -W "$compl" -- "$cur" ) )
+    local OLDIFS="$IFS"
+    IFS=$'\n'
+    COMPREPLY=( $( compgen -W "$compl" -- "$cur" ) )
+    IFS="$OLDIFS"
 
     # try to properly escape completion results
-    # almost unchanged from from: http://stackoverflow.com/a/1146716/1535516
+    # based on snipped from: http://stackoverflow.com/a/1146716/1535516
     local escaped_single_qoute="'\''"
     local i=0
-    for entry in ${COMPREPLY[*]}
-    do
+    for entry in "${COMPREPLY[@]}"; do
         if [[ "${cur:0:1}" == "'" ]]; then
             # started with single quote, escaping only other single quotes
             # [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
