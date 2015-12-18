@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DIT__LAZYLOADABLE_HPP__
-#define DIT__LAZYLOADABLE_HPP__
+#ifndef DIT__UTILS__LAZYLOADABLE_HPP__
+#define DIT__UTILS__LAZYLOADABLE_HPP__
 
 /**
  * @brief Helper template that follows CRTP to provide lazy loading.
@@ -67,4 +67,4 @@ private:
     bool loaded;
 };
 
-#endif // DIT__LAZYLOADABLE_HPP__
+#endif // DIT__UTILS__LAZYLOADABLE_HPP__

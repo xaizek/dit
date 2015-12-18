@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
+#include "utils/LazyLoadable.hpp"
 #include "utils/Passkey.hpp"
-#include "LazyLoadable.hpp"
 
 class Change;
 class Storage;

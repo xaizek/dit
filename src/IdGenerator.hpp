@@ -21,7 +21,7 @@
 #include <array>
 #include <string>
 
-#include "LazyLoadable.hpp"
+#include "utils/LazyLoadable.hpp"
 
 class Config;
 

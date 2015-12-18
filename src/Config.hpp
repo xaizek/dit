@@ -23,7 +23,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "LazyLoadable.hpp"
+#include "utils/LazyLoadable.hpp"
 
 /**
  * @brief Abstraction over configuration storage.
