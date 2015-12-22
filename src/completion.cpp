@@ -30,6 +30,23 @@
 #include "Storage.hpp"
 
 int
+completeKeys(Storage &storage, std::ostream &os)
+{
+    std::unordered_set<std::string> keys;
+
+    for (Item &item : storage.list()) {
+        const std::set<std::string> &itemKeys = item.listRecordNames();
+        keys.insert(itemKeys.cbegin(), itemKeys.cend());
+    }
+
+    for (const std::string &key : keys) {
+        os << key << '\n';
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int
 completeKeys(Storage &storage, std::ostream &os,
              const std::vector<std::string> &args)
 {
