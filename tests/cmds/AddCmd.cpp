@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 
+#include <memory>
 #include <sstream>
 
 #include "Change.hpp"
