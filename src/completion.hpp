@@ -29,6 +29,18 @@ class Storage;
  *
  * @param storage Source of the keys (taken from all the elements).
  * @param os Stream to output completion.
+ *
+ * @returns Application exit code.
+ */
+int completeKeys(Storage &storage, std::ostream &os);
+
+/**
+ * @brief Completes item keys in the storage.
+ *
+ * Doesn't complete keys that are found among @p args.
+ *
+ * @param storage Source of the keys (taken from all the elements).
+ * @param os Stream to output completion.
  * @param args Existing arguments of the command (used to remove duplicates).
  *
  * @returns Application exit code.

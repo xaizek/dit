@@ -35,7 +35,7 @@
 namespace fs = boost::filesystem;
 
 /**
- * @brief Usage message for "ls" command.
+ * @brief Usage message for "complete" command.
  */
 const char *const USAGE = "Usage: complete <regular args>";
 

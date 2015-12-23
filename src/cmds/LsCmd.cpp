@@ -28,6 +28,7 @@
 #include "ItemTable.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "completion.hpp"
 #include "integration.hpp"
 
 /**
@@ -108,16 +109,5 @@ LsCmd::run(Project &project, const std::vector<std::string> &args)
 boost::optional<int>
 LsCmd::complete(Project &project, const std::vector<std::string> &)
 {
-    std::unordered_set<std::string> keys;
-
-    for (Item &item : project.getStorage().list()) {
-        const std::set<std::string> &itemKeys = item.listRecordNames();
-        keys.insert(itemKeys.cbegin(), itemKeys.cend());
-    }
-
-    for (const std::string &key : keys) {
-        out() << key << '\n';
-    }
-
-    return EXIT_SUCCESS;
+    return completeKeys(project.getStorage(), out());
 }

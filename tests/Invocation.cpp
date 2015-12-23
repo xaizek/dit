@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "Catch/catch.hpp"
+
 #include <string>
 #include <vector>
-
-#include "Catch/catch.hpp"
 
 #include "Invocation.hpp"
 
