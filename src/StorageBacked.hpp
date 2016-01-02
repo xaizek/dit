@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DIT__UTILS__STORAGEBACKED_HPP__
-#define DIT__UTILS__STORAGEBACKED_HPP__
+#ifndef DIT__STORAGEBACKED_HPP__
+#define DIT__STORAGEBACKED_HPP__
 
 #include <cassert>
 
@@ -106,4 +106,4 @@ private:
     bool modified;
 };
 
-#endif // DIT__UTILS__STORAGEBACKED_HPP__
+#endif // DIT__STORAGEBACKED_HPP__

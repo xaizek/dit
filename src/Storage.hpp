@@ -23,9 +23,9 @@
 #include <string>
 #include <vector>
 
-#include "utils/LazyLoadable.hpp"
 #include "utils/Passkey.hpp"
 #include "IdGenerator.hpp"
+#include "StorageBacked.hpp"
 
 namespace boost { namespace filesystem {
     class path;
