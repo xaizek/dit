@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include "utils/LazyLoadable.hpp"
 #include "utils/Passkey.hpp"
+#include "StorageBacked.hpp"
 
 class Change;
 class Storage;
@@ -38,9 +38,9 @@ class Tests;
  * Pseudo-keys start with '_', such keys are read-only.
  * Keys can include only [-a-zA-Z_0-9], but can't start with [-_0-9].
  */
-class Item : private LazyLoadable<Item>
+class Item : private StorageBacked<Item>
 {
-    friend class LazyLoadable<Item>;
+    friend class StorageBacked<Item>;
 
 public:
     /**
@@ -155,6 +155,7 @@ public:
     {
         return changes;
     }
+
     /**
      * @brief Sets timestamp provider.
      *
@@ -200,10 +201,6 @@ private:
      * @brief Change set associated with the item.
      */
     std::vector<Change> changes;
-    /**
-     * @brief Whether item was changed.
-     */
-    bool changed;
 };
 
 #endif // DIT__ITEM_HPP__

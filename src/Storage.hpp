@@ -23,9 +23,9 @@
 #include <string>
 #include <vector>
 
-#include "utils/LazyLoadable.hpp"
 #include "utils/Passkey.hpp"
 #include "IdGenerator.hpp"
+#include "StorageBacked.hpp"
 
 namespace boost { namespace filesystem {
     class path;
@@ -38,9 +38,9 @@ class Tests;
 /**
  * @brief Storage for a set of items.
  */
-class Storage : private LazyLoadable<Storage>
+class Storage : private StorageBacked<Storage>
 {
-    friend class LazyLoadable<Storage>;
+    friend class StorageBacked<Storage>;
 
 public:
     /**
@@ -109,7 +109,7 @@ public:
      * @throws boost::filesystem::filesystem_error On issues with storage.
      * @throws std::runtime_error On data write failure.
      */
-    void save();
+    virtual void save() override;
 
 private:
     /**

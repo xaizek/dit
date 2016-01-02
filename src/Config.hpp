@@ -23,7 +23,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "utils/LazyLoadable.hpp"
+#include "StorageBacked.hpp"
 
 /**
  * @brief Abstraction over configuration storage.
@@ -31,9 +31,9 @@
  * Keys that start with exclamation mark ("!") are builtin ones and shouldn't
  * normally be touched from the outside.
  */
-class Config : private LazyLoadable<Config>
+class Config : private StorageBacked<Config>
 {
-    friend class LazyLoadable<Config>;
+    friend class StorageBacked<Config>;
 
 public:
     /**
@@ -102,7 +102,7 @@ public:
     /**
      * @brief Stores in-memory configuration to permanent storage.
      */
-    void save();
+    virtual void save() override;
 
 private:
     /**
@@ -123,10 +123,6 @@ private:
      * @brief In-memory storage of the configuration.
      */
     boost::property_tree::ptree props;
-    /**
-     * @brief Whether there are change to write back to permanent storage.
-     */
-    bool changed;
 };
 
 #endif // DIT__CONFIG_HPP__

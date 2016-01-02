@@ -15,28 +15,46 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DIT__UTILS__LAZYLOADABLE_HPP__
-#define DIT__UTILS__LAZYLOADABLE_HPP__
+#ifndef DIT__STORAGEBACKED_HPP__
+#define DIT__STORAGEBACKED_HPP__
+
+#include <cassert>
 
 /**
- * @brief Helper template that follows CRTP to provide lazy loading.
+ * @brief Represents data that is loaded from and stored to external storage.
  *
- * The derived class should either inherit from this one publicly or "friend"
- * it.
+ * Follows CRTP.  The derived class should either inherit from this one publicly
+ * or "friend" it.
  *
  * @tparam D Type of derived class.
  */
 template <class D>
-class LazyLoadable
+class StorageBacked
 {
 protected:
     /**
-     * @brief Initializes the instance as "not loaded".
+     * @brief Initializes the instance as "not loaded" (by default).
+     *
+     * "loaded" objects are useful when creating something that is not yet in
+     * the storage and for tests.
      *
      * @param loaded Whether instance is loaded on initialization.
      */
-    LazyLoadable(bool loaded = false) : loaded(loaded)
+    StorageBacked(bool loaded = false) : loaded(loaded), modified(false)
     {
+    }
+
+public:
+    /**
+     * @brief Stores changes.
+     *
+     * Some objects can delegate saving them to other objects, so empty default
+     * implementation makes sense.
+     */
+    virtual void save()
+    {
+        assert(false &&
+               "Saving devired instance that doesn't implement saving.");
     }
 
 protected:
@@ -60,11 +78,32 @@ protected:
         return loaded;
     }
 
+    /**
+     * @brief Marks data as modified.
+     */
+    void markModified()
+    {
+        modified = true;
+    }
+    /**
+     * @brief Retrieves whether there are any modifications worth saving.
+     *
+     * @returns @c true if so, otherwise @c false is returned.
+     */
+    bool isModified() const
+    {
+        return modified;
+    }
+
 private:
     /**
      * @brief Whether configuration was loaded from permanent storage.
      */
     bool loaded;
+    /**
+     * @brief Whether storage was modified (and might need saving).
+     */
+    bool modified;
 };
 
-#endif // DIT__UTILS__LAZYLOADABLE_HPP__
+#endif // DIT__STORAGEBACKED_HPP__
