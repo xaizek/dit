@@ -49,7 +49,7 @@ Storage::Storage(Project &project)
 }
 
 Storage::Storage(Project &project, pk<Project>)
-    : LazyLoadable<Storage>(true), project(project),
+    : StorageBacked<Storage>(true), project(project),
       idGenerator(project.getConfig(false))
 {
 }

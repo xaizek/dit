@@ -28,9 +28,9 @@ class Config;
 /**
  * @brief Manages IDs for items by generating the next unique one.
  */
-class IdGenerator : private LazyLoadable<IdGenerator>
+class IdGenerator : private StorageBacked<IdGenerator>
 {
-    friend class LazyLoadable<IdGenerator>;
+    friend class StorageBacked<IdGenerator>;
 
 public:
     /**
@@ -64,7 +64,7 @@ public:
     /**
      * @brief Stores changed state into configuration.
      */
-    void save();
+    virtual void save() override;
 
 private:
     /**
@@ -100,10 +100,6 @@ private:
      * @brief Number of already issues IDs.
      */
     int count;
-    /**
-     * @brief Whether there is a state to be stored.
-     */
-    bool changed;
 };
 
 #endif // DIT__IDGENERATOR_HPP__

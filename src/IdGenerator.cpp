@@ -56,7 +56,7 @@ IdGenerator::init(Config &config)
                { sequences[0][0], sequences[1][0], sequences[2][0] });
 }
 
-IdGenerator::IdGenerator(Config &config) : config(config), changed(false)
+IdGenerator::IdGenerator(Config &config) : config(config)
 {
 }
 
@@ -79,7 +79,7 @@ IdGenerator::advanceId()
     // TODO: at least report on reaching upper limit for IDs, or better extend
     //       numberation by one field.
 
-    changed = true;
+    markModified();
 }
 
 void
@@ -139,7 +139,7 @@ getIdx(int k, int b)
 void
 IdGenerator::save()
 {
-    if (!changed) {
+    if (!isModified()) {
         return;
     }
 

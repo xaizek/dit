@@ -69,14 +69,12 @@ Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
 }
 
 Item::Item(Storage &storage, std::string id, bool exists, pk<Storage>)
-    : LazyLoadable<Item>(!exists), storage(storage), id(std::move(id)),
-      changed(false)
+    : StorageBacked<Item>(!exists), storage(storage), id(std::move(id))
 {
 }
 
 Item::Item(std::string id, pk<Tests>)
-    : LazyLoadable<Item>(true), storage(storage), id(std::move(id)),
-      changed(false)
+    : StorageBacked<Item>(true), storage(storage), id(std::move(id))
 {
 }
 
@@ -204,13 +202,13 @@ Item::setValue(const std::string &key, const std::string &value)
                 }
             }
 
-            changed = true;
+            markModified();
             return;
         }
     }
 
     changes.emplace_back(timestamp, key, value);
-    changed = true;
+    markModified();
 }
 
 Change *
@@ -240,7 +238,7 @@ Item::getLatestChange(const std::string &key, Change *before)
 bool
 Item::wasChanged() const
 {
-    return changed;
+    return isModified();
 }
 
 void

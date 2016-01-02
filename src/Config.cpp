@@ -31,7 +31,7 @@ namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
 Config::Config(std::string path, Config *parent)
-    : path(std::move(path)), parent(parent), changed(false)
+    : path(std::move(path)), parent(parent)
 {
 }
 
@@ -103,17 +103,15 @@ Config::set(const std::string &key, const std::string &val)
     }
 
     props.put(key, val);
-    changed = true;
+    markModified();
 }
 
 void
 Config::save()
 {
-    if (!changed) {
-        return;
+    if (isModified()) {
+        write_info(path, props);
     }
-
-    write_info(path, props);
 }
 
 void
