@@ -38,6 +38,17 @@
 
 namespace po = boost::program_options;
 
+/**
+ * @brief Usage message for "config" command.
+ */
+const char *const USAGE = R"(Usage: config [--help] [--global] [key[=val]...]
+
+When invoked without arguments, settings are listed.
+
+    key        --  displays configuration value
+    key=value  --  sets configuration value
+    key=-      --  spawns editor to edit configuration value)";
+
 namespace {
 
 /**
@@ -127,8 +138,7 @@ private:
 }
 
 ConfigCmd::ConfigCmd()
-    : parent("config", "read/update configuration",
-             "Usage: config [key[=val]...]"),
+    : parent("config", "read/update configuration", USAGE),
       globalCfg(nullptr),
       visibleOpts("config sub-command options")
 {

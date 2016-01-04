@@ -64,7 +64,7 @@ public:
 }
 
 CompleteCmd::CompleteCmd()
-    : parent("complete", "command-line completion helper", USAGE)
+    : parent("complete", "perform command-line completion", USAGE)
 {
 }
 

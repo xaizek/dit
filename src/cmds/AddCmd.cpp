@@ -34,6 +34,18 @@
 #include "integration.hpp"
 #include "parsing.hpp"
 
+/**
+ * @brief Usage message for "add" command.
+ */
+const char *const USAGE = R"(Usage: add key=value...
+
+Sets or appends to values of items:
+
+    key=value   --  set new value
+    key=-       --  set new value via external editor
+    key+=value  --  append value (from earlier key=value pair)
+    key+=-      --  append value via external editor)";
+
 namespace {
 
 /**
@@ -64,7 +76,7 @@ public:
 
 }
 
-AddCmd::AddCmd() : parent("add", "add new item", "Usage: add key=value")
+AddCmd::AddCmd() : parent("add", "add new item", USAGE)
 {
 }
 

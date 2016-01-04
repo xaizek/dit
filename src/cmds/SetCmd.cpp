@@ -42,8 +42,10 @@ const char *const USAGE = R"(Usage: set id key[+]=value...
 
 Sets or appends to values of items:
 
-    <field>=<value>   --  set new value
-    <field>+=<value>  --  append to the old value after new-line character
+    key=value   --  set new value
+    key=-       --  set/edit value via external editor
+    key+=value  --  append to the old value after new-line character
+    key+=-      --  append value via external editor
 
 For example:
 
@@ -79,7 +81,7 @@ public:
 
 }
 
-SetCmd::SetCmd() : parent("set", "changes items", USAGE)
+SetCmd::SetCmd() : parent("set", "modify item entries", USAGE)
 {
 }
 
