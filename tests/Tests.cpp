@@ -73,3 +73,9 @@ Tests::storeItem(Storage &storage, Item item)
 {
     storage.put(std::move(item), {});
 }
+
+bool
+Tests::configIsModified(Config &config)
+{
+    return config.isModified({});
+}
