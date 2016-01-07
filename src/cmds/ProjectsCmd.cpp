@@ -71,7 +71,7 @@ public:
 
 }
 
-ProjectsCmd::ProjectsCmd() : parent("projects", "lists projects", USAGE)
+ProjectsCmd::ProjectsCmd() : parent("projects", "list projects", USAGE)
 {
 }
 

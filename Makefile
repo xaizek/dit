@@ -70,9 +70,18 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
-.PHONY: check clean coverage show-coverage reset-coverage debug release
+.PHONY: check clean coverage man show-coverage reset-coverage debug release
 
 debug release: $(out_dir)/$(bin)
+
+man: $(out_dir)/docs/dit.1
+$(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
+	pandoc -V title=dit \
+	       -V section=1 \
+	       -V app=dit \
+	       -V date="$$(date +'%B %d, %Y')" \
+	       -V author='xaizek <xaizek@openmailbox.org>' \
+	       -s -o $@ $(sort $^)
 
 coverage: check $(out_dir)/$(bin)
 	lcov --directory $(out_dir)/ --base-directory src/ --capture \
@@ -106,12 +115,12 @@ $(out_dir)/tests/tests: $(filter-out %/main.o,$(bin_objects)) $(tests_objects) \
 $(out_dir)/%.o: %.cpp | $(out_dirs)
 	$(CXX) -o $@ -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) $<
 
-$(out_dirs):
+$(out_dirs) $(out_dir)/docs:
 	mkdir -p $@
 
 clean:
 	-$(RM) -r coverage/ debug/ release/
 	-$(RM) $(bin_objects) $(bin_depends) $(tests_objects) $(tests_depends) \
-           $(out_dir)/$(bin) $(out_dir)/tests/tests
+           $(out_dir)/$(bin) $(out_dir)/tests/tests $(out_dir)/docs/dit.1
 
 include $(wildcard $(bin_depends) $(tests_depends))

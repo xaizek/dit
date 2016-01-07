@@ -80,7 +80,7 @@ public:
 
 }
 
-LsCmd::LsCmd() : parent("ls", "lists items", USAGE)
+LsCmd::LsCmd() : parent("ls", "list items", USAGE)
 {
 }
 

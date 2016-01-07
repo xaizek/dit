@@ -75,7 +75,7 @@ private:
 }
 
 HelpCmd::HelpCmd()
-    : parent("help", "help information", "Usage: help [command]")
+    : parent("help", "provide help information", "Usage: help [command]")
 {
 }
 

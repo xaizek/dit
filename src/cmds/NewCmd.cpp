@@ -54,7 +54,8 @@ public:
 
 }
 
-NewCmd::NewCmd() : parent("new", "creates projects", "Usage: new project-name")
+NewCmd::NewCmd() : parent("new", "create new project",
+                          "Usage: new project-name")
 {
 }
 

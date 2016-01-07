@@ -72,7 +72,7 @@ private:
 
 }
 
-ShowCmd::ShowCmd() : parent("show", "displays items", "Usage: show id")
+ShowCmd::ShowCmd() : parent("show", "display item entries", "Usage: show id")
 {
 }
 
