@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
-// * Check that all sequences are of equal size.
-// * Check that number of items equals "count" in configuration.
-// * Generate sequence for "count" items and make sure they match ids of
+// * Check that all sequences are of the size of alphabet, which is not zero.
+// * Check that number of items equals "total" in configuration.
+// * Generate sequence for "total" items and make sure they match ids of
 //   existing items.
 // * Order in which items were created should match the sequence.
 // * Validate contents of items (timestamps, duplicates, redundancy, conflicts).

@@ -25,6 +25,7 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/filesystem.hpp>
 
+#include "utils/Passkey.hpp"
 #include "utils/propsRange.hpp"
 
 namespace fs = boost::filesystem;
@@ -112,6 +113,12 @@ Config::save()
     if (isModified()) {
         write_info(path, props);
     }
+}
+
+bool
+Config::isModified(pk<Tests>) const
+{
+    return isModified();
 }
 
 void

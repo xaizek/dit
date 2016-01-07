@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 
+class Config;
 class Item;
 class Project;
 class Storage;
@@ -83,6 +84,13 @@ public:
      * @param item Item to put into the storage.
      */
     static void storeItem(Storage &storage, Item item);
+
+    /**
+     * @brief Retrieves whether configuration has any unsaved changes.
+     *
+     * @returns @c true if so, otherwise @c false is returned.
+     */
+    static bool configIsModified(Config &config);
 };
 
 #endif // DIT__TESTS_HPP__

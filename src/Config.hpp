@@ -23,7 +23,10 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+#include "utils/Passkey.hpp"
 #include "StorageBacked.hpp"
+
+class Tests;
 
 /**
  * @brief Abstraction over configuration storage.
@@ -34,6 +37,8 @@
 class Config : private StorageBacked<Config>
 {
     friend class StorageBacked<Config>;
+
+    using StorageBacked<Config>::isModified;
 
 public:
     /**
@@ -103,6 +108,13 @@ public:
      * @brief Stores in-memory configuration to permanent storage.
      */
     virtual void save() override;
+
+    /**
+     * @brief Retrieves whether configuration has any unsaved changes.
+     *
+     * @returns @c true if so, otherwise @c false is returned.
+     */
+    bool isModified(pk<Tests>) const;
 
 private:
     /**
