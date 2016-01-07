@@ -40,7 +40,8 @@ namespace fs = boost::filesystem;
 void
 Storage::init(Project &project)
 {
-    IdGenerator::init(project.getConfig(false));
+    IdGenerator::init(project.getConfig(false),
+                      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 }
 
 Storage::Storage(Project &project)

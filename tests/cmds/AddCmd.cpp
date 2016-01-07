@@ -60,65 +60,55 @@ TEST_CASE("Add fails on wrong invocation", "[cmds][add][invocation]")
     REQUIRE(err.str() != std::string());
 }
 
-TEST_CASE("Add allows external editing", "[cmds][add][integration]")
+TEST_CASE("Addition on new item", "[cmds][add]")
 {
+    Command *const cmd = Commands::get("add");
     std::unique_ptr<Project> prj = Tests::makeProject();
     Storage &storage = prj->getStorage();
 
     Config &cfg = prj->getConfig(false);
 
-    cfg.set("!ids.sequences.first",
+    cfg.set("!ids.sequences.alphabet",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    cfg.set("!ids.sequences.count", "3");
+    cfg.set("!ids.sequences.0",
             "BWlupmoqXJwfSsRzgFvMEDtUOjTnePYrGbxANhVLcIQyKkidHZCa");
-    cfg.set("!ids.sequences.second",
+    cfg.set("!ids.sequences.1",
             "MYgRHkGujvoawZnJhLdNciFxPKmACQEeWUtDBTXVOzIpSyrlqfsb");
-    cfg.set("!ids.sequences.third",
+    cfg.set("!ids.sequences.2",
             "PIxFYDACivrWKVpSLMRmzuTHNGwktZOcBXldJjhygnQbEeqUfoas");
     cfg.set("!ids.count", "64");
+    cfg.set("!ids.total", "64");
     cfg.set("!ids.next", "fYP");
 
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    char editor_env[] = "EDITOR=echo new-value >>";
-    putenv(editor_env);
+    SECTION("Item is added")
+    {
+        boost::optional<int> exitCode = cmd->run(*prj, { "title:", "title" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
 
-    Command *const cmd = Commands::get("add");
-    boost::optional<int> exitCode = cmd->run(*prj, { "title=-" });
-    REQUIRE(exitCode);
-    REQUIRE(*exitCode == EXIT_SUCCESS);
+        REQUIRE(out.str() == "Created item: fYP\n");
+        REQUIRE(err.str() == std::string());
+    }
 
-    REQUIRE(out.str() != std::string());
-    REQUIRE(err.str() == std::string());
+    SECTION("Add allows external editing")
+    {
+        char editor_env[] = "EDITOR=echo new-value >>";
+        putenv(editor_env);
 
-    REQUIRE(storage.get("fYP").getValue("title") == "new-value");
-}
+        boost::optional<int> exitCode = cmd->run(*prj, { "title=-" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
 
-TEST_CASE("New item is added successfully", "[cmds][add]")
-{
-    Command *const cmd = Commands::get("add");
-    std::unique_ptr<Project> prj = Tests::makeProject();
-    Config &cfg = prj->getConfig(false);
+        REQUIRE(out.str() != std::string());
+        REQUIRE(err.str() == std::string());
 
-    cfg.set("!ids.sequences.first",
-            "BWlupmoqXJwfSsRzgFvMEDtUOjTnePYrGbxANhVLcIQyKkidHZCa");
-    cfg.set("!ids.sequences.second",
-            "MYgRHkGujvoawZnJhLdNciFxPKmACQEeWUtDBTXVOzIpSyrlqfsb");
-    cfg.set("!ids.sequences.third",
-            "PIxFYDACivrWKVpSLMRmzuTHNGwktZOcBXldJjhygnQbEeqUfoas");
-    cfg.set("!ids.count", "64");
-    cfg.set("!ids.next", "fYP");
-
-    std::ostringstream out;
-    std::ostringstream err;
-    Tests::setStreams(out, err);
-
-    boost::optional<int> exitCode = cmd->run(*prj, { "title:", "title" });
-    REQUIRE(exitCode);
-    REQUIRE(*exitCode == EXIT_SUCCESS);
-
-    REQUIRE(out.str() == "Created item: fYP\n");
-    REQUIRE(err.str() == std::string());
+        REQUIRE(storage.get("fYP").getValue("title") == "new-value");
+    }
 }
 
 TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")

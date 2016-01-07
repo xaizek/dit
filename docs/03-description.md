@@ -42,9 +42,10 @@ IDs
 ---
 
 Identifies are three character strings picked in semi-randomised way that
-guarantees that they won't repeat until space of IDs is exhausted.  The space is
-picked at the moment of project creation.  Each character can be one of 26 lower
-case and 26 upper case letters of Latin alphabet.
+guarantees that they won't repeat.  The space is picked at the moment of project
+creation.  Each character can be one of 26 lower case and 26 upper case letters
+of Latin alphabet.  IDs start as at the length of three and then automatically
+extended.
 
 Items
 -----

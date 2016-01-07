@@ -18,8 +18,9 @@
 #ifndef DIT__IDGENERATOR_HPP__
 #define DIT__IDGENERATOR_HPP__
 
-#include <array>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "StorageBacked.hpp"
 
@@ -37,14 +38,15 @@ public:
      * @brief Creates generator for the configuration.
      *
      * @param config Configuration to initialize.
+     * @param alphabet Set of characters available for use in sequences.
      */
-    static void init(Config &config);
+    static void init(Config &config, const std::string &alphabet);
 
 public:
     /**
      * @brief Constructs ID generator out of configuration.
      *
-     * @param config
+     * @param config Configuration to use for reading/saving state.
      */
     IdGenerator(Config &config);
 
@@ -52,7 +54,7 @@ public:
     /**
      * @brief Retrieves current unemployed ID.
      *
-     * @returns The id.
+     * @returns The ID.
      */
     std::string getId();
     /**
@@ -79,9 +81,9 @@ private:
      * @param id Current ID.
      * @param count Sequential number of current ID.
      *
-     * @returns Next ID.
+     * @returns Pair of next ID and new count.
      */
-    std::string advance(std::string id, int count) const;
+    std::pair<std::string, int> advance(std::string id, int count);
 
 private:
     /**
@@ -91,15 +93,23 @@ private:
     /**
      * @brief ID position sequences.
      */
-    std::array<std::string, 3> sequences;
+    std::vector<std::string> sequences;
     /**
-     * @brief Next id to be issued.
+     * @brief Next ID to be issued.
      */
     std::string nextId;
     /**
-     * @brief Number of already issues IDs.
+     * @brief Count within ID sequence of current width.
      */
     int count;
+    /**
+     * @brief Total number of already issued IDs.
+     */
+    int total;
+    /**
+     * @brief Alphabet used in this particular instance of the generator.
+     */
+    std::string alphabet;
 };
 
 #endif // DIT__IDGENERATOR_HPP__
