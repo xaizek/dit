@@ -111,6 +111,13 @@ public:
      */
     virtual void save() override;
 
+    /**
+     * @brief Retrieves ID generation option employed by this storage.
+     *
+     * @returns The generator.
+     */
+    IdGenerator & getIdGenerator() { return idGenerator; }
+
 private:
     /**
      * @brief Actually loads storage from physical source, first level.

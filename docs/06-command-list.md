@@ -10,6 +10,16 @@ Adds new item.
 
 Creates new item filling it with specified entries.
 
+check
+-----
+
+Verifies project state.
+
+**Usage: check**
+
+Checks that storage files and their content are meaningful.  Prints out errors
+if something is wrong and exits with non-zero exit code.
+
 complete
 --------
 

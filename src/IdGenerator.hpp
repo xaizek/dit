@@ -18,6 +18,7 @@
 #ifndef DIT__IDGENERATOR_HPP__
 #define DIT__IDGENERATOR_HPP__
 
+#include <functional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -48,7 +49,7 @@ public:
      *
      * @param config Configuration to use for reading/saving state.
      */
-    IdGenerator(Config &config);
+    explicit IdGenerator(Config &config);
 
 public:
     /**
@@ -63,6 +64,21 @@ public:
      * As a result generates next ID.
      */
     void advanceId();
+
+    /**
+     * @brief Retrieves size of the generated sequence of IDs so far.
+     *
+     * @returns The size.
+     */
+    int size() const { return total; }
+
+    /**
+     * @brief Runs visitor once for each ID in order of their generation.
+     *
+     * @param visitor Visitor to invoke per ID.
+     */
+    void forEachId(std::function<void(const std::string &)> visitor);
+
     /**
      * @brief Stores changed state into configuration.
      */
@@ -84,6 +100,12 @@ private:
      * @returns Pair of next ID and new count.
      */
     std::pair<std::string, int> advance(std::string id, int count);
+    /**
+     * @brief Dumps current state into configuration object.
+     *
+     * @param config Configuration to save data into.
+     */
+    void dump(Config &config) const;
 
 private:
     /**

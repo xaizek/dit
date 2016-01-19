@@ -164,12 +164,37 @@ inline C shuffle(const C &c)
 }
 
 void
+IdGenerator::forEachId(std::function<void(const std::string &)> visitor)
+{
+    ensureLoaded();
+
+    Config idsConfig("forEachId");
+    dump(idsConfig);
+
+    // Reset to initial state.
+    idsConfig.set("!ids.next",
+                  { sequences[0][0], sequences[1][0], sequences[2][0] });
+    idsConfig.set("!ids.count", "0");
+    idsConfig.set("!ids.total", "0");
+
+    IdGenerator idsGenerator(idsConfig);
+    for (int i = 0; i < total; ++i) {
+        visitor(idsGenerator.getId());
+        idsGenerator.advanceId();
+    }
+}
+
+void
 IdGenerator::save()
 {
-    if (!isModified()) {
-        return;
+    if (isModified()) {
+        dump(config);
     }
+}
 
+void
+IdGenerator::dump(Config &config) const
+{
     config.set("!ids.sequences.alphabet", alphabet);
     config.set("!ids.next", nextId);
     config.set("!ids.count", std::to_string(count));

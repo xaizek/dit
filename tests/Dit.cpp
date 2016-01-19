@@ -168,6 +168,7 @@ TEST_CASE("Completion of commands", "[app][completion]")
 
         const std::string expectedOut =
             "add\n"
+            "check\n"
             "complete\n"
             "config\n";
         REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
@@ -183,6 +184,7 @@ TEST_CASE("Completion of commands", "[app][completion]")
 
         const std::string expectedOut =
             "add.add\n"
+            "add.check\n"
             "add.complete\n"
             "add.config\n";
         REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
