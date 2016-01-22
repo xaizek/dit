@@ -30,6 +30,15 @@
 #include "Storage.hpp"
 
 int
+completeIds(Storage &storage, std::ostream &os)
+{
+    for (Item &item : storage.list()) {
+        os << item.getId() << '\n';
+    }
+    return EXIT_SUCCESS;
+}
+
+int
 completeKeys(Storage &storage, std::ostream &os)
 {
     std::unordered_set<std::string> keys;

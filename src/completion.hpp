@@ -25,6 +25,16 @@
 class Storage;
 
 /**
+ * @brief Completes IDs from the storage.
+ *
+ * @param storage Source of IDs.
+ * @param os Stream to output completion.
+ *
+ * @returns Application exit code.
+ */
+int completeIds(Storage &storage, std::ostream &os);
+
+/**
  * @brief Completes item keys in the storage.
  *
  * @param storage Source of the keys (taken from all the elements).

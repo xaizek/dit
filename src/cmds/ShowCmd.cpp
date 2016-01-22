@@ -28,6 +28,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
+#include "completion.hpp"
 #include "printing.hpp"
 
 template <typename C>
@@ -139,9 +140,6 @@ ShowCmd::complete(Project &project, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
-    for (Item &item : project.getStorage().list()) {
-        out() << item.getId() << '\n';
-    }
-
+    completeIds(project.getStorage(), out());
     return EXIT_SUCCESS;
 }
