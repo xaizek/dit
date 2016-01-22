@@ -1,8 +1,8 @@
 _dit_
 _2015 - 2016_
 
-**Last updated**: 05 January, 2016
-**Version**: 0.8
+**Last updated**: 22 January, 2016
+**Version**: 0.9
 
 ### Brief Description ###
 
@@ -21,9 +21,9 @@ oriented on GTD and similar techniques.
 
 ### Status ###
 
-This is still pre-release version and it might see some significant changes for
-the sake of improvement, but the code itself is stable.  The application has
-been in development and use since summer 2015.
+This is quite close to 1.0 version, although it might see some changes for the
+sake of improvement, but the code itself is stable.  The application has been in
+development and use since summer 2015.
 
 ### Features ###
 
