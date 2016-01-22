@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+class Item;
 class Storage;
 
 /**
@@ -33,6 +34,18 @@ class Storage;
  * @returns Application exit code.
  */
 int completeIds(Storage &storage, std::ostream &os);
+
+/**
+ * @brief Completes keys from single element.
+ *
+ * @param item Source of key names.
+ * @param os Stream to output completion.
+ * @param args Existing arguments of the command (used to remove duplicates).
+ *
+ * @returns Application exit code.
+ */
+int completeKeys(Item &item, std::ostream &os,
+                 const std::vector<std::string> &args);
 
 /**
  * @brief Completes item keys in the storage.

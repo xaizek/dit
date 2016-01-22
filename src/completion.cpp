@@ -39,6 +39,23 @@ completeIds(Storage &storage, std::ostream &os)
 }
 
 int
+completeKeys(Item &item, std::ostream &os, const std::vector<std::string> &args)
+{
+    std::set<std::string> keys = item.listRecordNames();
+
+    // Remove elements already present on the command-line from completion list.
+    for (const std::string &arg : args) {
+        keys.erase(arg);
+    }
+
+    for (const std::string &key : keys) {
+        os << key << '\n';
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int
 completeKeys(Storage &storage, std::ostream &os)
 {
     std::unordered_set<std::string> keys;
