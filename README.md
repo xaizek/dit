@@ -33,6 +33,24 @@ development and use since summer 2015.
 * Aliases with argument substitution;
 * Composition of aliases and commands.
 
+### Usage ###
+
+The out of the box setup is minimal.  One is likely to want to change some
+settings add define convenient aliases.  There are no assumptions on the
+workflow, which are expected to be defined by the user.
+
+### Example ###
+
+Commands look like:
+
+```
+d.d add title: Add install target. type: addition category: code status: in\ progress
+```
+
+Example of entry listing:
+
+![Entry listing](data/dit.png)
+
 ### Supported Environment ###
 
 Expected to work in \*nix like environments.
