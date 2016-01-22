@@ -23,9 +23,12 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -34,6 +37,7 @@
 
 #include "utils/containers.hpp"
 #include "utils/memory.hpp"
+#include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
@@ -45,6 +49,8 @@
 namespace fs = boost::filesystem;
 
 static Config & getDefaultConfig();
+static std::vector<std::string> completeCmdName(const std::string &composition,
+                                                std::vector<std::string> names);
 static std::vector<std::string> listProjects(const std::string &projectsDir);
 static std::vector<std::string> listCommands(Config &config);
 
@@ -174,14 +180,7 @@ Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
     if (boost::ends_with(invocation.getPrjName(), COMPL_CURSOR_MARK)) {
         names = listProjects(projectsDir);
     } else if (boost::ends_with(composition, COMPL_CURSOR_MARK)) {
-        names = listCommands(*globalConfig);
-        if (composition.find('.') != std::string::npos) {
-            const std::string prefix =
-                composition.substr(0, composition.rfind('.') + 1);
-            for (std::string &name : names) {
-                name = prefix + name;
-            }
-        }
+        names = completeCmdName(composition, listCommands(*globalConfig));
     } else {
         return completeCmd();
     }
@@ -191,6 +190,39 @@ Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
     }
 
     return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Completes command name performind dedupplication.
+ *
+ * @param composition Command composition (might consist of single command).
+ * @param names List of all command names (including names of aliases).
+ *
+ * @returns List of completion matches.
+ */
+static std::vector<std::string>
+completeCmdName(const std::string &composition, std::vector<std::string> names)
+{
+    if (composition.find('.') == std::string::npos) {
+        return std::move(names);
+    }
+
+    const std::string prefix = composition.substr(0,
+                                                  composition.rfind('.') + 1);
+
+    std::set<std::string> all(names.cbegin(), names.cend());
+    auto cmds = split(prefix, '.');
+    std::set<std::string> present(cmds.cbegin(), cmds.cend());
+
+    std::vector<std::string> matches;
+    std::set_difference(all.cbegin(), all.cend(),
+                        cmds.cbegin(), cmds.cend(),
+                        std::back_inserter(matches));
+
+    for (std::string &name : matches) {
+        name = prefix + name;
+    }
+    return std::move(matches);
 }
 
 int

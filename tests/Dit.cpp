@@ -183,7 +183,6 @@ TEST_CASE("Completion of commands", "[app][completion]")
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
         const std::string expectedOut =
-            "add.add\n"
             "add.check\n"
             "add.complete\n"
             "add.config\n";
