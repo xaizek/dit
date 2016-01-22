@@ -24,7 +24,7 @@
 #include "utils/containers.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
-#include "decoration.hpp"
+#include "printing.hpp"
 
 static bool operator<(const Command &l, const Command &r);
 
@@ -112,10 +112,8 @@ HelpCmd::complete(Dit &, const std::vector<std::string> &args)
 int
 HelpCmd::listCommands()
 {
-    for (Command &cmd : sorted(Commands::list())) {
-        out() << decor::bold << cmd.getName() << decor::def
-              << " -- "
-              << cmd.getDescr() << '\n';
+    for (const Command &cmd : sorted(Commands::list())) {
+        out() << Cmd{cmd.getName()} << " -- " << cmd.getDescr() << '\n';
     }
 
     return EXIT_SUCCESS;
@@ -144,7 +142,7 @@ HelpCmd::commandHelp(const std::string &cmdName)
         return EXIT_FAILURE;
     }
 
-    out() << decor::bold << cmdName << decor::def
+    out() << Cmd{cmdName}
           << " -- "
           << cmd->getDescr() << "\n\n"
           << cmd->getHelp() << '\n';

@@ -32,9 +32,9 @@
 #include "Config.hpp"
 #include "Dit.hpp"
 #include "Project.hpp"
-#include "decoration.hpp"
 #include "integration.hpp"
 #include "parsing.hpp"
+#include "printing.hpp"
 
 namespace po = boost::program_options;
 
@@ -302,6 +302,6 @@ ConfigCmd::printKey(Config &config, const std::string &key)
 {
     const std::string val = config.get(key, "<not set>");
     if (!val.empty()) {
-        out() << decor::bold << key << decor::def << " = " << val << '\n';
+        out() << Key{key} << " = " << val << '\n';
     }
 }
