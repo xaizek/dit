@@ -28,7 +28,8 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
-#include "decoration.hpp"
+#include "completion.hpp"
+#include "printing.hpp"
 
 template <typename C>
 static inline bool contains(const C &c, const typename C::value_type &what);
@@ -129,9 +130,7 @@ contains(const C &c, const typename C::value_type &what)
 void
 ShowCmd::printRecord(const std::string &name, const std::string &val)
 {
-    out() << decor::bold << name << decor::def
-          << (val.find('\n') == std::string::npos ? ": " : ":\n")
-          << val<< '\n';
+    out() << Key{name} << Value{val} << '\n';
 }
 
 boost::optional<int>
@@ -141,9 +140,6 @@ ShowCmd::complete(Project &project, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
-    for (Item &item : project.getStorage().list()) {
-        out() << item.getId() << '\n';
-    }
-
+    completeIds(project.getStorage(), out());
     return EXIT_SUCCESS;
 }

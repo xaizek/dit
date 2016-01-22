@@ -241,6 +241,25 @@ Item::wasChanged() const
     return isModified();
 }
 
+const std::vector<Change> &
+Item::getChanges()
+{
+    ensureLoaded();
+    return changes;
+}
+
+std::vector<Change> &
+Item::getChanges(pk<Storage>)
+{
+    return changes;
+}
+
+const std::vector<Change> &
+Item::getChanges(pk<Storage>) const
+{
+    return changes;
+}
+
 void
 Item::setTimeSource(std::function<std::time_t()> getTime, pk<Tests>)
 {

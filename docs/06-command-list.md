@@ -74,6 +74,16 @@ Without arguments displays summary of available commands.
 
 With argument displays summary on that command.
 
+log
+---
+
+Displays item changes.
+
+**Usage: log \<item id\> [key...]**
+
+Displays information about item changes (from oldest to newest) either for all
+fields (if only item id is specified) or just for the specified ones.
+
 ls
 --
 

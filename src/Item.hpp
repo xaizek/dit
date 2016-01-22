@@ -138,23 +138,23 @@ public:
      */
     bool wasChanged() const;
     /**
+     * @brief Retrieves read-only set of changes of the item.
+     *
+     * @returns List of item changes.
+     */
+    const std::vector<Change> & getChanges();
+    /**
      * @brief Retrieves set of changes of the item.
      *
      * @returns List of item changes.
      */
-    std::vector<Change> & getChanges(pk<Storage>)
-    {
-        return changes;
-    }
+    std::vector<Change> & getChanges(pk<Storage>);
     /**
      * @brief Retrieves immutable set of changes of the item.
      *
      * @returns Constant list of item changes.
      */
-    const std::vector<Change> & getChanges(pk<Storage>) const
-    {
-        return changes;
-    }
+    const std::vector<Change> & getChanges(pk<Storage>) const;
 
     /**
      * @brief Sets timestamp provider.
@@ -198,7 +198,7 @@ private:
      */
     const std::string id;
     /**
-     * @brief Change set associated with the item.
+     * @brief Change set associated with the item (from oldest to newest).
      */
     std::vector<Change> changes;
 };

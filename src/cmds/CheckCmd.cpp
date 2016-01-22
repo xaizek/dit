@@ -58,6 +58,14 @@ public:
         const std::vector<std::string> &args) override;
 
 private:
+    /**
+     * @brief Compares actual list of ids with expected list.
+     *
+     * @param items Known items.
+     * @param idGenerator Generator of item IDs.
+     *
+     * @returns Exit code like one returned by @c main().
+     */
     int checkIdList(const std::vector<std::reference_wrapper<Item>> &items,
                     IdGenerator &idGenerator);
 };
@@ -88,14 +96,6 @@ CheckCmd::run(Project &project, const std::vector<std::string> &)
     return checkIdList(items, idGenerator);
 }
 
-/**
- * @brief Compares actual list of ids with expected list.
- *
- * @param items Known items.
- * @param idGenerator Generator of item IDs.
- *
- * @returns Exit code like one returned by @c main().
- */
 int
 CheckCmd::checkIdList(const std::vector<std::reference_wrapper<Item>> &items,
                       IdGenerator &idGenerator)
