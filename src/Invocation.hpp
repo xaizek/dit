@@ -82,6 +82,32 @@ public:
     void parse(bool completion = false);
 
     /**
+     * @brief Whether usage information should be displayed.
+     *
+     * @returns @c true if so, @c false otherwise.
+     */
+    bool shouldPrintHelp() const;
+    /**
+     * @brief Returns usage information related to command-line options.
+     *
+     * @returns The information.
+     */
+    std::string getHelp() const;
+    /**
+     * @brief Retrieves name of command-line options.
+     *
+     * To be used for completion.
+     *
+     * @returns List of the names.
+     */
+    std::vector<std::string> getOpts() const;
+    /**
+     * @brief Whether version information should be displayed.
+     *
+     * @returns @c true if so, @c false otherwise.
+     */
+    bool shouldPrintVersion() const;
+    /**
      * @brief Retrieves name of the project to act on.
      *
      * @returns The name.
@@ -111,6 +137,16 @@ public:
      * @returns Key-value pairs to use for the override.
      */
     std::vector<std::pair<std::string, std::string>> getConfs() const;
+
+private:
+    /**
+     * @brief Parses command-line options (like @c --help).
+     *
+     * Initializes @c cmdLine for further processing.
+     *
+     * @param completion Whether this is for command-line completion.
+     */
+    void processOptions(bool completion);
 
 private:
     /**
@@ -145,6 +181,22 @@ private:
      * @brief Function that resolves alias name into its right-hand side.
      */
     aliasResolverFunc aliasResolver;
+    /**
+     * @brief Whether usage information should be displayed.
+     */
+    bool help = false;
+    /**
+     * @brief Usage information related to command-line options.
+     */
+    std::string helpMsg;
+    /**
+     * @brief Retrieves name of command-line options.
+     */
+    std::vector<std::string> optNames;
+    /**
+     * @brief Whether version information should be displayed.
+     */
+    bool version = false;
 };
 
 #endif // DIT__INVOCATION_HPP__

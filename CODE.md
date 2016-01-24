@@ -27,6 +27,8 @@ the second one gets project reference.  Invocation order is: global then project
 specific.  One can do all the work at project specific level (if it makes sense)
 by saving data passed into global handler for future use.
 
+Completion is a first-class operation and is handled on many levels of code.
+
 #### Registration ####
 
 This is done automatically by `AutoRegisteredCommand` class.  Commands just need
