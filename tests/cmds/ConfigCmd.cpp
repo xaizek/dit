@@ -75,6 +75,8 @@ TEST_CASE("Config completes options", "[cmds][config][completion]")
     const std::string expectedOut =
         "--help\n"
         "--global\n"
+        "-h\n"
+        "-g\n"
         "ui.ls:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
@@ -116,6 +118,8 @@ TEST_CASE("Config completes global config", "[cmds][config][completion]")
     const std::string expectedOut =
         "--help\n"
         "--global\n"
+        "-h\n"
+        "-g\n"
         "core.defprj:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());

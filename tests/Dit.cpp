@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 
+#include <iostream>
 #include <sstream>
 
 #include "Config.hpp"
@@ -26,6 +27,30 @@
 #include "Project.hpp"
 
 #include "Tests.hpp"
+
+TEST_CASE("Help is displayed", "[app][invocation]")
+{
+    StreamCapture capture(std::cout);
+
+    Dit dit({ "app", "--help" });
+
+    boost::optional<int> exitCode = dit.run();
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+    REQUIRE(!capture.get().empty());
+}
+
+TEST_CASE("Version is displayed", "[app][invocation]")
+{
+    StreamCapture capture(std::cout);
+
+    Dit dit({ "app", "--version" });
+
+    boost::optional<int> exitCode = dit.run();
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+    REQUIRE(!capture.get().empty());
+}
 
 TEST_CASE("Running commands", "[app]")
 {
@@ -81,7 +106,9 @@ TEST_CASE("Running commands", "[app]")
 
         const std::string expectedOut =
             "--help\n"
-            "--global\n";
+            "--global\n"
+            "-h\n"
+            "-g\n";
 
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
@@ -167,6 +194,10 @@ TEST_CASE("Completion of commands", "[app][completion]")
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
         const std::string expectedOut =
+            "--help\n"
+            "--version\n"
+            "-h\n"
+            "-v\n"
             "add\n"
             "check\n"
             "complete\n"
@@ -183,6 +214,10 @@ TEST_CASE("Completion of commands", "[app][completion]")
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
         const std::string expectedOut =
+            "--help\n"
+            "--version\n"
+            "-h\n"
+            "-v\n"
             "add.check\n"
             "add.complete\n"
             "add.config\n";
@@ -218,6 +253,8 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
         const std::string expectedOut =
             "--help\n"
             "--global\n"
+            "-h\n"
+            "-g\n"
             "ui.ls:\n"
             "ui.show:\n";
         REQUIRE(out.str() == expectedOut);
@@ -247,7 +284,9 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 
         const std::string expectedOut =
             "--help\n"
-            "--global\n";
+            "--global\n"
+            "-h\n"
+            "-g\n";
 
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());

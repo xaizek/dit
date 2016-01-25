@@ -45,6 +45,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "parsing.hpp"
+#include "printing.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -130,6 +131,24 @@ int
 Dit::run()
 {
     invocation.parse();
+
+    if (invocation.shouldPrintHelp()) {
+        std::cout << invocation.getHelp();
+
+        std::cout << "\nsub-commands:\n";
+        for (const Command &cmd : sorted(Commands::list())) {
+            std::cout << "  " << Cmd{cmd.getName()}
+                      << " -- " << cmd.getDescr() << '\n';
+        }
+
+        return EXIT_SUCCESS;
+    }
+
+    if (invocation.shouldPrintVersion()) {
+        std::cout << "0.9\n";
+        return EXIT_SUCCESS;
+    }
+
     const std::string cmdName = invocation.getCmdName();
     const std::vector<std::string> cmdArgs = invocation.getCmdArgs();
 
@@ -179,8 +198,13 @@ Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
 
     if (boost::ends_with(invocation.getPrjName(), COMPL_CURSOR_MARK)) {
         names = listProjects(projectsDir);
+    } else if (composition.empty()) {
+        names = invocation.getOpts();
     } else if (boost::ends_with(composition, COMPL_CURSOR_MARK)) {
         names = completeCmdName(composition, listCommands(*globalConfig));
+        for (const std::string &opt : invocation.getOpts()) {
+            names.push_back(opt);
+        }
     } else {
         return completeCmd();
     }

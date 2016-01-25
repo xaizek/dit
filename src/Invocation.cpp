@@ -24,11 +24,17 @@
 #include <utility>
 #include <vector>
 
+#include <boost/program_options/errors.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/tokenizer.hpp>
 
 #include "utils/containers.hpp"
 #include "utils/strings.hpp"
+
+namespace po = boost::program_options;
 
 std::vector<std::string> breakIntoArgs(const std::string &line);
 static std::vector<std::string> applyAlias(
@@ -77,9 +83,7 @@ Invocation::setAliasResolver(aliasResolverFunc resolver)
 void
 Invocation::parse(bool completion)
 {
-    if (cmdLine.empty()) {
-        cmdLine = breakIntoArgs(defCmdLine);
-    }
+    processOptions(completion);
 
     if (!cmdLine.empty()) {
         composition = cmdLine[0];
@@ -87,8 +91,8 @@ Invocation::parse(bool completion)
         cmdLine.erase(cmdLine.begin());
     }
 
-    // break composition by a '.' and apply aliases from right to left, commands
-    // that are not aliases are just prepended to current command-line
+    // Break composition by a '.' and apply aliases from right to left, commands
+    // that are not aliases are just prepended to current command-line.
     namespace adaptors = boost::adaptors;
     const std::vector<std::string> names = split(composition, '.');
     for (const std::string &name : adaptors::reverse(names)) {
@@ -107,6 +111,57 @@ Invocation::parse(bool completion)
     } else {
         cmdName = cmdLine[0];
         cmdLine.erase(cmdLine.begin());
+    }
+}
+
+void
+Invocation::processOptions(bool completion)
+{
+    po::options_description opts("dit options");
+    opts.add_options()
+        ("help,h", "display help message")
+        ("version,v", "display version information");
+    std::ostringstream oss;
+    oss << opts;
+    helpMsg = oss.str();
+
+    using opt_t = boost::shared_ptr<po::option_description>;
+    optNames.clear();
+    for (const opt_t &opt : opts.options()) {
+        optNames.push_back("--" + opt->long_name());
+    }
+    optNames.push_back("-h");
+    optNames.push_back("-v");
+
+    po::options_description all;
+    all.add(opts);
+
+    std::vector<std::string> prefix;
+    std::tie(prefix, cmdLine) = span(cmdLine, [](const std::string &a) {
+                                         return !a.empty() && a.front() == '-';
+                                     });
+
+    po::variables_map vm;
+    try {
+        po::store(po::command_line_parser(prefix).options(all).run(), vm);
+        po::notify(vm);
+    } catch (const boost::program_options::error &) {
+        // Allow unknown options for completion.
+        if (!completion) {
+            throw;
+        }
+    }
+
+    help = vm.count("help");
+    version = vm.count("version");
+
+    if (cmdLine.empty()) {
+        if (prefix.empty()) {
+            cmdLine = breakIntoArgs(defCmdLine);
+        } else {
+            composition.clear();
+            cmdName.clear();
+        }
     }
 }
 
@@ -177,6 +232,30 @@ applyAlias(const std::vector<std::string> &alias,
     }
 
     return std::move(substituted);
+}
+
+bool
+Invocation::shouldPrintHelp() const
+{
+    return help;
+}
+
+std::string
+Invocation::getHelp() const
+{
+    return helpMsg;
+}
+
+std::vector<std::string>
+Invocation::getOpts() const
+{
+    return optNames;
+}
+
+bool
+Invocation::shouldPrintVersion() const
+{
+    return version;
 }
 
 std::string

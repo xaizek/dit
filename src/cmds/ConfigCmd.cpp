@@ -143,8 +143,8 @@ ConfigCmd::ConfigCmd()
       visibleOpts("config sub-command options")
 {
     visibleOpts.add_options()
-        ("help", "display help message")
-        ("global", "use global configuration");
+        ("help,h", "display help message")
+        ("global,g", "use global configuration");
 }
 
 boost::optional<int>
@@ -255,8 +255,9 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
 
     using opt_t = boost::shared_ptr<po::option_description>;
     for (const opt_t &opt : visibleOpts.options()) {
-        out() << opt->format_name() << '\n';
+        out() << "--" << opt->long_name() << '\n';
     }
+    out() << "-h\n" << "-g\n";
 
     // Due to implicitly added space after completion match colon form is easier
     // to type.

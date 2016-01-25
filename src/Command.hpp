@@ -159,4 +159,18 @@ private:
     const std::string help;
 };
 
+/**
+ * @brief Compares two commands by their names.
+ *
+ * @param l First command to compare.
+ * @param r Second command to compare.
+ *
+ * @returns @c true if @p l is "less than" @p r, otherwise @c false is returned.
+ */
+inline bool
+operator<(const Command &l, const Command &r)
+{
+    return l.getName() < r.getName();
+}
+
 #endif // DIT__COMMAND_HPP__

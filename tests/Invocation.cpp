@@ -22,6 +22,31 @@
 
 #include "Invocation.hpp"
 
+TEST_CASE("Help request is detected.", "[invocation]")
+{
+    auto aliasResolver = [](const std::string &) { return std::string(); };
+
+    Invocation invocation;
+    invocation.setCmdLine({ "--help" });
+    invocation.setAliasResolver(aliasResolver);
+    invocation.parse();
+
+    REQUIRE(invocation.shouldPrintHelp());
+    REQUIRE(!invocation.getHelp().empty());
+}
+
+TEST_CASE("Version request is detected.", "[invocation]")
+{
+    auto aliasResolver = [](const std::string &) { return std::string(); };
+
+    Invocation invocation;
+    invocation.setCmdLine({ "--version" });
+    invocation.setAliasResolver(aliasResolver);
+    invocation.parse();
+
+    REQUIRE(invocation.shouldPrintVersion());
+}
+
 TEST_CASE("Project name is extracted correctly.", "[invocation][project]")
 {
     auto aliasResolver = [](const std::string &) { return std::string(); };
