@@ -119,8 +119,8 @@ Invocation::processOptions(bool completion)
 {
     po::options_description opts("dit options");
     opts.add_options()
-        ("help", "display help message")
-        ("version", "display version information");
+        ("help,h", "display help message")
+        ("version,v", "display version information");
     std::ostringstream oss;
     oss << opts;
     helpMsg = oss.str();
@@ -128,8 +128,10 @@ Invocation::processOptions(bool completion)
     using opt_t = boost::shared_ptr<po::option_description>;
     optNames.clear();
     for (const opt_t &opt : opts.options()) {
-        optNames.push_back(opt->format_name());
+        optNames.push_back("--" + opt->long_name());
     }
+    optNames.push_back("-h");
+    optNames.push_back("-v");
 
     po::options_description all;
     all.add(opts);

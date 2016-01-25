@@ -106,7 +106,9 @@ TEST_CASE("Running commands", "[app]")
 
         const std::string expectedOut =
             "--help\n"
-            "--global\n";
+            "--global\n"
+            "-h\n"
+            "-g\n";
 
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
@@ -194,6 +196,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
         const std::string expectedOut =
             "--help\n"
             "--version\n"
+            "-h\n"
+            "-v\n"
             "add\n"
             "check\n"
             "complete\n"
@@ -212,6 +216,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
         const std::string expectedOut =
             "--help\n"
             "--version\n"
+            "-h\n"
+            "-v\n"
             "add.check\n"
             "add.complete\n"
             "add.config\n";
@@ -247,6 +253,8 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
         const std::string expectedOut =
             "--help\n"
             "--global\n"
+            "-h\n"
+            "-g\n"
             "ui.ls:\n"
             "ui.show:\n";
         REQUIRE(out.str() == expectedOut);
@@ -276,7 +284,9 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 
         const std::string expectedOut =
             "--help\n"
-            "--global\n";
+            "--global\n"
+            "-h\n"
+            "-g\n";
 
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
