@@ -84,6 +84,9 @@ ProjectsCmd::run(Dit &dit, const std::vector<std::string> &args)
     }
 
     const std::string &projectsDir = dit.getProjectsDir();
+    if (!fs::exists(projectsDir)) {
+        return EXIT_SUCCESS;
+    }
 
     std::vector<std::pair<std::string, std::string>> infos;
 
