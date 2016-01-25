@@ -68,6 +68,11 @@ NewCmd::run(Dit &dit, const std::vector<std::string> &args)
     }
 
     const std::string &prjName = args[0];
+    if (prjName.find('/') != std::string::npos) {
+        err() << "Project name can't contain slash.\n";
+        return EXIT_FAILURE;
+    }
+
     std::string rootDir = (fs::path(dit.getProjectsDir())/prjName).string();
 
     if (Project(rootDir).exists()) {
