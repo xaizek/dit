@@ -1,6 +1,8 @@
 CXXFLAGS += -std=c++11 -Wall -Wextra -Werror -MMD -I$(abspath src)
 LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_system
 
+INSTALL := install -D
+
 ifneq ($(OS),Windows_NT)
     bin_suffix :=
 else
@@ -19,7 +21,14 @@ pos = $(strip $(eval T := ) \
 
 # determine output directory and build target; "." is the directory by default
 # or "release"/"debug" for corresponding targets
+is_release := 0
 ifneq ($(call pos,release,$(MAKECMDGOALS)),-1)
+    is_release := 1
+endif
+ifneq ($(call pos,install,$(MAKECMDGOALS)),-1)
+    is_release := 1
+endif
+ifneq ($(is_release),0)
     EXTRA_CXXFLAGS := -O3
     EXTRA_LDFLAGS  := -Wl,--strip-all
 
@@ -71,6 +80,7 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean coverage man show-coverage reset-coverage debug release
+.PHONY: install install-docs
 
 debug release: $(out_dir)/$(bin)
 
@@ -103,6 +113,18 @@ $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
 
 check: $(target) $(out_dir)/tests/tests reset-coverage
 	@$(out_dir)/tests/tests
+
+install: release
+	$(INSTALL) $(out_dir)/$(bin) $(DESTDIR)/usr/bin/$(bin)
+	$(INSTALL) -m 644 scripts/bash-completion \
+	                  $(DESTDIR)/usr/share/bash-completion/completions/dit
+
+install-docs: man
+	$(INSTALL) -m 644 $(out_dir)/docs/dit.1 $(DESTDIR)/usr/share/man/man1/dit.1
+
+uninstall:
+	$(RM) $(DESTDIR)/usr/bin/$(bin) $(DESTDIR)/usr/share/man/man1/dit.1 \
+	      $(DESTDIR)/usr/share/man/man1/dit.1
 
 # work around parenthesis warning in tests somehow caused by ccache
 $(out_dir)/tests/tests: EXTRA_CXXFLAGS += -Wno-error=parentheses -Itests/
