@@ -26,3 +26,14 @@ Creating an alias for `dit` itself won't hurt either:
 ```bash
 alias d='dit'
 ```
+
+Note that this can break completion if there are not workarounds like the one
+mentioned in http://superuser.com/a/437508.  Another option is to define
+completion manually for the alias like this:
+
+```bash
+complete -F _dit d
+```
+
+This won't work right away with `d.d` and `d.v` above as they take project name
+argument.
