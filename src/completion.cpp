@@ -26,8 +26,27 @@
 #include <utility>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+
 #include "Item.hpp"
+#include "Project.hpp"
 #include "Storage.hpp"
+
+std::vector<std::string>
+listProjects(const std::string &projectsDir)
+{
+    namespace fs = boost::filesystem;
+
+    std::vector<std::string> names;
+
+    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
+        if (Project(e.path().string()).exists()) {
+            names.push_back(e.path().filename().string());
+        }
+    }
+
+    return std::move(names);
+}
 
 int
 completeIds(Storage &storage, std::ostream &os)
