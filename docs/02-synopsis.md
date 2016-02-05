@@ -3,9 +3,6 @@ SYNOPSIS
 
 `dit [.<project>] [key=value] [key+=value] [<command>] [args...]`
 
-The command name is **dit** instead of **dit** as the first one is easier and
-faster to type.
-
 Broken down structure of the command-line:
 
 ```
