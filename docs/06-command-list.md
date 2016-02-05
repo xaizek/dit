@@ -114,6 +114,15 @@ Lists projects.
 Lists projects along with their descriptions (**prj.descr**).  Picked project is
 marked with a star (\*).
 
+rename
+------
+
+Rename project.
+
+**Usage: rename \<old name\> \<new name\>**
+
+Renames existing project.
+
 set
 ---
 
