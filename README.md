@@ -45,7 +45,7 @@ workflow, which are expected to be defined by the user.
 Commands look like:
 
 ```
-d.d add title: Add install target. type: addition category: code status: in\ progress
+d.d add title: Add install target. type: addition category: code status: in progress
 ```
 
 Example of entry listing:
