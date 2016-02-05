@@ -27,8 +27,7 @@
 
 #include "Tests.hpp"
 
-TEST_CASE("Projects command",
-          "[cmds][projects][invocation]")
+TEST_CASE("Projects command", "[cmds][projects][invocation]")
 {
     Command *const cmd = Commands::get("projects");
 

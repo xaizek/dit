@@ -26,6 +26,15 @@ class Item;
 class Storage;
 
 /**
+ * @brief Lists all projects.
+ *
+ * @param projectsDir Base directory for projects.
+ *
+ * @returns Names of discovered projects with prepended dot (.).
+ */
+std::vector<std::string> listProjects(const std::string &projectsDir);
+
+/**
  * @brief Completes IDs from the storage.
  *
  * @param storage Source of IDs.

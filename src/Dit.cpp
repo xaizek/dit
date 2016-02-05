@@ -44,6 +44,7 @@
 #include "Invocation.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
+#include "completion.hpp"
 #include "parsing.hpp"
 #include "printing.hpp"
 
@@ -52,7 +53,6 @@ namespace fs = boost::filesystem;
 static Config & getDefaultConfig();
 static std::vector<std::string> completeCmdName(const std::string &composition,
                                                 std::vector<std::string> names);
-static std::vector<std::string> listProjects(const std::string &projectsDir);
 static std::vector<std::string> listCommands(Config &config);
 
 /**
@@ -198,6 +198,10 @@ Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
 
     if (boost::ends_with(invocation.getPrjName(), COMPL_CURSOR_MARK)) {
         names = listProjects(projectsDir);
+        std::transform(names.begin(), names.end(), names.begin(),
+                       [](const std::string &s) {
+                           return '.' + s;
+                       });
     } else if (composition.empty()) {
         names = invocation.getOpts();
     } else if (boost::ends_with(composition, COMPL_CURSOR_MARK)) {
@@ -279,27 +283,6 @@ Dit::completeCmd()
     }
 
     return EXIT_FAILURE;
-}
-
-/**
- * @brief Lists all projects.
- *
- * @param projectsDir Base directory for projects.
- *
- * @returns Names of discovered projects with prepended dot (.).
- */
-static std::vector<std::string>
-listProjects(const std::string &projectsDir)
-{
-    std::vector<std::string> names;
-
-    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
-        if (Project(e.path().string()).exists()) {
-            names.push_back('.' + e.path().filename().string());
-        }
-    }
-
-    return std::move(names);
 }
 
 /**
