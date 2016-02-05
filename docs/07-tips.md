@@ -1,6 +1,13 @@
 TIPS
 ====
 
+Install and use bash completion
+-------------------------------
+
+Bash completion script is installed in standard location and should work
+automatically.  Lots of things are completed in a predictable and helpful
+manner, so be sure to use the completion as it helps a great deal.
+
 Create aliases for frequently used projects
 -------------------------------------------
 
