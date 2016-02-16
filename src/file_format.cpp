@@ -91,7 +91,7 @@ decode(std::string str)
 {
     boost::replace_all(str, R"(\n)", "\n");
     boost::replace_all(str, R"(\\)", R"(\)");
-    return std::move(str);
+    return str;
 }
 
 std::ostream &
@@ -127,5 +127,5 @@ encode(std::string str)
 {
     boost::replace_all(str, R"(\)", R"(\\)");
     boost::replace_all(str, "\n", R"(\n)");
-    return std::move(str);
+    return str;
 }

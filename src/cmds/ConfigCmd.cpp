@@ -286,7 +286,7 @@ ConfigCmd::parseOpts(const std::vector<std::string> &args) const
     po::store(po::command_line_parser(args).options(all).positional(p).run(),
               vm);
     po::notify(vm);
-    return std::move(vm);
+    return vm;
 }
 
 int

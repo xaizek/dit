@@ -45,7 +45,7 @@ listProjects(const std::string &projectsDir)
         }
     }
 
-    return std::move(names);
+    return names;
 }
 
 int

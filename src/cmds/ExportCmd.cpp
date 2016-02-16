@@ -188,5 +188,5 @@ ExportCmd::shellEscape(std::string str)
             boost::is_any_of("\\\r\n\t'\"; ?|[]{}<>`!$&*()#~")),
         ShellEscaper());
 
-    return std::move(str);
+    return str;
 }

@@ -214,7 +214,7 @@ applyAlias(const std::vector<std::string> &alias,
 
                 // Stop after inserting last argument during completion.
                 if (completion && argN == args.size()) {
-                    return std::move(substituted);
+                    return substituted;
                 }
             } else {
                 substituted.emplace_back();
@@ -231,7 +231,7 @@ applyAlias(const std::vector<std::string> &alias,
         }
     }
 
-    return std::move(substituted);
+    return substituted;
 }
 
 bool

@@ -268,7 +268,7 @@ parsePairedArgs(const std::vector<std::string> &args)
         }
     }
 
-    return std::move(parsed);
+    return parsed;
 }
 
 bool

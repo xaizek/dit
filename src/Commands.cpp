@@ -58,7 +58,7 @@ Commands::list()
         list.emplace_back(*e.second.get());
     }
 
-    return std::move(list);
+    return list;
 }
 
 Commands &

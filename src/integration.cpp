@@ -125,7 +125,7 @@ readEditedValue(const std::string &path)
     };
 
     boost::trim_if(value, [](char c) { return std::isspace(c) || c == '\n'; } );
-    return std::move(value);
+    return value;
 }
 
 unsigned int

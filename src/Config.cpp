@@ -53,7 +53,7 @@ Config::get(const std::string &key)
     }
 
     if (parent == nullptr || !val.empty()) {
-        return std::move(val);
+        return val;
     }
     return parent->get(key);
 }
@@ -87,7 +87,7 @@ Config::list(const std::string &path)
             list.push_back(propName);
         }
     }
-    return std::move(list);
+    return list;
 }
 
 void

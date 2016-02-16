@@ -160,7 +160,7 @@ inline C shuffle(const C &c)
     std::mt19937 g(rd());
     std::shuffle(shuffled.begin(), shuffled.end(), g);
 
-    return std::move(shuffled);
+    return shuffled;
 }
 
 void

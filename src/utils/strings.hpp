@@ -64,7 +64,7 @@ split(const std::string &str, char with)
 
     std::vector<std::string> results;
     boost::split(results, str, boost::is_from_range(with, with));
-    return std::move(results);
+    return results;
 }
 
 #endif // DIT__UTILS__STRINGS_HPP__

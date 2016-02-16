@@ -232,7 +232,7 @@ static std::vector<std::string>
 completeCmdName(const std::string &composition, std::vector<std::string> names)
 {
     if (composition.find('.') == std::string::npos) {
-        return std::move(names);
+        return names;
     }
 
     const std::string prefix = composition.substr(0,
@@ -250,7 +250,7 @@ completeCmdName(const std::string &composition, std::vector<std::string> names)
     for (std::string &name : matches) {
         name = prefix + name;
     }
-    return std::move(matches);
+    return matches;
 }
 
 int
@@ -305,7 +305,7 @@ listCommands(Config &config)
         names.push_back(alias);
     }
 
-    return std::move(names);
+    return names;
 }
 
 std::unique_ptr<Project>
@@ -325,7 +325,7 @@ Dit::openProject(const std::string &name, std::string &error)
         return {};
     }
 
-    return std::move(project);
+    return project;
 }
 
 std::pair<Config, std::unique_ptr<Config>>
