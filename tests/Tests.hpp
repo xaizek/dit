@@ -89,6 +89,8 @@ private:
  */
 class Tests
 {
+    friend class MockTimeSource;
+
 public:
     /**
      * @brief Disables adding escape sequences to output.
@@ -102,17 +104,6 @@ public:
      * @param err Error stream.
      */
     static void setStreams(std::ostream &out, std::ostream &err);
-
-    /**
-     * @brief Sets timestamp provider for Item and Change objects.
-     *
-     * @param getTime New provider.
-     */
-    static void setTimeSource(std::function<std::time_t()> getTime);
-    /**
-     * @brief Resets timestamp provider to its default value.
-     */
-    static void resetTimeSource();
 
     /**
      * @brief Makes an instance of @c Project.
@@ -143,6 +134,43 @@ public:
      * @returns @c true if so, otherwise @c false is returned.
      */
     static bool configIsModified(Config &config);
+
+private:
+    /**
+     * @brief Sets timestamp provider for Item and Change objects.
+     *
+     * @param getTime New provider.
+     */
+    static void setTimeSource(std::function<std::time_t()> getTime);
+    /**
+     * @brief Resets timestamp provider to its default value.
+     */
+    static void resetTimeSource();
+};
+
+/**
+ * @brief RAII time source replacer.
+ */
+class MockTimeSource
+{
+public:
+    /**
+     * @brief Sets timestamp provider for Item and Change objects.
+     *
+     * @param getTime New provider.
+     */
+    explicit MockTimeSource(std::function<std::time_t()> getTime)
+    {
+        Tests::setTimeSource(getTime);
+    }
+
+    /**
+     * @brief Resets timestamp provider to its default value.
+     */
+    ~MockTimeSource()
+    {
+        Tests::resetTimeSource();
+    }
 };
 
 #endif // DIT__TESTS_HPP__

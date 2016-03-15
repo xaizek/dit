@@ -42,8 +42,7 @@ TEST_CASE("_created pseudo field is empty for empty item.",
 TEST_CASE("_created pseudo field is updated correctly.", "[item][pseudo-field]")
 {
     std::time_t t = std::time(nullptr);
-    std::function<std::time_t()> timeSource = [&t](){ return t++; };
-    Tests::setTimeSource(timeSource);
+    MockTimeSource timeMock([&t](){ return t++; });
 
     Item itemA = Tests::makeItem("aaa");
     Item itemB = Tests::makeItem("bbb");
@@ -52,8 +51,6 @@ TEST_CASE("_created pseudo field is updated correctly.", "[item][pseudo-field]")
     itemB.setValue("title", "value");
 
     REQUIRE(itemB.getValue("_created") > itemA.getValue("_created"));
-
-    Tests::resetTimeSource();
 }
 
 TEST_CASE("_changed pseudo field is empty for empty item.",
@@ -66,8 +63,7 @@ TEST_CASE("_changed pseudo field is empty for empty item.",
 TEST_CASE("_changed pseudo field is updated correctly.", "[item][pseudo-field]")
 {
     std::time_t t = std::time(nullptr);
-    std::function<std::time_t()> timeSource = [&t](){ return t++; };
-    Tests::setTimeSource(timeSource);
+    MockTimeSource timeMock([&t](){ return t++; });
 
     Item itemA = Tests::makeItem("aaa");
     Item itemB = Tests::makeItem("bbb");
@@ -75,15 +71,12 @@ TEST_CASE("_changed pseudo field is updated correctly.", "[item][pseudo-field]")
     itemA.setValue("title", "value");
     itemB.setValue("title", "value");
     REQUIRE(itemB.getValue("_changed") > itemA.getValue("_changed"));
-
-    Tests::resetTimeSource();
 }
 
 TEST_CASE("Empty values are not listed", "[item]")
 {
     std::time_t t = std::time(nullptr);
-    std::function<std::time_t()> timeSource = [&t](){ return t++; };
-    Tests::setTimeSource(timeSource);
+    MockTimeSource timeMock([&t](){ return t++; });
 
     Item item = Tests::makeItem("aaa");
     item.setValue("title", "some title");
