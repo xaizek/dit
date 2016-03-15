@@ -36,17 +36,16 @@ TEST_CASE("Rename command fails", "[cmds][rename][invocation]")
     std::ostringstream out, err;
     Tests::setStreams(out, err);
 
-    char no_data[] = "XDG_CONFIG_HOME=tests/no-data";
-    char data[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char no_data[] = "XDG_CONFIG_HOME=tests/no-data";
+    static char data[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
-    putenv(no_data);
     putenv(home_env);
 
+    putenv(no_data);
     Dit badDit({ "app" });
 
     putenv(data);
-
     Dit goodDit({ "app" });
 
     boost::optional<int> exitCode;
@@ -107,8 +106,8 @@ TEST_CASE("Rename command succeeds", "[cmds][rename][invocation]")
     std::ostringstream out, err;
     Tests::setStreams(out, err);
 
-    char data[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char data[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(data);
     putenv(home_env);
@@ -133,8 +132,8 @@ TEST_CASE("Rename command successful completion", "[cmds][rename][completion]")
 {
     Command *const cmd = Commands::get("rename");
 
-    char data[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char data[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(data);
     putenv(home_env);
@@ -178,8 +177,8 @@ TEST_CASE("Rename failed successful completion", "[cmds][rename][completion]")
 {
     Command *const cmd = Commands::get("rename");
 
-    char data[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char data[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(data);
     putenv(home_env);

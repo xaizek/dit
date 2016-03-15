@@ -56,8 +56,8 @@ TEST_CASE("Running commands", "[app]")
 {
     Tests::disableDecorations();
 
-    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
@@ -145,8 +145,8 @@ TEST_CASE("Completion of projects", "[app][completion]")
 {
     Tests::disableDecorations();
 
-    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
@@ -174,8 +174,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
 {
     Tests::disableDecorations();
 
-    char xdg_env[] = "XDG_CONFIG_HOME=";
-    char home_env[] = "HOME=.";
+    static char xdg_env[] = "XDG_CONFIG_HOME=";
+    static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
@@ -230,8 +230,8 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
 {
     Tests::disableDecorations();
 
-    char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
-    char home_env[] = "HOME=.";
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);

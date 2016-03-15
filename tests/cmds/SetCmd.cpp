@@ -90,7 +90,7 @@ TEST_CASE("Set allows external editing", "[cmds][set][integration]")
     std::ostringstream err;
     Tests::setStreams(out, err);
 
-    char editor_env[] = "EDITOR=echo new-value >>";
+    static char editor_env[] = "EDITOR=echo new-value >>";
     putenv(editor_env);
 
     Command *const cmd = Commands::get("set");

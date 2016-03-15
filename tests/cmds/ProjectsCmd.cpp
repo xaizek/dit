@@ -34,8 +34,8 @@ TEST_CASE("Projects command", "[cmds][projects][invocation]")
     std::ostringstream out, err;
     Tests::setStreams(out, err);
 
-    char xdg_env[] = "XDG_CONFIG_HOME=tests/no-data";
-    char home_env[] = "HOME=.";
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/no-data";
+    static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);

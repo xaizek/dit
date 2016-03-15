@@ -97,7 +97,7 @@ TEST_CASE("Addition on new item", "[cmds][add]")
 
     SECTION("Add allows external editing")
     {
-        char editor_env[] = "EDITOR=echo new-value >>";
+        static char editor_env[] = "EDITOR=echo new-value >>";
         putenv(editor_env);
 
         boost::optional<int> exitCode = cmd->run(*prj, { "title=-" });
