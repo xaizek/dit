@@ -155,10 +155,8 @@ ExportCmd::complete(Project &project, const std::vector<std::string> &args)
 void
 ExportCmd::exportItem(const std::string &cmd, Item &item)
 {
-    std::ostringstream cmdLine;
-
     // Compose command-line.
-    cmdLine << cmd;
+    std::ostringstream cmdLine(cmd, std::ios::out | std::ios::ate);
     for (const std::string &key : item.listRecordNames()) {
         cmdLine << ' ' << key << '=' << shellEscape(item.getValue(key));
     }
