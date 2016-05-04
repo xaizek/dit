@@ -29,14 +29,13 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/range/adaptor/reversed.hpp>
-#include <boost/tokenizer.hpp>
 
+#include "utils/args.hpp"
 #include "utils/containers.hpp"
 #include "utils/strings.hpp"
 
 namespace po = boost::program_options;
 
-std::vector<std::string> breakIntoArgs(const std::string &line);
 static std::vector<std::string> applyAlias(
     const std::vector<std::string> &alias, const std::vector<std::string> &args,
     bool completion);
@@ -163,21 +162,6 @@ Invocation::processOptions(bool completion)
             cmdName.clear();
         }
     }
-}
-
-/**
- * @brief Tokenize the command line, respecting escapes and quotes.
- *
- * @param line Line to parse.
- *
- * @returns Array of arguments.
- */
-std::vector<std::string>
-breakIntoArgs(const std::string &line)
-{
-    boost::escaped_list_separator<char> sep("\\", " ", "\"'");
-    boost::tokenizer<boost::escaped_list_separator<char>> tok(line, sep);
-    return std::vector<std::string>(tok.begin(), tok.end());
 }
 
 /**
