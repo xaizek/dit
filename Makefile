@@ -68,12 +68,10 @@ rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) \
 bin := dit$(bin_suffix)
 
 bin_sources := $(call rwildcard, src/, *.cpp)
-bin_sources := $(wildcard $(bin_sources))
 bin_objects := $(bin_sources:%.cpp=$(out_dir)/%.o)
 bin_depends := $(bin_sources:%.cpp=$(out_dir)/%.d)
 
 tests_sources := $(call rwildcard, tests/, *.cpp)
-tests_sources := $(wildcard $(tests_sources))
 tests_objects := $(tests_sources:%.cpp=$(out_dir)/%.o)
 tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
