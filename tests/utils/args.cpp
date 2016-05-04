@@ -32,3 +32,35 @@ TEST_CASE("Benign input", "[utils][args]")
     std::vector<std::string> args = breakIntoArgs("a b c");
     REQUIRE(args == (std::vector<std::string>{ "a", "b", "c" }));
 }
+
+TEST_CASE("Leading whitespace", "[utils][args]")
+{
+    std::vector<std::string> args = breakIntoArgs(" a b c");
+    REQUIRE(args == (std::vector<std::string>{ "a", "b", "c" }));
+}
+
+TEST_CASE("Extra whitespace", "[utils][args]")
+{
+    std::vector<std::string> args = breakIntoArgs("a   b   c");
+    REQUIRE(args == (std::vector<std::string>{ "a", "b", "c" }));
+}
+
+TEST_CASE("Trailing whitespace", "[utils][args]")
+{
+    std::vector<std::string> args = breakIntoArgs("a b c ");
+    REQUIRE(args == (std::vector<std::string>{ "a", "b", "c" }));
+}
+
+TEST_CASE("Whitespace everywhere", "[utils][args]")
+{
+    std::vector<std::string> args = breakIntoArgs("  a    b  c ");
+    REQUIRE(args == (std::vector<std::string>{ "a", "b", "c" }));
+}
+
+TEST_CASE("Throws exception on unclosed bracket", "[utils][args]")
+{
+    REQUIRE_THROWS_AS(breakIntoArgs("'broken"), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("\"broken"), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken'"), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\""), boost::escaped_list_error);
+}
