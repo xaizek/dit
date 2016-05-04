@@ -27,7 +27,7 @@
 #include <utility>
 #include <vector>
 
-#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "utils/getLines.hpp"
