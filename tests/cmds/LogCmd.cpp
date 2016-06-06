@@ -142,6 +142,57 @@ TEST_CASE("Log displays operations correctly", "[cmds][log]")
     }
 }
 
+TEST_CASE("Log produces diffs", "[cmds][log]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Command *const cmd = Commands::get("log");
+    Storage &storage = prj->getStorage();
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    std::time_t t = std::time(nullptr);
+    MockTimeSource timeMock([&t](){ return t++; });
+
+    SECTION("Runs of identical lines are folded with single-line context")
+    {
+        Item item = Tests::makeItem("id");
+        item.setValue("title", "a\nb\nc\nd\ne");
+        item.setValue("title", "a\nb\nc\nd\nf");
+        Tests::storeItem(storage, std::move(item));
+
+        boost::optional<int> exitCode = cmd->run(*prj, { "id" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::vector<std::string> lines = split(out.str(), '\n');
+        REQUIRE(boost::starts_with(lines[6], "title changed:"));
+        REQUIRE(lines[7] == "  a");
+        REQUIRE(boost::starts_with(lines[8], "<2"));
+        REQUIRE(lines[9] == "  d");
+        REQUIRE(lines[10] == "- e");
+        REQUIRE(lines[11] == "+ f");
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Runs of identical lines are folded with single-line context")
+    {
+        Item item = Tests::makeItem("id");
+        item.setValue("title", "a");
+        item.setValue("title", "0\na");
+        Tests::storeItem(storage, std::move(item));
+
+        boost::optional<int> exitCode = cmd->run(*prj, { "id" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::vector<std::string> lines = split(out.str(), '\n');
+        REQUIRE(boost::starts_with(lines[1], "title changed:"));
+        REQUIRE(lines[2] == "+ 0");
+        REQUIRE(err.str() == std::string());
+    }
+}
+
 TEST_CASE("Completion of id for log", "[cmds][log][completion]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();
