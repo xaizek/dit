@@ -17,11 +17,14 @@
 
 #include <cstdlib>
 
+#include <deque>
+#include <sstream>
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include "utils/strings.hpp"
 #include "Change.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
@@ -30,6 +33,9 @@
 #include "completion.hpp"
 #include "decoration.hpp"
 #include "printing.hpp"
+
+static std::string diff(const std::vector<std::string> &f,
+                        const std::vector<std::string> &s);
 
 namespace {
 
@@ -99,15 +105,100 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
                   << Value{value} << '\n';
         } else {
             out() << Key{key}
-                  << decor::blue_fg << decor::bold << " changed to"
-                  << decor::def
-                  << Value{value} << '\n';
+                  << decor::blue_fg << decor::bold << " changed" << decor::def
+                  << Value{diff(split(values[key], '\n'), split(value, '\n'))};
         }
 
         values[key] = value;
     }
 
     return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Finds difference between two lists of lines.
+ *
+ * Implements solution for longest common subsequence problem that matches
+ * modified finding of edit distance (substitution operation excluded) with
+ * backtracking afterward to compose result.
+ *
+ * @param f New state.
+ * @param s Previous state.
+ *
+ * @returns Colored difference showing how to get new state from the old one.
+ */
+static std::string
+diff(const std::vector<std::string> &f, const std::vector<std::string> &s)
+{
+    int d[f.size() + 1][s.size() + 1];
+
+    // Modified edit distance finding.
+    using size_type = std::vector<std::string>::size_type;
+    for (size_type i = 0U, nf = f.size(); i <= nf; ++i) {
+        for (size_type j = 0U, ns = s.size(); j <= ns; ++j) {
+            if (i == 0U) {
+                d[i][j] = j;
+            } else if (j == 0U) {
+                d[i][j] = i;
+            } else {
+                d[i][j] = std::min(d[i - 1U][j] + 1, d[i][j - 1U] + 1);
+                if (f[i - 1U] == s[j - 1U]) {
+                    d[i][j] = std::min(d[i - 1U][j - 1U], d[i][j]);
+                }
+            }
+        }
+    }
+
+    std::deque<std::string> result;
+    int identicalLines = 0;
+
+    auto foldIdentical = [&identicalLines, &result]() {
+        if (identicalLines > 3) {
+            result.erase(result.cbegin() + 1,
+                         result.cbegin() + (identicalLines - 1));
+            result.insert(result.cbegin() + 1,
+                          "<" + std::to_string(identicalLines - 2) +
+                          " unchanged lines folded>");
+        }
+        identicalLines = 0;
+    };
+
+    // Compose results with folding of long runs of identical lines (longer than
+    // three lines).
+    int i = f.size(), j = s.size();
+    while (i != 0 || j != 0) {
+        if (i == 0) {
+            foldIdentical();
+            result.push_front("+ " + s[--j]);
+        } else if (j == 0) {
+            foldIdentical();
+            result.push_front("- " + f[--i]);
+        } else if (d[i][j] == d[i][j - 1] + 1) {
+            foldIdentical();
+            result.push_front("+ " + s[--j]);
+        } else if (d[i][j] == d[i - 1][j] + 1) {
+            foldIdentical();
+            result.push_front("- " + f[--i]);
+        } else {
+            result.push_front("  " + f[--i]);
+            --j;
+            ++identicalLines;
+        }
+    }
+    foldIdentical();
+
+    // Color results and turn them into a string.
+    std::ostringstream oss;
+    for (const std::string &line : result) {
+        switch (line[0]) {
+            case '+': oss << decor::green_fg; break;
+            case '-': oss << decor::red_fg;   break;
+            case '<': oss << decor::black_fg << decor::bold;   break;
+        }
+        oss << line << decor::def << '\n';
+    }
+
+    return oss.str();
 }
 
 boost::optional<int>

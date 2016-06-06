@@ -36,8 +36,7 @@ TEST_CASE("Export fails on wrong invocation", "[cmds][export][invocation]")
     std::unique_ptr<Project> prj = Tests::makeProject();
     Command *const cmd = Commands::get("export");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -67,8 +66,7 @@ TEST_CASE("Completion of export", "[cmds][export][completion]")
 
     Command *const cmd = Commands::get("export");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -83,8 +81,8 @@ TEST_CASE("Completion of export", "[cmds][export][completion]")
     {
         exitCode = cmd->complete(*prj, { "cmd", "ti" });
         expectedOut =
-            "title\n"
-            "bug_number\n";
+            "bug_number\n"
+            "title\n";
     }
 
     REQUIRE(exitCode);
@@ -107,8 +105,7 @@ TEST_CASE("Item exporting", "[cmds][export]")
 
     Command *const cmd = Commands::get("export");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     SECTION("No operation run")

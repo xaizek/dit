@@ -36,8 +36,7 @@ TEST_CASE("Set fails on wrong invocation", "[cmds][set][invocation]")
     std::unique_ptr<Project> prj = Tests::makeProject();
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -86,8 +85,7 @@ TEST_CASE("Set allows external editing", "[cmds][set][integration]")
 
     Tests::storeItem(storage, std::move(item));
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     static char editor_env[] = "EDITOR=echo new-value >>";
@@ -119,8 +117,7 @@ TEST_CASE("Item is changed successfully", "[cmds][set]")
 
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -155,8 +152,7 @@ TEST_CASE("Completion of id for set", "[cmds][set][completion]")
 
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "i" });
@@ -181,8 +177,7 @@ TEST_CASE("Completion of first key name on set", "[cmds][set][completion]")
 
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "id", "ti" });
@@ -190,8 +185,8 @@ TEST_CASE("Completion of first key name on set", "[cmds][set][completion]")
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
     const std::string expectedOut =
-        "title:\n"
-        "bug_number:\n";
+        "bug_number:\n"
+        "title:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }
@@ -209,8 +204,7 @@ TEST_CASE("Completion of next key name on set", "[cmds][set][completion]")
 
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj,
@@ -236,8 +230,7 @@ TEST_CASE("Completion of a value on set", "[cmds][set][completion]")
 
     Command *const cmd = Commands::get("set");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "id", "title=" });

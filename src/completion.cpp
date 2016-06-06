@@ -77,7 +77,7 @@ completeKeys(Item &item, std::ostream &os, const std::vector<std::string> &args)
 int
 completeKeys(Storage &storage, std::ostream &os)
 {
-    std::unordered_set<std::string> keys;
+    std::set<std::string> keys;
 
     for (Item &item : storage.list()) {
         const std::set<std::string> &itemKeys = item.listRecordNames();
@@ -95,7 +95,7 @@ int
 completeKeys(Storage &storage, std::ostream &os,
              const std::vector<std::string> &args)
 {
-    std::unordered_set<std::string> keys;
+    std::set<std::string> keys;
 
     for (Item &item : storage.list()) {
         const std::set<std::string> &itemKeys = item.listRecordNames();

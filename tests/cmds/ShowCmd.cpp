@@ -36,8 +36,7 @@ TEST_CASE("Too few args cause error.", "[cmds][show][args]")
     Command *const cmd = Commands::get("show");
     std::unique_ptr<Project> prj = Tests::makeProject();
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->run(*prj, { });
@@ -66,8 +65,7 @@ TEST_CASE("Values are displayed in alphabetical order by default.",
 
     Tests::storeItem(storage, std::move(item));
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->run(*prj, { "id" });
@@ -100,8 +98,7 @@ TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
 
     Tests::storeItem(storage, std::move(item));
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->run(*prj, { "id" });
