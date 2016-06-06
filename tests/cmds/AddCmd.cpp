@@ -37,8 +37,7 @@ TEST_CASE("Add fails on wrong invocation", "[cmds][add][invocation]")
     std::unique_ptr<Project> prj = Tests::makeProject();
     Command *const cmd = Commands::get("add");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -81,8 +80,7 @@ TEST_CASE("Addition on new item", "[cmds][add]")
     cfg.set("!ids.total", "64");
     cfg.set("!ids.next", "fYP");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     SECTION("Item is added")
@@ -124,8 +122,7 @@ TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
 
     Command *const cmd = Commands::get("add");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "ti" });
@@ -133,8 +130,8 @@ TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
     const std::string expectedOut =
-        "title:\n"
-        "bug_number:\n";
+        "bug_number:\n"
+        "title:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }
@@ -152,8 +149,7 @@ TEST_CASE("Completion of next key name on addition", "[cmds][add][completion]")
 
     Command *const cmd = Commands::get("add");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "title:", "t", "b" });
@@ -178,8 +174,7 @@ TEST_CASE("Completion of a value on addition", "[cmds][add][completion]")
 
     Command *const cmd = Commands::get("add");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "title=" });

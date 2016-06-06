@@ -40,8 +40,7 @@ TEST_CASE("Config value completion on trailing =", "[cmds][config][completion]")
     Config &cfg = prj->getConfig(false);
     cfg.set("ui.ls", "ls-value");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "ui.ls=" });
@@ -64,8 +63,7 @@ TEST_CASE("Config completes options", "[cmds][config][completion]")
     Config &cfg = prj->getConfig(false);
     cfg.set("ui.ls", "ls-value");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "-" });
@@ -94,8 +92,7 @@ TEST_CASE("Config completes global config", "[cmds][config][completion]")
     Config &cfg = prj->getConfig(false);
     cfg.set("ui.ls", "ls-value");
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";

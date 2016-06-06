@@ -140,8 +140,7 @@ TEST_CASE("Rename command successful completion", "[cmds][rename][completion]")
 
     Dit dit({ "app" });
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode;
@@ -185,8 +184,7 @@ TEST_CASE("Rename failed successful completion", "[cmds][rename][completion]")
 
     Dit dit({ "app" });
 
-    std::ostringstream out;
-    std::ostringstream err;
+    std::ostringstream out, err;
     Tests::setStreams(out, err);
 
     boost::optional<int> exitCode = cmd->complete(dit, { "a", "b", "c" });
