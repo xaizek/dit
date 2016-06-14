@@ -124,3 +124,30 @@ TEST_CASE("Item exporting", "[cmds][export]")
     REQUIRE(out.str() == std::string());
     REQUIRE(err.str() == std::string());
 }
+
+TEST_CASE("Stdout destination", "[cmds][export]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "This's a title");
+    item.setValue("bug_number", "22");
+
+    Tests::storeItem(storage, std::move(item));
+
+    Command *const cmd = Commands::get("export");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->run(*prj, { "-" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    // There must be two trailing zeroes.
+    const char expectedOut[] = "bug_number=22\0title=This's a title\0";
+    REQUIRE(out.str() == std::string(std::begin(expectedOut),
+                                     std::end(expectedOut)));
+    REQUIRE(err.str() == std::string());
+}

@@ -39,9 +39,11 @@
 /**
  * @brief Usage message for "export" command.
  */
-const char *const USAGE = R"(Usage: export cmd [expr like for ls...]
+const char *const USAGE = R"(Usage: export (-|cmd) [expr like for ls...]
 
-The cmd is run once for each item with arguments of the form key=value.)";
+Either the cmd is run once for each item with arguments of the form key=value
+or items are printed to standard output with key=value fields terminated by null
+character and each item also finished by null character.)";
 
 namespace {
 
@@ -155,6 +157,14 @@ ExportCmd::complete(Project &project, const std::vector<std::string> &args)
 void
 ExportCmd::exportItem(const std::string &cmd, Item &item)
 {
+    if (const bool toStdOut = (cmd == "-")) {
+        for (const std::string &key : item.listRecordNames()) {
+            out() << key << '=' << item.getValue(key) << '\0';
+        }
+        out() << '\0';
+        return;
+    }
+
     // Compose command-line.
     std::ostringstream cmdLine(cmd, std::ios::out | std::ios::ate);
     for (const std::string &key : item.listRecordNames()) {

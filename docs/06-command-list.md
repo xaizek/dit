@@ -58,10 +58,11 @@ export
 
 Invokes external script passing item data via argument list.
 
-**Usage: export cmd \<list of conditions\>**
+**Usage: export (-|cmd) \<list of conditions\>**
 
 Invokes **cmd key1=value1 key2=value2** for each item that matches given list
-of conditions.
+of conditions or prints out items to standard output with **key=value** fields
+terminated by null character and each item also finished by null character.
 
 help
 ----

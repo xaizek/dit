@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <boost/multi_array.hpp>
+
 #include <cstdlib>
 
 #include <deque>
@@ -130,7 +132,7 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
 static std::string
 diff(const std::vector<std::string> &f, const std::vector<std::string> &s)
 {
-    int d[f.size() + 1][s.size() + 1];
+    boost::multi_array<int, 2> d(boost::extents[f.size() + 1][s.size() + 1]);
 
     // Modified edit distance finding.
     using size_type = std::vector<std::string>::size_type;
