@@ -52,6 +52,8 @@ Example of entry listing:
 
 ![Entry listing](data/dit.png)
 
+See [docs](docs/08-example.md) for more detailed example.
+
 ### Supported Environment ###
 
 Expected to work in \*nix like environments.
