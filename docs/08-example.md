@@ -103,7 +103,7 @@ It's sometimes handy to add additional columns to the table, aliases can help
 here as well:
 
 ```bash
-dit config --global alias.dates='ui.ls.fmt+=,_created,_changed'
+$ dit config --global alias.dates='ui.ls.fmt+=,_created,_changed'
 $ dit ls.dates
 ID   TITLE         STATUS  CREATED              CHANGED
 fqH  Explore dit.  done    2016-02-05 12:31:25  2016-02-05 13:07:51
@@ -112,10 +112,12 @@ fqH  Explore dit.  done    2016-02-05 12:31:25  2016-02-05 13:07:51
 If at some later moment one wants to view history of a task, use `log`:
 
 ```bash
-dit log fqH
+$ dit log fqH
 title created: Explore dit.
 status created: in progress
-status changed to: done
+status changed:
+-in progress
++done
 ```
 
 And so on...
