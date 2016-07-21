@@ -78,7 +78,7 @@ boost::optional<int>
 LogCmd::run(Project &project, const std::vector<std::string> &args)
 {
     if (args.size() < 1) {
-        err() << "Expected single argument (id).\n";
+        err() << "Expected at least one argument (id).\n";
         return EXIT_FAILURE;
     }
 
