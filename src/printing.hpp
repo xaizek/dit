@@ -21,6 +21,7 @@
 #include <ostream>
 #include <string>
 
+#include "utils/contains.hpp"
 #include "decoration.hpp"
 
 /**
@@ -89,7 +90,7 @@ operator<<(std::ostream &os, const Key &key)
 inline std::ostream &
 operator<<(std::ostream &os, const Value &val)
 {
-    return os << (val.data.find('\n') == std::string::npos ? ": " : ":\n")
+    return os << (contains(val.data, '\n') ? ":\n" : ": ")
               << val.data;
 }
 

@@ -23,6 +23,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -31,9 +32,6 @@
 #include "Storage.hpp"
 #include "completion.hpp"
 #include "printing.hpp"
-
-template <typename C>
-static inline bool contains(const C &c, const typename C::value_type &what);
 
 namespace {
 
@@ -120,22 +118,6 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
     }
 
     return EXIT_SUCCESS;
-}
-
-/**
- * @brief Checks whether container contains given item.
- *
- * @tparam C Type of the container.
- * @param c Container to examine.
- * @param what Item to look up in the container.
- *
- * @returns @c true when item is found, @c false otherwise.
- */
-template <typename C>
-static inline bool
-contains(const C &c, const typename C::value_type &what)
-{
-    return std::find(c.cbegin(), c.cend(), what) != c.cend();
 }
 
 void

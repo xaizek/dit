@@ -26,6 +26,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Change.hpp"
 #include "Commands.hpp"
@@ -94,7 +95,7 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
         const std::string &key = change.getKey();
         const std::string &value = change.getValue();
 
-        if (!filter.empty() && filter.find(key) == filter.end()) {
+        if (!filter.empty() && !contains(filter, key)) {
             continue;
         }
 

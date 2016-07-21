@@ -25,6 +25,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "utils/containers.hpp"
+#include "utils/contains.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Config.hpp"
@@ -78,12 +79,12 @@ RenameCmd::run(Dit &dit, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
-    if (args[0].find('/') != std::string::npos) {
+    if (contains(args[0], '/')) {
         err() << "Project name can't contain slash: " << args[0] << '\n';
         return EXIT_FAILURE;
     }
 
-    if (args[1].find('/') != std::string::npos) {
+    if (contains(args[1], '/')) {
         err() << "Project name can't contain slash: " << args[1] << '\n';
         return EXIT_FAILURE;
     }

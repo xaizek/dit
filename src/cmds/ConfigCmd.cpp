@@ -26,6 +26,7 @@
 
 #include <boost/program_options.hpp>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -227,7 +228,7 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
     po::variables_map vm = parseOpts(args);
     Config &config = vm.count("global") ? *globalCfg : project.getConfig(false);
 
-    if (!args.empty() && args.back().find('=') != std::string::npos) {
+    if (!args.empty() && contains(args.back(), '=')) {
         std::string last = args.back();
         last.pop_back();
         out() << '\'' << config.get(last, "") << "'\n";

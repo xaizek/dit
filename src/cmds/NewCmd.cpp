@@ -23,6 +23,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "utils/contains.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Dit.hpp"
@@ -68,7 +69,7 @@ NewCmd::run(Dit &dit, const std::vector<std::string> &args)
     }
 
     const std::string &prjName = args[0];
-    if (prjName.find('/') != std::string::npos) {
+    if (contains(prjName, '/')) {
         err() << "Project name can't contain slash.\n";
         return EXIT_FAILURE;
     }
