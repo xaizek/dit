@@ -20,8 +20,10 @@
 #include <algorithm>
 #include <ostream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -30,9 +32,6 @@
 #include "Storage.hpp"
 #include "completion.hpp"
 #include "printing.hpp"
-
-template <typename C>
-static inline bool contains(const C &c, const typename C::value_type &what);
 
 namespace {
 
@@ -73,15 +72,16 @@ private:
 
 }
 
-ShowCmd::ShowCmd() : parent("show", "display item entries", "Usage: show id")
+ShowCmd::ShowCmd() : parent("show", "display item entries",
+                            "Usage: show id [key...]")
 {
 }
 
 boost::optional<int>
 ShowCmd::run(Project &project, const std::vector<std::string> &args)
 {
-    if (args.size() != 1) {
-        err() << "Expected single argument (id).\n";
+    if (args.size() < 1U) {
+        err() << "Expected at least one argument (id).\n";
         return EXIT_FAILURE;
     }
 
@@ -91,10 +91,15 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
     const std::vector<std::string> ordering = split(order, ',');
 
     const std::string &id = args[0];
+    std::unordered_set<std::string> filter(++args.cbegin(), args.cend());
     Item &item = project.getStorage().get(id);
 
     // Print known fields in specified order first.
     for (const std::string &field : ordering) {
+        if (!filter.empty() && !contains(filter, field)) {
+            continue;
+        }
+
         const std::string &v = item.getValue(field);
         if (!v.empty()) {
             printRecord(field, v);
@@ -103,28 +108,16 @@ ShowCmd::run(Project &project, const std::vector<std::string> &args)
 
     // Print out the rest of the fields.
     for (const std::string &c : item.listRecordNames()) {
+        if (!filter.empty() && !contains(filter, c)) {
+            continue;
+        }
+
         if (!contains(ordering, c)) {
             printRecord(c, item.getValue(c));;
         }
     }
 
     return EXIT_SUCCESS;
-}
-
-/**
- * @brief Checks whether container contains given item.
- *
- * @tparam C Type of the container.
- * @param c Container to examine.
- * @param what Item to look up in the container.
- *
- * @returns @c true when item is found, @c false otherwise.
- */
-template <typename C>
-static inline bool
-contains(const C &c, const typename C::value_type &what)
-{
-    return std::find(c.cbegin(), c.cend(), what) != c.cend();
 }
 
 void
@@ -136,10 +129,15 @@ ShowCmd::printRecord(const std::string &name, const std::string &val)
 boost::optional<int>
 ShowCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    if (args.size() > 1) {
-        return EXIT_FAILURE;
+    if (args.size() <= 1U) {
+        return completeIds(project.getStorage(), out());
     }
 
-    completeIds(project.getStorage(), out());
-    return EXIT_SUCCESS;
+    try {
+        const std::string &id = args[0];
+        Item &item = project.getStorage().get(id);
+        return completeKeys(item, out(), { ++args.cbegin(), args.cend() });
+    } catch (std::runtime_error &) {
+        return EXIT_FAILURE;
+    }
 }

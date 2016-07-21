@@ -30,6 +30,7 @@
 #include <set>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "Commands.hpp"
 #include "IdGenerator.hpp"
 #include "Item.hpp"
@@ -114,7 +115,7 @@ CheckCmd::checkIdList(const std::vector<std::reference_wrapper<Item>> &items,
     idGenerator.forEachId(
         [this, &actualIds, &expectedIds, &result](const std::string &id) {
             expectedIds.insert(id);
-            if (actualIds.find(id) == actualIds.end()) {
+            if (!contains(actualIds, id)) {
                 err() << "Missing item with id: " << id << '\n';
                 result = EXIT_FAILURE;
             }

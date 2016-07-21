@@ -47,6 +47,36 @@ TEST_CASE("Too few args cause error.", "[cmds][show][args]")
     REQUIRE(err.str() != std::string());
 }
 
+TEST_CASE("Values are filtered.", "[cmds][show]")
+{
+    Tests::disableDecorations();
+
+    Command *const cmd = Commands::get("show");
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+    Config &cfg = prj->getConfig();
+
+    cfg.set("ui.show.order", "wrongfieldname");
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+    item.setValue("bug_number", "22");
+
+    Tests::storeItem(storage, std::move(item));
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->run(*prj, { "id", "title" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        "title: title\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
 TEST_CASE("Values are displayed in alphabetical order by default.",
           "[cmds][show][order]")
 {
@@ -110,6 +140,79 @@ TEST_CASE("Values are displayed in specified order.", "[cmds][show][order]")
         "comment: something\n"
         "additional: information\n"
         "bug_number: 22\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Completion of id for show", "[cmds][show][completion]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+
+    Tests::storeItem(storage, std::move(item));
+
+    Command *const cmd = Commands::get("show");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->complete(*prj, { "i" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut = "id\n";
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Completion of field name for show", "[cmds][show][completion]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+    item.setValue("bug_number", "22");
+
+    Tests::storeItem(storage, std::move(item));
+
+    Command *const cmd = Commands::get("show");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    std::string expectedOut;
+
+    SECTION("Wrong id produces error")
+    {
+        boost::optional<int> exitCode = cmd->complete(*prj, { "idd", "ti" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+    }
+
+    SECTION("First filter value")
+    {
+        boost::optional<int> exitCode = cmd->complete(*prj, { "id", "ti" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        expectedOut =
+            "bug_number\n"
+            "title\n";
+    }
+
+    SECTION("Second filter value")
+    {
+        boost::optional<int> exitCode = cmd->complete(*prj,
+                                                      { "id", "title", "b" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        expectedOut = "bug_number\n";
+    }
+
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }

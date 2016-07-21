@@ -32,6 +32,7 @@
 
 #include "utils/args.hpp"
 #include "utils/containers.hpp"
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 
 namespace po = boost::program_options;
@@ -52,7 +53,7 @@ Invocation::setCmdLine(std::vector<std::string> args)
     std::tie(assigns, cmdLine) =
         span(args,
              [](const std::string &s) {
-                 return s.find('=') != std::string::npos;
+                 return contains(s, '=');
              });
 
     confs.reserve(assigns.size());

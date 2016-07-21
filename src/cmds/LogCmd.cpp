@@ -26,6 +26,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Change.hpp"
 #include "Commands.hpp"
@@ -77,13 +78,13 @@ LogCmd::LogCmd() : parent("log", "display item changes",
 boost::optional<int>
 LogCmd::run(Project &project, const std::vector<std::string> &args)
 {
-    if (args.size() < 1) {
-        err() << "Expected single argument (id).\n";
+    if (args.size() < 1U) {
+        err() << "Expected at least one argument (id).\n";
         return EXIT_FAILURE;
     }
 
     const std::string &id = args[0];
-    std::unordered_set<std::string> filter(++args.cbegin(), args.end());
+    std::unordered_set<std::string> filter(++args.cbegin(), args.cend());
 
     Item &item = project.getStorage().get(id);
     const std::vector<Change> &changes = item.getChanges();
@@ -94,7 +95,7 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
         const std::string &key = change.getKey();
         const std::string &value = change.getValue();
 
-        if (!filter.empty() && filter.find(key) == filter.end()) {
+        if (!filter.empty() && !contains(filter, key)) {
             continue;
         }
 
@@ -206,7 +207,7 @@ diff(const std::vector<std::string> &f, const std::vector<std::string> &s)
 boost::optional<int>
 LogCmd::complete(Project &project, const std::vector<std::string> &args)
 {
-    if (args.size() <= 1) {
+    if (args.size() <= 1U) {
         return completeIds(project.getStorage(), out());
     }
 

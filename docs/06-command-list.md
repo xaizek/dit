@@ -138,8 +138,9 @@ show
 
 Displays items.
 
-**Usage: show \<item id\>**
+**Usage: show \<item id\> [key...]**
 
-Prints entries of specified item.
+Prints entries of specified item, either all fields (if only item id is
+specified) or just for the specified ones.
 
 Affected by: **ui.show.order**.

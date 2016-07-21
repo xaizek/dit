@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -122,7 +123,7 @@ AddCmd::complete(Project &project, const std::vector<std::string> &args)
 
     std::vector<std::string> parsedArgs = parsePairedArgs(args);
 
-    if (!args.empty() && parsedArgs.back().find('=') != std::string::npos) {
+    if (!args.empty() && contains(parsedArgs.back(), '=')) {
         std::string key, value;
         std::tie(key, value) = splitAt(parsedArgs.back(), '=');
 

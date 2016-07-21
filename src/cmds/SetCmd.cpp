@@ -25,6 +25,7 @@
 
 #include <boost/range/iterator_range.hpp>
 
+#include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -115,7 +116,7 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
             return EXIT_FAILURE;
         }
 
-        if (fields.find(key) == fields.end()) {
+        if (!contains(fields, key)) {
             fields[key] = item.getValue(key);
         }
 
@@ -158,7 +159,7 @@ SetCmd::complete(Project &project, const std::vector<std::string> &args)
 
     // Complete values.
     std::vector<std::string> parsedArgs = parsePairedArgs(args);
-    if (!args.empty() && parsedArgs.back().find('=') != std::string::npos) {
+    if (!args.empty() && contains(parsedArgs.back(), '=')) {
         std::string key, value;
         std::tie(key, value) = splitAt(parsedArgs.back(), '=');
 

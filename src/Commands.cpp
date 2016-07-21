@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "utils/contains.hpp"
 #include "Command.hpp"
 
 /**
@@ -36,7 +37,7 @@ Commands::add(std::unique_ptr<Command> cmd)
 {
     const std::string cmdName = cmd->getName();
 
-    if (cmds.find(cmdName) != cmds.end()) {
+    if (contains(cmds, cmdName)) {
         throw std::runtime_error("Two commands named: " + cmdName);
     }
 
