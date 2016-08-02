@@ -74,3 +74,14 @@ TEST_CASE("Empty settings are not listed", "[config][parent-child][list]")
 
     REQUIRE(child.list("alias") == std::vector<std::string>());
 }
+
+TEST_CASE("List looks into parent config", "[config][parent-child][list]")
+{
+    Config parent("parent");
+    parent.set("alias.name", "value1");
+    parent.set("something.else", "value2");
+
+    Config child("child", &parent);
+
+    REQUIRE(child.list("alias") == std::vector<std::string> { "name" });
+}

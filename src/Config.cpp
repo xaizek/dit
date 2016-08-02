@@ -75,7 +75,9 @@ Config::list(const std::string &path)
     boost::optional<boost::property_tree::ptree &> subtree =
         props.get_child_optional(path);
     if (!subtree) {
-        return {};
+        return (parent == nullptr)
+             ? std::vector<std::string>()
+             : parent->list(path);
     }
 
     std::vector<std::string> list;

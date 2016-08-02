@@ -107,6 +107,21 @@ TEST_CASE("Addition on new item", "[cmds][add]")
 
         REQUIRE(storage.get("fYP").getValue("title") == "new-value");
     }
+
+    SECTION("Defaults are applied")
+    {
+        cfg.set("defaults.status", "planned");
+
+        boost::optional<int> exitCode = cmd->run(*prj, { "title:", "title" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        REQUIRE(out.str() == "Created item: fYP\n");
+        REQUIRE(err.str() == std::string());
+
+        REQUIRE(storage.get("fYP").getValue("title") == "title");
+        REQUIRE(storage.get("fYP").getValue("status") == "planned");
+    }
 }
 
 TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")
