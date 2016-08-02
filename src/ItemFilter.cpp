@@ -60,27 +60,24 @@ ItemFilter::passes(Item &item) const
                 if (val != cond.value) {
                     return false;
                 }
-                break;
+                continue;
             case Op::ne:
                 if (val == cond.value) {
                     return false;
                 }
-                break;
+                continue;
             case Op::iccontains:
                 if (!boost::icontains(val, cond.value)) {
                     return false;
                 }
-                break;
+                continue;
             case Op::icnotcontain:
                 if (boost::contains(val, cond.value)) {
                     return false;
                 }
-                break;
-
-            default:
-                assert(false && "Unhandled operation type.");
-                break;
+                continue;
         }
+        assert(false && "Unhandled operation type.");
     }
 
     return true;
