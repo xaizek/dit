@@ -122,6 +122,32 @@ TEST_CASE("Addition on new item", "[cmds][add]")
         REQUIRE(storage.get("fYP").getValue("title") == "title");
         REQUIRE(storage.get("fYP").getValue("status") == "planned");
     }
+
+    SECTION("Addition guard prevents creation of incomplete item")
+    {
+        cfg.set("guards.newitem", "status!=");
+
+        boost::optional<int> exitCode = cmd->run(*prj, { "title:", "title" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+
+        REQUIRE(out.str() == std::string());
+        REQUIRE(err.str() != std::string());
+    }
+
+    SECTION("Item is created when guard is satisfied")
+    {
+        cfg.set("guards.newitem", "status==planned");
+
+        boost::optional<int> exitCode = cmd->run(*prj,
+                                                 { "title:",  "title",
+                                                   "status:", "planned" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        REQUIRE(out.str() == "Created item: fYP\n");
+        REQUIRE(err.str() == std::string());
+    }
 }
 
 TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")

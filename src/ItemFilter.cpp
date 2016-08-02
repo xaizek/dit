@@ -53,34 +53,38 @@ ItemFilter::~ItemFilter()
 bool
 ItemFilter::passes(Item &item) const
 {
+    return passes([&item](const std::string &f) { return item.getValue(f); });
+}
+
+bool
+ItemFilter::passes(std::function<std::string(const std::string &)> accessor)
+    const
+{
     for (const Cond &cond : conds) {
-        const std::string &val = item.getValue(cond.key);
+        const std::string &val = accessor(cond.key);
         switch (cond.op) {
             case Op::eq:
                 if (val != cond.value) {
                     return false;
                 }
-                break;
+                continue;
             case Op::ne:
                 if (val == cond.value) {
                     return false;
                 }
-                break;
+                continue;
             case Op::iccontains:
                 if (!boost::icontains(val, cond.value)) {
                     return false;
                 }
-                break;
+                continue;
             case Op::icnotcontain:
                 if (boost::contains(val, cond.value)) {
                     return false;
                 }
-                break;
-
-            default:
-                assert(false && "Unhandled operation type.");
-                break;
+                continue;
         }
+        assert(false && "Unhandled operation type.");
     }
 
     return true;

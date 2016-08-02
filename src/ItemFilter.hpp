@@ -18,6 +18,7 @@
 #ifndef DIT__ITEMFILTER_HPP__
 #define DIT__ITEMFILTER_HPP__
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -59,6 +60,18 @@ public:
      * @returns @c true if it passes, and @c false otherwise.
      */
     bool passes(Item &item) const;
+
+    /**
+     * @brief Checks whether item represented by its fields passes the filter.
+     *
+     * This is a generalized version, which allows for different representations
+     * of items.
+     *
+     * @param accessor Accessor of item data (by field name).
+     *
+     * @returns @c true if it passes, and @c false otherwise.
+     */
+    bool passes(std::function<std::string(const std::string &)> accessor) const;
 
 private:
     /**
