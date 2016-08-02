@@ -17,10 +17,10 @@
 
 #include <cstdlib>
 
-#include <map>
 #include <ostream>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -89,7 +89,7 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
         return EXIT_FAILURE;
     }
 
-    std::map<std::string, std::string> fields;
+    std::unordered_map<std::string, std::string> fields;
 
     for (const std::string &a : parsePairedArgs(args)) {
         std::string key, value;
