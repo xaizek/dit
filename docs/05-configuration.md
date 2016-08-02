@@ -84,6 +84,10 @@ names command to be used on invocation without arguments.
 **core.defprj** (global) (no default) --
 names project to use if none was specified.
 
+**defaults.*** (no defaults) --
+default values for newly created items.  Configuration on project level
+completely hides global one.
+
 **prj.descr** (no default) --
 project description for **projects** command.
 

@@ -107,6 +107,13 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
         fields[key] = value;
     }
 
+    Config &cfg = project.getConfig();
+    for (const std::string &defKey : cfg.list("defaults")) {
+        if (!contains(fields, defKey)) {
+            fields[defKey] = cfg.get("defaults." + defKey);
+        }
+    }
+
     Item &item = project.getStorage().create();
     for (const auto &entry : fields) {
         item.setValue(entry.first, entry.second);
