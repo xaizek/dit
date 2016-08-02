@@ -24,11 +24,13 @@
 #include <utility>
 #include <vector>
 
+#include "utils/args.hpp"
 #include "utils/contains.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
+#include "ItemFilter.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
 #include "completion.hpp"
@@ -108,10 +110,21 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     }
 
     Config &cfg = project.getConfig();
+
     for (const std::string &defKey : cfg.list("defaults")) {
         if (!contains(fields, defKey)) {
             fields[defKey] = cfg.get("defaults." + defKey);
         }
+    }
+
+    std::string guard = cfg.get("guards.newitem", std::string());
+    auto accessor = [&fields](const std::string &f) {
+        auto it = fields.find(f);
+        return (it == fields.cend()) ? std::string() : it->second;
+    };
+    if (!ItemFilter(breakIntoArgs(guard)).passes(accessor)) {
+        err() << "New item doesn't pass the guard: " << guard << '\n';
+        return EXIT_FAILURE;
     }
 
     Item &item = project.getStorage().create();

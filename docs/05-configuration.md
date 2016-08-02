@@ -88,6 +88,10 @@ names project to use if none was specified.
 default values for newly created items.  Configuration on project level
 completely hides global one.
 
+**guards.newitem** (no default) --
+condition ("List of conditions" like for **ls** command) evaluated for fields of
+a new item.  If this condition is not satisfied, item creation aborts.
+
 **prj.descr** (no default) --
 project description for **projects** command.
 
