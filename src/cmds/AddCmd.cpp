@@ -108,8 +108,8 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     }
 
     Item &item = project.getStorage().create();
-    for (auto field : fields) {
-        item.setValue(field.first, field.second);
+    for (const auto &entry : fields) {
+        item.setValue(entry.first, entry.second);
     }
     out() << "Created item: " << item.getId() << '\n';
 
