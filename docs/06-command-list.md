@@ -36,11 +36,11 @@ config
 
 Displays/updates configuration.
 
-**Usage: config [--help] [--global] \<list of fields\>**
+**Usage: config [--help|-h] [--global|-g] \<list of fields\>**
 
-**--help** causes option summary to be printed.
+**--help (-h)** causes option summary to be printed.
 
-**--global** switches operations to act on global configuration, whereas by
+**--global (-g)** switches operations to act on global configuration, whereas by
 default project-specific configuration is processed.
 
 When invoked without arguments, all values are displayed.

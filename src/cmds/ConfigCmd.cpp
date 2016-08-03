@@ -43,7 +43,8 @@ namespace po = boost::program_options;
 /**
  * @brief Usage message for "config" command.
  */
-const char *const USAGE = R"(Usage: config [--help] [--global] [key[=val]...]
+const char *const USAGE =
+R"(Usage: config [--help|-h] [--global|-g] [key[=val]...]
 
 When invoked without arguments, settings are listed.
 
