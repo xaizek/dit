@@ -80,7 +80,11 @@ log
 
 Displays item changes.
 
-**Usage: log \<item id\> [key...]**
+**Usage: log [--help|-h] [--timestamps|-t] \<item id\> [key...]**
+
+**--help (-h)** causes option summary to be printed.
+
+**--timestamps (-t)** adds timestamp to each change printed.
 
 Displays information about item changes (from oldest to newest) either for all
 fields (if only item id is specified) or just for the specified ones.
