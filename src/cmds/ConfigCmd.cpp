@@ -27,6 +27,7 @@
 #include <boost/program_options.hpp>
 
 #include "utils/contains.hpp"
+#include "utils/opts.hpp"
 #include "utils/strings.hpp"
 #include "Command.hpp"
 #include "Commands.hpp"
@@ -100,14 +101,6 @@ private:
      */
     int run(Config &config, const std::vector<std::string> &args);
     /**
-     * @brief Parses command-specific options.
-     *
-     * @param args List of options.
-     *
-     * @returns Mapping of options into actually passed values.
-     */
-    po::variables_map parseOpts(const std::vector<std::string> &args) const;
-    /**
      * @brief Lists configuration keys along with their values.
      *
      * Builtin keys are not listed.
@@ -131,9 +124,9 @@ private:
      */
     Config *globalCfg;
     /**
-     * @brief User-visible options of the command.
+     * @brief Options of the sub-command.
      */
-    po::options_description visibleOpts;
+    po::options_description opts;
 };
 
 }
@@ -141,9 +134,9 @@ private:
 ConfigCmd::ConfigCmd()
     : parent("config", "read/update configuration", USAGE),
       globalCfg(nullptr),
-      visibleOpts("config sub-command options")
+      opts("config sub-command options")
 {
-    visibleOpts.add_options()
+    opts.add_options()
         ("help,h", "display help message")
         ("global,g", "use global configuration");
 }
@@ -151,18 +144,18 @@ ConfigCmd::ConfigCmd()
 boost::optional<int>
 ConfigCmd::run(Dit &dit, const std::vector<std::string> &args)
 {
-    po::variables_map vm = parseOpts(args);
+    po::variables_map vm = parseOpts(args, opts);
 
     if (vm.count("help")) {
-        out() << visibleOpts;
+        out() << opts;
         return EXIT_SUCCESS;
     }
 
     if (vm.count("global")) {
         Config &config = dit.getConfig();
-        if (vm.count("expressions")) {
+        if (vm.count("positional")) {
             return run(config,
-                       vm["expressions"].as<std::vector<std::string>>());
+                       vm["positional"].as<std::vector<std::string>>());
         }
         return run(config, {});
     }
@@ -225,7 +218,7 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
 {
     assert(globalCfg != nullptr && "Global completion handler wasn't called.");
 
-    po::variables_map vm = parseOpts(args);
+    po::variables_map vm = parseOpts(args, opts);
     Config &config = vm.count("global") ? *globalCfg : project.getConfig(false);
 
     if (!args.empty() && contains(args.back(), '=')) {
@@ -255,7 +248,7 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
     }
 
     using opt_t = boost::shared_ptr<po::option_description>;
-    for (const opt_t &opt : visibleOpts.options()) {
+    for (const opt_t &opt : opts.options()) {
         out() << "--" << opt->long_name() << '\n';
     }
     out() << "-h\n" << "-g\n";
@@ -267,27 +260,6 @@ ConfigCmd::complete(Project &project, const std::vector<std::string> &args)
     }
 
     return EXIT_SUCCESS;
-}
-
-po::variables_map
-ConfigCmd::parseOpts(const std::vector<std::string> &args) const
-{
-    po::options_description hiddenOpts;
-    hiddenOpts.add_options()
-        ("expressions", po::value<std::vector<std::string>>(),
-            "assigns/displays values");
-
-    po::options_description all;
-    all.add(visibleOpts).add(hiddenOpts);
-
-    po::positional_options_description p;
-    p.add("expressions", -1);
-
-    po::variables_map vm;
-    po::store(po::command_line_parser(args).options(all).positional(p).run(),
-              vm);
-    po::notify(vm);
-    return vm;
 }
 
 int
