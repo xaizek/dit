@@ -66,6 +66,20 @@ TEST_CASE("Running commands", "[app]")
     std::ostringstream err;
     Tests::setStreams(out, err);
 
+    SECTION("Wrong command name")
+    {
+        StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+        Dit dit({ "app", "wrong-name" });
+
+        boost::optional<int> exitCode = dit.run();
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+
+        REQUIRE(coutCapture.get() == std::string());
+        REQUIRE(cerrCapture.get() != std::string());
+    }
+
     SECTION("projects")
     {
         Dit dit({ "app", "projects" });
