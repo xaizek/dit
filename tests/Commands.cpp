@@ -19,6 +19,12 @@
 
 #include <cstddef>
 
+#include <memory>
+#include <stdexcept>
+#include <utility>
+
+#include "utils/memory.hpp"
+#include "Command.hpp"
 #include "Commands.hpp"
 
 TEST_CASE("Get doesn't have side effects", "[commands]")
@@ -27,4 +33,19 @@ TEST_CASE("Get doesn't have side effects", "[commands]")
 
     REQUIRE(Commands::get("doesn't exist") == nullptr);
     REQUIRE(Commands::list().size() == commandCount);
+}
+
+TEST_CASE("Commands must have unique names", "[commands]")
+{
+    class Cmd : public Command {
+    public:
+        Cmd(std::string name, std::string descr, std::string help)
+            : Command(name, descr, help) { }
+    };
+
+    Command *const cmd = Commands::get("log");
+    REQUIRE(cmd != nullptr);
+
+    auto fakeCmd = make_unique<Cmd>("log", std::string(), std::string());
+    REQUIRE_THROWS_AS(Commands::add(std::move(fakeCmd)), std::runtime_error);
 }
