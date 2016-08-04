@@ -43,6 +43,17 @@ TEST_CASE("Config value completion on trailing =", "[cmds][config][completion]")
     std::ostringstream out, err;
     Tests::setStreams(out, err);
 
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", "projects" });
+
+    // Initialize internal state.
+    REQUIRE(!cmd->complete(dit, { }));
+
     boost::optional<int> exitCode = cmd->complete(*prj, { "ui.ls=" });
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
@@ -65,6 +76,17 @@ TEST_CASE("Config completes options", "[cmds][config][completion]")
 
     std::ostringstream out, err;
     Tests::setStreams(out, err);
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", "projects" });
+
+    // Initialize internal state.
+    REQUIRE(!cmd->complete(dit, { }));
 
     boost::optional<int> exitCode = cmd->complete(*prj, { "-" });
     REQUIRE(exitCode);
