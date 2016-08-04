@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/xaizek/dit.svg?branch=master)](https://travis-ci.org/xaizek/dit)
+
 _dit_
 _2015 - 2016_
 

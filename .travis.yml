@@ -1,0 +1,35 @@
+sudo: required
+dist: trusty
+
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      compiler: g++
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'libboost-all-dev']
+      env: COMPILER=g++-5
+
+script:
+ # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libboost-dev; fi
+ # - pip install --user cpp-coveralls
+ - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CC" = gcc ]; then
+     make CXX="$COMPILER" -j4 &&
+     make CXX="$COMPILER" check -j4;
+   fi
+ - if [ "$TRAVIS_OS_NAME" != "linux" -o "$CC" != gcc ]; then
+     make -j4 &&
+     make check -j4;
+   fi
+
+notifications:
+  email:
+    recipients:
+      - xaizek@openmailbox.org
+
+cache:
+  directories:
+    - $HOME/.cache/pip
