@@ -22,7 +22,8 @@
 #include <string>
 #include <vector>
 
-class Cond;
+struct Cond;
+
 class Item;
 
 /**
