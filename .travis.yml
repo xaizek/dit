@@ -7,13 +7,19 @@ matrix:
   include:
     - os: linux
       compiler: g++
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'libboost-all-dev', 'python-pip']
       env:
         - COMPILER=g++-5
         - COVERAGE=yes
+    - os: linux
+      compiler: clang
+      env:
+        - COMPILER=clang++
+        - COVERAGE=no
+
+addons:
+  apt:
+    sources: ['ubuntu-toolchain-r-test']
+    packages: ['g++-5', 'libboost-all-dev', 'python-pip']
 
 install:
  - if [ "$COVERAGE" = "yes" ]; then
