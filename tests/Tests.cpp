@@ -65,7 +65,10 @@ Tests::makeProject()
 Item
 Tests::makeItem(std::string id)
 {
-    return Item(std::move(id), {});
+    static Project dummyProject("/fake/project/root/for/tests", {}, {});
+    static Storage dummyStorage(dummyProject);
+
+    return Item(dummyStorage, std::move(id), {});
 }
 
 void
