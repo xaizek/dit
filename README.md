@@ -1,7 +1,7 @@
 _dit_
 _2015 - 2016_
 
-**Last updated**: 19 June, 2016
+**Last updated**: 04 August, 2016
 
 **Version**: 0.10
 
@@ -62,8 +62,7 @@ Expected to work in \*nix like environments.
 
 * GNU Make;
 * C++11 compatible compiler (e.g. GCC 4.9.3);
-* [Boost][3], tested with 1.58 and 1.59, but somewhat older versions should work
-  as well;
+* [Boost][3], tested with 1.54, 1.58 and 1.59;
 * (optional) pandoc for building man page.
 
 ### Interaction with Environment ###

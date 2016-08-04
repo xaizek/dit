@@ -28,6 +28,7 @@
 #include <tuple>
 #include <utility>
 
+#include <boost/range/iterator_range.hpp>
 #include <boost/filesystem.hpp>
 
 #include "Change.hpp"
@@ -118,7 +119,9 @@ Storage::load()
         return;
     }
 
-    for (fs::directory_entry &e : fs::directory_iterator(dataDir)) {
+    using dir_it = fs::directory_iterator;
+    for (fs::directory_entry &e :
+         boost::make_iterator_range(dir_it(dataDir), dir_it())) {
         loadDir(e.path());
     }
 }
@@ -126,8 +129,10 @@ Storage::load()
 void
 Storage::loadDir(const fs::path &path)
 {
+    using dir_it = fs::directory_iterator;
     fs::path prefix = path.filename();
-    for (fs::directory_entry &e : fs::directory_iterator(path)) {
+    for (fs::directory_entry &e :
+         boost::make_iterator_range(dir_it(path), dir_it())) {
         const std::string id = prefix.string() + e.path().filename().string();
 
         bool inserted = items.emplace(id, Item(*this, id, true, {})).second;

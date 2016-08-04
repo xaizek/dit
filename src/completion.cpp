@@ -26,6 +26,7 @@
 #include <utility>
 #include <vector>
 
+#include <boost/range/iterator_range.hpp>
 #include <boost/filesystem.hpp>
 
 #include "Item.hpp"
@@ -39,7 +40,9 @@ listProjects(const std::string &projectsDir)
 
     std::vector<std::string> names;
 
-    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
+    using dir_it = fs::directory_iterator;
+    for (fs::directory_entry &e :
+         boost::make_iterator_range(dir_it(projectsDir), dir_it())) {
         if (Project(e.path().string()).exists()) {
             names.push_back(e.path().filename().string());
         }
