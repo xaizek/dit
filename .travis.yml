@@ -10,19 +10,24 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'libboost-all-dev']
-      env: COMPILER=g++-5
+          packages: ['g++-5', 'libboost-all-dev', 'python-pip']
+      env:
+        - COMPILER=g++-5
+        - COVERAGE=yes
+
+install:
+ - if [ "$COVERAGE" = "yes" ]; then
+     pip install --user cpp-coveralls;
+   fi
 
 script:
- # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libboost-dev; fi
- # - pip install --user cpp-coveralls
- - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CC" = gcc ]; then
-     make CXX="$COMPILER" -j4 &&
-     make CXX="$COMPILER" check -j4;
+ - if [ "$COVERAGE" = "yes" ]; then
+     make -j4 CXX="$COMPILER" with-coverage;
    fi
- - if [ "$TRAVIS_OS_NAME" != "linux" -o "$CC" != gcc ]; then
-     make -j4 &&
-     make check -j4;
+
+after_success:
+ - if [ "$COVERAGE" = "yes" ]; then
+     coveralls --encoding iso-8859-1 --exclude tests --gcov-options '\-p';
    fi
 
 notifications:
@@ -33,3 +38,4 @@ notifications:
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/.ccache

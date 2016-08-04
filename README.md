@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/xaizek/dit.svg?branch=master)](https://travis-ci.org/xaizek/dit)
+[![Coverage Status](https://coveralls.io/repos/github/xaizek/dit/badge.svg)](https://coveralls.io/github/xaizek/dit)
 
 _dit_
 _2015 - 2016_

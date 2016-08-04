@@ -15,6 +15,9 @@ Builds release version in `release/`.
 * `man`
 Builds manual page in `<out>/docs/dit.1`, requires `pandoc`.
 
+* `with-coverage`
+Builds with coverage in current directory and generates no report.
+
 * `coverage`
 Builds coverage in `coverage/` putting report in `coverage/data/`.  Requires
 `lcov` to be installed.
