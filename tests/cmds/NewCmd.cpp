@@ -17,6 +17,8 @@
 
 #include "Catch/catch.hpp"
 
+#include <boost/filesystem/operations.hpp>
+
 #include <cstdlib>
 
 #include <sstream>
@@ -26,6 +28,8 @@
 #include "Dit.hpp"
 
 #include "Tests.hpp"
+
+namespace fs = boost::filesystem;
 
 TEST_CASE("New invocation", "[cmds][new][invocation]")
 {
@@ -69,4 +73,26 @@ TEST_CASE("New invocation", "[cmds][new][invocation]")
 
     REQUIRE(out.str() == std::string());
     REQUIRE(err.str() != std::string());
+}
+
+TEST_CASE("New creates new project", "[cmds][new]")
+{
+    Command *const cmd = Commands::get("new");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app" });
+
+    boost::optional<int> exitCode = cmd->run(dit, { "test" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    fs::remove_all("tests/data/dit/projects/test");
 }

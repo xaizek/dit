@@ -16,6 +16,7 @@
 // along with dit.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/multi_array.hpp>
+#include <boost/program_options.hpp>
 
 #include <cstdlib>
 
@@ -27,7 +28,9 @@
 #include <vector>
 
 #include "utils/contains.hpp"
+#include "utils/opts.hpp"
 #include "utils/strings.hpp"
+#include "utils/time.hpp"
 #include "Change.hpp"
 #include "Commands.hpp"
 #include "Item.hpp"
@@ -36,6 +39,8 @@
 #include "completion.hpp"
 #include "decoration.hpp"
 #include "printing.hpp"
+
+namespace po = boost::program_options;
 
 static std::string diff(const std::vector<std::string> &f,
                         const std::vector<std::string> &s);
@@ -66,25 +71,48 @@ public:
     virtual boost::optional<int> complete(
         Project &project,
         const std::vector<std::string> &args) override;
+
+private:
+    /**
+     * @brief Options of the sub-command.
+     */
+    po::options_description opts;
 };
 
 }
 
-LogCmd::LogCmd() : parent("log", "display item changes",
-                          "Usage: log id [key...]")
+LogCmd::LogCmd()
+    : parent("log", "display item changes",
+             "Usage: log [--help|-h] [--timestamps|-t] id [key...]"),
+      opts("log sub-command options")
 {
+    opts.add_options()
+        ("help,h", "display help message")
+        ("timestamps,t", "display when changes happened");
 }
 
 boost::optional<int>
 LogCmd::run(Project &project, const std::vector<std::string> &args)
 {
-    if (args.size() < 1U) {
+    po::variables_map vm = parseOpts(args, opts);
+    if (vm.count("help")) {
+        out() << opts;
+        return EXIT_SUCCESS;
+    }
+
+    if (vm.count("positional") < 1U) {
         err() << "Expected at least one argument (id).\n";
         return EXIT_FAILURE;
     }
 
-    const std::string &id = args[0];
-    std::unordered_set<std::string> filter(++args.cbegin(), args.cend());
+    const bool withTimestamps = vm.count("timestamps");
+
+    auto positional = vm["positional"].as<std::vector<std::string>>();
+
+    const std::string &id = positional[0];
+    std::unordered_set<std::string> filter {
+        ++positional.cbegin(), positional.cend()
+    };
 
     Item &item = project.getStorage().get(id);
     const std::vector<Change> &changes = item.getChanges();
@@ -99,16 +127,22 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
             continue;
         }
 
+        const std::string at = withTimestamps
+                             ? " (" + timeToString(change.getTimestamp()) + ')'
+                             : std::string();
         if (value.empty()) {
             out() << Key{key}
-                  << decor::red_fg << decor::bold << " deleted\n" << decor::def;
+                  << decor::red_fg << decor::bold << " deleted" << decor::def
+                  << at << '\n';
         } else if (values[key].empty()) {
             out() << Key{key}
                   << decor::yellow_fg << decor::bold << " created" << decor::def
+                  << at
                   << Value{value} << '\n';
         } else {
             out() << Key{key}
                   << decor::blue_fg << decor::bold << " changed" << decor::def
+                  << at
                   << Value{diff(split(values[key], '\n'), split(value, '\n'))};
         }
 
@@ -207,6 +241,12 @@ diff(const std::vector<std::string> &f, const std::vector<std::string> &s)
 boost::optional<int>
 LogCmd::complete(Project &project, const std::vector<std::string> &args)
 {
+    using opt_t = boost::shared_ptr<po::option_description>;
+    for (const opt_t &opt : opts.options()) {
+        out() << "--" << opt->long_name() << '\n';
+    }
+    out() << "-h\n" << "-t\n";
+
     if (args.size() <= 1U) {
         return completeIds(project.getStorage(), out());
     }

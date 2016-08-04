@@ -58,6 +58,46 @@ TEST_CASE("Log fails on wrong invocation", "[cmds][log][invocation]")
     }
 }
 
+TEST_CASE("Log handles options", "[cmds][log][invocation]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Command *const cmd = Commands::get("log");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode;
+
+    SECTION("--help")
+    {
+        exitCode = cmd->run(*prj, { "--help" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+        REQUIRE(out.str() != std::string());
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("--timestamps")
+    {
+        Item item = Tests::makeItem("id");
+        item.setValue("title", "something");
+        Storage &storage = prj->getStorage();
+        Tests::storeItem(storage, std::move(item));
+
+        exitCode = cmd->run(*prj, { "id" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string withoutTimestamps = out.str();
+
+        exitCode = cmd->run(*prj, { "--timestamps", "id" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        REQUIRE(out.str() != withoutTimestamps);
+    }
+}
+
 TEST_CASE("Log filters fields", "[cmds][log]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();
@@ -211,7 +251,12 @@ TEST_CASE("Completion of id for log", "[cmds][log][completion]")
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
-    const std::string expectedOut = "id\n";
+    const std::string expectedOut =
+        "--help\n"
+        "--timestamps\n"
+        "-h\n"
+        "-t\n"
+        "id\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }
@@ -232,7 +277,11 @@ TEST_CASE("Completion of field name for log", "[cmds][log][completion]")
     std::ostringstream out, err;
     Tests::setStreams(out, err);
 
-    std::string expectedOut;
+    std::string expectedOut =
+        "--help\n"
+        "--timestamps\n"
+        "-h\n"
+        "-t\n";
 
     SECTION("Wrong id produces error")
     {
@@ -247,7 +296,7 @@ TEST_CASE("Completion of field name for log", "[cmds][log][completion]")
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
-        expectedOut =
+        expectedOut +=
             "bug_number\n"
             "title\n";
     }
@@ -259,9 +308,41 @@ TEST_CASE("Completion of field name for log", "[cmds][log][completion]")
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
 
-        expectedOut = "bug_number\n";
+        expectedOut += "bug_number\n";
     }
 
+    REQUIRE(out.str() == expectedOut);
+    REQUIRE(err.str() == std::string());
+}
+
+TEST_CASE("Log completes options", "[cmds][log][completion]")
+{
+    Tests::disableDecorations();
+
+    Command *const cmd = Commands::get("log");
+
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+    Tests::storeItem(storage, std::move(item));
+
+    Config &cfg = prj->getConfig(false);
+    cfg.set("ui.ls", "ls-value");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    boost::optional<int> exitCode = cmd->complete(*prj, { "-" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    const std::string expectedOut =
+        "--help\n"
+        "--timestamps\n"
+        "-h\n"
+        "-t\n"
+        "id\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
 }

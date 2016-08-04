@@ -47,7 +47,8 @@ Commands::add(std::unique_ptr<Command> cmd)
 Command *
 Commands::get(const std::string &name)
 {
-    return cmds[name].get();
+    auto it = cmds.find(name);
+    return (it == cmds.cend()) ? nullptr : it->second.get();
 }
 
 std::vector<std::reference_wrapper<Command>>
