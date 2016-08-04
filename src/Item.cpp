@@ -62,7 +62,7 @@ Item::Item(Storage &storage, std::string id, bool exists, pk<Storage>)
 {
 }
 
-Item::Item(std::string id, pk<Tests>)
+Item::Item(Storage &storage, std::string id, pk<Tests>)
     : StorageBacked<Item>(true), storage(storage), id(std::move(id))
 {
 }

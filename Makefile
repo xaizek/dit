@@ -41,18 +41,24 @@ else
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
     else
-        with_cov := 0
+        with_cov := no
+        ifneq ($(call pos,with-coverage,$(MAKECMDGOALS)),-1)
+            with_cov := data
+        endif
         ifneq ($(call pos,coverage,$(MAKECMDGOALS)),-1)
-            with_cov := 1
+            with_cov := report
         endif
         ifneq ($(call pos,show-coverage,$(MAKECMDGOALS)),-1)
-            with_cov := 1
+            with_cov := report
         endif
 
-        ifneq ($(with_cov),0)
-            out_dir := coverage
+        ifneq ($(with_cov),no)
             EXTRA_CXXFLAGS += --coverage
             EXTRA_LDFLAGS  += --coverage
+        endif
+
+        ifeq ($(with_cov),report)
+            out_dir := coverage
         else
             out_dir := .
         endif
@@ -77,7 +83,8 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
-.PHONY: check clean coverage man show-coverage reset-coverage debug release
+.PHONY: check clean man debug release
+.PHONY: with-coverage coverage show-coverage reset-coverage
 .PHONY: install install-docs
 
 debug release: $(out_dir)/$(bin)
@@ -91,18 +98,20 @@ $(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
 	       -V author='xaizek <xaizek@openmailbox.org>' \
 	       -s -o $@ $(sort $^)
 
-coverage: check $(out_dir)/$(bin)
+show-coverage: coverage
+	$$BROWSER coverage/data/index.html
+
+coverage: with-coverage
 	lcov --directory $(out_dir)/ --base-directory src/ --capture \
 	     --output-file $(out_dir)/lcov.info --config-file lcovrc \
 	     --test-name unit_tests --quiet
 	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
 	     --config-file lcovrc --demangle-cpp --show-details
 
-show-coverage: coverage
-	$$BROWSER coverage/data/index.html
+with-coverage: check $(out_dir)/$(bin)
 
 reset-coverage:
-ifeq ($(with_cov),1)
+ifeq ($(with_cov),report)
 	lcov --directory $(out_dir)/ --zerocounters
 endif
 

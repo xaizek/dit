@@ -68,9 +68,10 @@ public:
     /**
      * @brief Constructs new item for testing purposes.
      *
+     * @param storage Dummy storage (not used, but must be valid).
      * @param id Id of the item.
      */
-    Item(std::string id, pk<Tests>);
+    Item(Storage &storage, std::string id, pk<Tests>);
 
 public:
     /**

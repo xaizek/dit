@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include <boost/range/iterator_range.hpp>
 #include <boost/filesystem.hpp>
 
 #include "Command.hpp"
@@ -91,7 +92,9 @@ ProjectsCmd::run(Dit &dit, const std::vector<std::string> &args)
     std::vector<std::pair<std::string, std::string>> infos;
 
     // Gather project information.
-    for (fs::directory_entry &e : fs::directory_iterator(projectsDir)) {
+    using dir_it = fs::directory_iterator;
+    for (fs::directory_entry &e :
+         boost::make_iterator_range(dir_it(projectsDir), dir_it())) {
         Project prj(e.path().string());
         if (!prj.exists()) {
             continue;

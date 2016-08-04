@@ -157,7 +157,8 @@ ExportCmd::complete(Project &project, const std::vector<std::string> &args)
 void
 ExportCmd::exportItem(const std::string &cmd, Item &item)
 {
-    if (const bool toStdOut = (cmd == "-")) {
+    /* Check for special value meaning "printing to stdout". */
+    if (cmd == "-") {
         for (const std::string &key : item.listRecordNames()) {
             out() << key << '=' << item.getValue(key) << '\0';
         }

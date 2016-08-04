@@ -42,7 +42,7 @@ IdGenerator::init(Config &config, const std::string &alphabet)
 {
     // Initial number of sequences (width of an ID) is three.
     std::array<std::string, 3> sequences = {
-        shuffle(alphabet), shuffle(alphabet), shuffle(alphabet)
+        { shuffle(alphabet), shuffle(alphabet), shuffle(alphabet) }
     };
 
     config.set("!ids.sequences.alphabet", alphabet);
