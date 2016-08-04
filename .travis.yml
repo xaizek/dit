@@ -19,7 +19,13 @@ matrix:
 addons:
   apt:
     sources: ['ubuntu-toolchain-r-test']
-    packages: ['g++-5', 'libboost-all-dev', 'python-pip']
+    packages:
+      - g++-5
+      - libboost-filesystem-dev
+      - libboost-program-options-dev
+      - libboost-system-dev
+      - libboost-dev
+      - python-pip
 
 install:
  - if [ "$COVERAGE" = "yes" ]; then
