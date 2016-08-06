@@ -39,6 +39,7 @@ enum class Op
  */
 struct Cond
 {
+    std::string str;   /**< @brief Original string representation. */
     std::string key;   /**< @brief Name of the key. */
     Op op;             /**< @brief Operation to use for comparison. */
     std::string value; /**< @brief Value to match against. */

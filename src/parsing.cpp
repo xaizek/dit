@@ -22,15 +22,22 @@
 #include <vector>
 
 #include <boost/fusion/adapted/struct.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_fusion.hpp>
+#include <boost/spirit/include/phoenix_object.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi_attr.hpp>
 #include <boost/spirit/include/qi_char_.hpp>
 #include <boost/spirit/include/qi_char_class.hpp>
 #include <boost/spirit/include/qi_core.hpp>
 #include <boost/spirit/include/qi_parse.hpp>
+#include <boost/spirit/repository/include/qi_iter_pos.hpp>
 
 #include "decoration.hpp"
 
 namespace ascii = boost::spirit::ascii;
+namespace phx = boost::phoenix;
 namespace qi = boost::spirit::qi;
 
 using qi::alnum;
@@ -42,6 +49,7 @@ using qi::lexeme;
 // from parsing rules.
 BOOST_FUSION_ADAPT_STRUCT(
     Cond,
+    (std::string, str)
     (std::string, key)
     (Op, op)
     (std::string, value)
@@ -140,22 +148,25 @@ public:
      */
     CondParser() : CondParser::base_type(expr)
     {
-        expr  %= key >> op >> value;
-        key   %= ::key;
+        using boost::spirit::repository::qi::iter_pos;
+        using phx::at_c;
+        using phx::construct;
+        using qi::_1; using qi::_2; using qi::_3; using qi::_4; using qi::_5;
+        using qi::_val;
+
+        expr  = ( iter_pos >> ::key >> op >> value >> iter_pos )
+                [ at_c<1>(_val) = _2, at_c<2>(_val) = _3, at_c<3>(_val) = _4,
+                  at_c<0>(_val) = construct<std::string>(_1, _5) ];
         value %= lexeme[ *char_ ];
     }
 
 private:
     /**
-     * @brief Whole expression: expr ::= key op value
+     * @brief Whole expression: expr ::= ::key op value
      *
      * Where: op ::= "==" | "!=" | "/" | "=/" | "#" | "!/"
      */
     qi::rule<I, Cond(), ascii::space_type> expr;
-    /**
-     * @brief Key name: key ::= [a-zA-Z_] [-a-zA-Z_]*
-     */
-    qi::rule<I, std::string(), ascii::space_type> key;
     /**
      * @brief Value to compare with: value ::= .*
      */
@@ -178,15 +189,29 @@ public:
     ColorRulesParser() : ColorRulesParser::base_type(rules)
     {
         using ascii::string;
+        using boost::spirit::repository::qi::iter_pos;
+        using phx::at_c;
+        using phx::begin;
+        using phx::construct;
+        using phx::end;
+        using qi::_1; using qi::_2; using qi::_3; using qi::_4; using qi::_5;
+        using qi::_val;
         using qi::attr;
 
         rules   %= -(rule >> *(';' >> rule));
         rule    %= +dec >> +match;
         match   %= special | cond;
-        special %= string("!heading") >> attr(Op::eq) >> attr(std::string());
+        special %= attr(std::string())
+                >> string("!heading") >> attr(Op::eq) >> attr(std::string());
         // Not reusing CondParser here because it parses till the end of the
         // string.
-        cond    %= ::key >> op >> lexeme[ *(char_ - ' ' - '\t' - ';') ];
+        cond = ( iter_pos
+              >> ::key >> op >> lexeme[ *(char_ - ' ' - '\t' - ';') ]
+              >> iter_pos
+               )
+               [ at_c<1>(_val) = _2, at_c<2>(_val) = _3,
+                 at_c<3>(_val) = construct<std::string>(begin(_4), end(_4)),
+                 at_c<0>(_val) = construct<std::string>(_1, _5) ];
     }
 
 private:
