@@ -74,6 +74,17 @@ public:
      */
     bool passes(std::function<std::string(const std::string &)> accessor) const;
 
+    /**
+     * @brief Checks whether item represented by its fields passes the filter.
+     *
+     * @param accessor Accessor of item data (by field name).
+     * @param error[out] Storage for error message.
+     *
+     * @returns @c true if it passes, and @c false otherwise.
+     */
+    bool passes(std::function<std::string(const std::string &)> accessor,
+                std::string &error) const;
+
 private:
     /**
      * @brief Set of constraints.
