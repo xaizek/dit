@@ -60,32 +60,49 @@ bool
 ItemFilter::passes(std::function<std::string(const std::string &)> accessor)
     const
 {
+    std::string error;
+    return passes(accessor, error);
+}
+
+bool
+ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
+                   std::string &error) const
+{
+    error.clear();
+
+    auto err = [&error](const Cond &cond) {
+        if (!error.empty()) {
+            error += '\n';
+        }
+        error += "\tnot met for " + cond.key + ": " + cond.str;
+    };
+
     for (const Cond &cond : conds) {
         const std::string &val = accessor(cond.key);
         switch (cond.op) {
             case Op::eq:
                 if (val != cond.value) {
-                    return false;
+                    err(cond);
                 }
                 continue;
             case Op::ne:
                 if (val == cond.value) {
-                    return false;
+                    err(cond);
                 }
                 continue;
             case Op::iccontains:
                 if (!boost::icontains(val, cond.value)) {
-                    return false;
+                    err(cond);
                 }
                 continue;
             case Op::icnotcontain:
                 if (boost::contains(val, cond.value)) {
-                    return false;
+                    err(cond);
                 }
                 continue;
         }
         assert(false && "Unhandled operation type.");
     }
 
-    return true;
+    return error.empty();
 }
