@@ -43,6 +43,15 @@ public:
 };
 
 /**
+ * @brief Strong typing of string with text line for output stream overload.
+ */
+class OptLine
+{
+public:
+    const std::string &data;
+};
+
+/**
  * @brief Strong typing of string with value for output stream overload.
  */
 class Value
@@ -92,6 +101,23 @@ operator<<(std::ostream &os, const Value &val)
 {
     return os << (contains(val.data, '\n') ? ":\n" : ": ")
               << val.data;
+}
+
+/**
+ * @brief Prints line on separate line, which does nothing for empty lines.
+ *
+ * @param os Stream to output formatted data to.
+ * @param line Line to print.
+ *
+ * @returns @p os.
+ */
+inline std::ostream &
+operator<<(std::ostream &os, const OptLine &line)
+{
+    if (line.data.empty()) {
+        return os;
+    }
+    return os << '\n' << line.data;
 }
 
 #endif // DIT__PRINTING_HPP__
