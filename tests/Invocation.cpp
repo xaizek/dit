@@ -370,3 +370,60 @@ TEST_CASE("Alias composition configuration is collected.",
     REQUIRE(confs[0] == conf("a", "1"));
     REQUIRE(confs[1] == conf("a+", "2"));
 }
+
+TEST_CASE("At most one unnamed command is allowed.",
+          "[invocation][composition]")
+{
+    auto aliasResolver = [](const std::string &) { return std::string(); };
+
+    Invocation invocation;
+    invocation.setAliasResolver(aliasResolver);
+    invocation.setDefCmdLine("defcmd");
+
+    SECTION("Just two unnamed commands")
+    {
+        invocation.setCmdLine({ ".proj", "." });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == ".");
+    }
+
+    SECTION("Two trailing unnamed commands")
+    {
+        invocation.setCmdLine({ "cmd.." });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "cmd..");
+    }
+}
+
+TEST_CASE("Unnamed command is expanded as default one.",
+          "[invocation][composition]")
+{
+    auto aliasResolver = [](const std::string &name) {
+        return (name == "alias") ? "alias-expanded" : std::string();
+    };
+
+    Invocation invocation;
+    invocation.setAliasResolver(aliasResolver);
+    invocation.setDefCmdLine("defcmd");
+
+    SECTION("Just unnamed command")
+    {
+        invocation.setCmdLine({ "" });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "defcmd");
+    }
+
+    SECTION("Leading unnamed command")
+    {
+        invocation.setCmdLine({ ".alias" });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "defcmd");
+    }
+
+    SECTION("Trailing unnamed command")
+    {
+        invocation.setCmdLine({ "alias." });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "alias-expanded");
+    }
+}
