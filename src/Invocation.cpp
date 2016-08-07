@@ -56,7 +56,7 @@ Invocation::setCmdLine(std::vector<std::string> args)
                  return contains(s, '=');
              });
 
-    confs.reserve(assigns.size());
+    confs.reserve(confs.size() + assigns.size());
     for (const std::string &assign : assigns) {
         confs.emplace_back(splitAt(assign, '='));
     }
