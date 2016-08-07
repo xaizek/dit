@@ -36,6 +36,11 @@ Command::Command(std::string name, std::string descr, std::string help)
 {
 }
 
+Command::~Command()
+{
+    // Put destructor and virtual table here.
+}
+
 std::string
 Command::getName() const
 {

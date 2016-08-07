@@ -46,6 +46,10 @@ operator>>(std::istream &s, std::vector<Change> &changes)
     std::time_t timestamp;
     bool timestampSet = false;
     for (const std::string &l : getLines(s)) {
+        if (l.empty()) {
+            throw std::runtime_error("Empty strings are not expected");
+        }
+
         if (std::isdigit(l[0])) {
             timestamp = lexical_cast<std::time_t>(l);
             timestampSet = true;

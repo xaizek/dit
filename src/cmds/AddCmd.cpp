@@ -36,7 +36,6 @@
 #include "completion.hpp"
 #include "integration.hpp"
 #include "parsing.hpp"
-#include "printing.hpp"
 
 /**
  * @brief Usage message for "add" command.
@@ -125,8 +124,7 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     };
     std::string error;
     if (!ItemFilter(breakIntoArgs(guard)).passes(accessor, error)) {
-        err() << "New item doesn't pass the guard: " << guard
-              << OptLine{error} << '\n';
+        err() << "New item doesn't pass the guard: " << guard << error << '\n';
         return EXIT_FAILURE;
     }
 

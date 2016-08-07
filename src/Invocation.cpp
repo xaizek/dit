@@ -17,6 +17,7 @@
 
 #include "Invocation.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <regex>
 #include <string>
@@ -44,7 +45,7 @@ static std::vector<std::string> applyAlias(
 void
 Invocation::setCmdLine(std::vector<std::string> args)
 {
-    if (!args.empty() && !args[0].empty() && args[0].front() == '.') {
+    if (!args.empty() && args[0].size() > 1U && args[0].front() == '.') {
         prjName = args[0].substr(1);
         args.erase(args.begin());
     }
@@ -56,7 +57,7 @@ Invocation::setCmdLine(std::vector<std::string> args)
                  return contains(s, '=');
              });
 
-    confs.reserve(assigns.size());
+    confs.reserve(confs.size() + assigns.size());
     for (const std::string &assign : assigns) {
         confs.emplace_back(splitAt(assign, '='));
     }
@@ -85,7 +86,8 @@ Invocation::parse(bool completion)
 {
     processOptions(completion);
 
-    if (!cmdLine.empty()) {
+    const bool takeComposition = !cmdLine.empty();
+    if (takeComposition) {
         composition = cmdLine[0];
         cmdName = composition;
         cmdLine.erase(cmdLine.begin());
@@ -94,16 +96,46 @@ Invocation::parse(bool completion)
     // Break composition by a '.' and apply aliases from right to left, commands
     // that are not aliases are just prepended to current command-line.
     namespace adaptors = boost::adaptors;
-    const std::vector<std::string> names = split(composition, '.');
-    for (const std::string &name : adaptors::reverse(names)) {
+    std::vector<std::string> names = takeComposition && composition.empty()
+                                   ? std::vector<std::string>({ std::string() })
+                                   : split(composition, '.');
+    if (std::count_if(names.cbegin(), names.cend(),
+                      std::mem_fn(&std::string::empty)) > 1U) {
+        names.assign({ composition });
+    }
+
+    auto processAlias = [this, completion](const std::string &name) {
         const std::string rhsString = aliasResolver(name);
         if (rhsString.empty()) {
             cmdLine.insert(cmdLine.begin(), name);
-            continue;
+            return;
         }
 
         const std::vector<std::string> &rhs = breakIntoArgs(rhsString);
         setCmdLine(applyAlias(rhs, cmdLine, completion));
+    };
+
+    for (const std::string &name : adaptors::reverse(names)) {
+        if (!name.empty()) {
+            processAlias(name);
+            continue;
+        }
+
+        if (defCmdLine.empty()) {
+            continue;
+        }
+
+        std::vector<std::string> args = breakIntoArgs(defCmdLine);
+        cmdLine.insert(cmdLine.cbegin(), args.cbegin(), args.cend());
+        setCmdLine(cmdLine);
+
+        if (!cmdLine.empty()) {
+            std::vector<std::string> names = split(cmdLine.front(), '.');
+            cmdLine.erase(cmdLine.begin());
+            for (const std::string &name : adaptors::reverse(names)) {
+                processAlias(name);
+            }
+        }
     }
 
     if (cmdLine.empty()) {

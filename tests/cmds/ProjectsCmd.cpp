@@ -17,6 +17,8 @@
 
 #include "Catch/catch.hpp"
 
+#include <boost/filesystem/operations.hpp>
+
 #include <cstdlib>
 
 #include <sstream>
@@ -26,6 +28,8 @@
 #include "Dit.hpp"
 
 #include "Tests.hpp"
+
+namespace fs = boost::filesystem;
 
 TEST_CASE("Projects command", "[cmds][projects][invocation]")
 {
@@ -63,4 +67,35 @@ TEST_CASE("Projects command", "[cmds][projects][invocation]")
         REQUIRE(out.str() == std::string());
         REQUIRE(err.str() == std::string());
     }
+}
+
+TEST_CASE("Projects does nothing if there are no projects",
+          "[cmds][projects][invocation]")
+{
+    Command *const cmd = Commands::get("projects");
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/tmp-data";
+    static char home_env[] = "HOME=.";
+
+    fs::create_directories("tests/tmp-data/dit/projects");
+    fs::copy_file("tests/main.cpp", "tests/tmp-data/dit/projects/main.cpp",
+                  fs::copy_option::none);
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app" });
+
+    boost::optional<int> exitCode = cmd->run(dit, { });
+
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
+
+    REQUIRE(out.str() == std::string());
+    REQUIRE(err.str() == std::string());
+
+    fs::remove_all("tests/tmp-data");
 }

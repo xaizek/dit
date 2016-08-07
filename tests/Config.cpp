@@ -17,6 +17,8 @@
 
 #include "Catch/catch.hpp"
 
+#include <boost/property_tree/info_parser.hpp>
+
 #include "Config.hpp"
 
 TEST_CASE("Absent values are taken from parent", "[config][parent-child]")
@@ -84,4 +86,12 @@ TEST_CASE("List looks into parent config", "[config][parent-child][list]")
     Config child("child", &parent);
 
     REQUIRE(child.list("alias") == std::vector<std::string> { "name" });
+}
+
+TEST_CASE("Loading file of wrong format throws exception", "[config]")
+{
+    Config child("tests/main.cpp");
+
+    namespace pt = boost::property_tree;
+    REQUIRE_THROWS_AS(child.get("key", "v") == "value", pt::info_parser_error);
 }

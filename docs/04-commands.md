@@ -114,7 +114,7 @@ what happens.
 Components are processed from right to left with aliases being expanded
 (commands are just expanded to themselve).  Each alias can be viewed as three
 components: configuration overrides, command name and arguments.  For each alias
-their components are mixed into current command-line as follows:
+its components are mixed into current command-line as follows:
 
  1. overrides = overrides + alias overrides          (appended)
  2. Command name from an alias is new command name.
@@ -122,6 +122,11 @@ their components are mixed into current command-line as follows:
 
 `expanded alias` is created by applying alias to current argument list.
 `extra arguments` are all arguments unused by the alias.
+
+One of the commands can be empty (as in `.cmd`, `cmd1..cmd2` or `cmd.`), in
+which case it designates default command line, which is expanded at that point
+of processing.  Note that leading dot can taken as indication of project name,
+and thus should be used with project specified explicitly.
 
 For example, the following aliases:
 

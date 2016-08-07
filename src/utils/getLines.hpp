@@ -24,7 +24,7 @@
 
 #include <boost/range.hpp>
 
-// See: http://ericniebler.com/2013/10/13/out-parameters-vs-move-semantics/
+// Based on: http://ericniebler.com/2013/10/13/out-parameters-vs-move-semantics/
 
 namespace detail {
 
@@ -65,7 +65,7 @@ private:
      */
     void increment()
     {
-        if (!std::getline(*s, *str, delim)) {
+        if (!std::getline(*s, *str, delim) || s->eof()) {
             *this = linesIterator();
         }
     }

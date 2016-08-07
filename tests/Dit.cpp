@@ -21,12 +21,29 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 #include "Config.hpp"
 #include "Dit.hpp"
 #include "Project.hpp"
 
 #include "Tests.hpp"
+
+TEST_CASE("Dit throws exception on empty args", "[app][invocation]")
+{
+    REQUIRE_THROWS_AS(Dit({}), std::runtime_error);
+}
+
+TEST_CASE("Dit throws exception on absent $HOME", "[app][invocation]")
+{
+    std::string home = std::getenv("HOME");
+
+    unsetenv("HOME");
+    REQUIRE_THROWS_AS(Dit({ "dit" }), std::runtime_error);
+
+    static std::string homeSet = "HOME=" + home;
+    putenv(&homeSet[0]);
+}
 
 TEST_CASE("Help is displayed", "[app][invocation]")
 {
@@ -50,6 +67,62 @@ TEST_CASE("Version is displayed", "[app][invocation]")
     REQUIRE(exitCode);
     REQUIRE(*exitCode == EXIT_SUCCESS);
     REQUIRE(!capture.get().empty());
+}
+
+TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
+{
+    StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+    std::string projectName;
+
+    SECTION("Empty project name")
+    {
+        projectName = ".";
+    }
+
+    SECTION("Wrong project name")
+    {
+        projectName = ".wrong-proj-name";
+    }
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", projectName });
+
+    boost::optional<int> exitCode = dit.run();
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(coutCapture.get() == std::string());
+    REQUIRE(cerrCapture.get() != std::string());
+}
+
+TEST_CASE("Dit errors on invalid project name on completion",
+          "[app][invocation][completion]")
+{
+    StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+    // Use wrong root directory to get empty global configuration.
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app" });
+
+    std::ostringstream out;
+    std::ostringstream err;
+    boost::optional<int> exitCode = dit.complete({ ".", "" }, out, err);
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(coutCapture.get() == std::string());
+    REQUIRE(cerrCapture.get() != std::string());
 }
 
 TEST_CASE("Running commands", "[app]")
@@ -92,7 +165,7 @@ TEST_CASE("Running commands", "[app]")
             " first\n"
             " second\n"
             "*tests\n"
-            " third\n";
+            " third -- third test project\n";
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
@@ -202,6 +275,8 @@ TEST_CASE("Completion of commands", "[app][completion]")
 
     SECTION("No prefix")
     {
+        dit.getConfig().set("alias.a__", "abc");
+
         boost::optional<int> exitCode = dit.complete({ "::cursor::" },
                                                      out, err);
         REQUIRE(exitCode);
@@ -212,11 +287,27 @@ TEST_CASE("Completion of commands", "[app][completion]")
             "--version\n"
             "-h\n"
             "-v\n"
+            "a__\n"
             "add\n"
             "check\n"
             "complete\n"
             "config\n";
         REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("No prefix or cursor")
+    {
+        boost::optional<int> exitCode = dit.complete({ "" }, out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut =
+            "--help\n"
+            "--version\n"
+            "-h\n"
+            "-v\n";
+        REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
 
@@ -255,6 +346,18 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
     std::ostringstream out;
     std::ostringstream err;
     Tests::setStreams(out, err);
+
+    SECTION("Wrong sub-command name")
+    {
+        boost::optional<int> exitCode = dit.complete({ "asdf",
+                                                       "ui.::cursor::" },
+                                                     out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+
+        REQUIRE(out.str() == std::string());
+        REQUIRE(err.str() == std::string());
+    }
 
     SECTION("Works")
     {
