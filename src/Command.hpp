@@ -49,7 +49,7 @@ public:
     /**
      * @brief Properly destructs objects of derived classes.
      */
-    virtual ~Command() = default;
+    virtual ~Command();
 
 public:
     /**
