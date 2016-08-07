@@ -45,7 +45,7 @@ static std::vector<std::string> applyAlias(
 void
 Invocation::setCmdLine(std::vector<std::string> args)
 {
-    if (!args.empty() && !args[0].empty() && args[0].front() == '.') {
+    if (!args.empty() && args[0].size() > 1U && args[0].front() == '.') {
         prjName = args[0].substr(1);
         args.erase(args.begin());
     }

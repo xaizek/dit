@@ -52,6 +52,38 @@ TEST_CASE("Version is displayed", "[app][invocation]")
     REQUIRE(!capture.get().empty());
 }
 
+TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
+{
+    StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+    std::string projectName;
+
+    SECTION("Empty project name")
+    {
+        projectName = ".";
+    }
+
+    SECTION("Wrong project name")
+    {
+        projectName = ".wrong-proj-name";
+    }
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", projectName });
+
+    boost::optional<int> exitCode = dit.run();
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(coutCapture.get() == std::string());
+    REQUIRE(cerrCapture.get() != std::string());
+}
+
 TEST_CASE("Running commands", "[app]")
 {
     Tests::disableDecorations();

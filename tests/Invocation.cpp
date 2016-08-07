@@ -47,6 +47,18 @@ TEST_CASE("Version request is detected.", "[invocation]")
     REQUIRE(invocation.shouldPrintVersion());
 }
 
+TEST_CASE("Project nae is extracted correctly.", "[invocation][project]")
+{
+    auto aliasResolver = [](const std::string &) { return std::string(); };
+
+    Invocation invocation;
+    invocation.setCmdLine({ "." });
+    invocation.setAliasResolver(aliasResolver);
+    invocation.parse();
+
+    REQUIRE(invocation.getPrjName() == "");
+}
+
 TEST_CASE("Project name is extracted correctly.", "[invocation][project]")
 {
     auto aliasResolver = [](const std::string &) { return std::string(); };
