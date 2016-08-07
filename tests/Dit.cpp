@@ -92,7 +92,7 @@ TEST_CASE("Running commands", "[app]")
             " first\n"
             " second\n"
             "*tests\n"
-            " third\n";
+            " third -- third test project\n";
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
