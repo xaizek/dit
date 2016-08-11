@@ -70,7 +70,7 @@ public:
      *
      * @returns The size.
      */
-    int size() const { return total; }
+    int size() { ensureLoaded(); return total; }
 
     /**
      * @brief Runs visitor once for each ID in order of their generation.
