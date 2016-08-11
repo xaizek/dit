@@ -88,7 +88,7 @@ CheckCmd::run(Project &project, const std::vector<std::string> &)
 
     // Check that number of items equals "total" in configuration.
     const int total = items.size();
-    if (total == idGenerator.size()) {
+    if (total != idGenerator.size()) {
         out() << "Unexpected number of items: " << total << " instead of "
               << idGenerator.size() << '\n';
         return EXIT_FAILURE;
