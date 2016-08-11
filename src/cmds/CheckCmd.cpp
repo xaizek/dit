@@ -88,8 +88,8 @@ CheckCmd::run(Project &project, const std::vector<std::string> &)
 
     // Check that number of items equals "total" in configuration.
     const int total = items.size();
-    if (total == idGenerator.size()) {
-        err() << "Unexpected number of items: " << total << " instead of "
+    if (total != idGenerator.size()) {
+        out() << "Unexpected number of items: " << total << " instead of "
               << idGenerator.size() << '\n';
         return EXIT_FAILURE;
     }
@@ -116,7 +116,7 @@ CheckCmd::checkIdList(const std::vector<std::reference_wrapper<Item>> &items,
         [this, &actualIds, &expectedIds, &result](const std::string &id) {
             expectedIds.insert(id);
             if (!contains(actualIds, id)) {
-                err() << "Missing item with id: " << id << '\n';
+                out() << "Missing item with id: " << id << '\n';
                 result = EXIT_FAILURE;
             }
         });
@@ -127,7 +127,7 @@ CheckCmd::checkIdList(const std::vector<std::reference_wrapper<Item>> &items,
                         expectedIds.cbegin(), expectedIds.cend(),
                         std::back_inserter(extraIds));
     for (const std::string &id : extraIds) {
-        err() << "Extra item with id: " << id << '\n';
+        out() << "Extra item with id: " << id << '\n';
         result = EXIT_FAILURE;
     }
 

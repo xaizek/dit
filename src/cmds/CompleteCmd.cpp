@@ -74,6 +74,7 @@ CompleteCmd::run(Dit &dit, const std::vector<std::string> &args)
     std::ostringstream estream;
     int exitCode = dit.complete(args, out(), estream);
     if (!estream.str().empty()) {
+        // Calling err() has side effects, so don't call unless error occurred.
         err() << estream.str();
     }
     return exitCode;
