@@ -20,6 +20,8 @@
 #include <ctime>
 
 #include <sstream>
+#include <stdexcept>
+#include <string>
 
 #include "Change.hpp"
 #include "Item.hpp"
@@ -30,6 +32,13 @@ TEST_CASE("_id pseudo field returns item id.", "[item][pseudo-field]")
 {
     Item item = Tests::makeItem("aaa");
     REQUIRE(item.getValue("_id") == "aaa");
+}
+
+TEST_CASE("Builtin keys are not writable", "[item][pseudo-field]")
+{
+    std::string error;
+    REQUIRE(!Item::isValidKeyName("_id", true, error));
+    REQUIRE(error != std::string());
 }
 
 TEST_CASE("_created pseudo field is empty for empty item.",
@@ -73,7 +82,7 @@ TEST_CASE("_changed pseudo field is updated correctly.", "[item][pseudo-field]")
     REQUIRE(itemB.getValue("_changed") > itemA.getValue("_changed"));
 }
 
-TEST_CASE("Empty values are not listed", "[item]")
+TEST_CASE("Empty values are not listed.", "[item]")
 {
     std::time_t t = std::time(nullptr);
     MockTimeSource timeMock([&t](){ return t++; });
@@ -83,4 +92,28 @@ TEST_CASE("Empty values are not listed", "[item]")
     REQUIRE(item.listRecordNames() == std::set<std::string>{"title"});
     item.setValue("title", std::string());
     REQUIRE(item.listRecordNames() == std::set<std::string>{});
+}
+
+TEST_CASE("Wrongly named keys cause error.", "[item]")
+{
+    Item item = Tests::makeItem("aaa");
+
+    SECTION("On get().")
+    {
+        REQUIRE_THROWS_AS(item.getValue("!@@#$%^"), std::runtime_error);
+    }
+
+    SECTION("On set().")
+    {
+        REQUIRE_THROWS_AS(item.setValue("!@@#$%^", "b"), std::runtime_error);
+    }
+}
+
+TEST_CASE("Setting field sets modified flag.", "[item]")
+{
+    Item item = Tests::makeItem("aaa");
+
+    REQUIRE(!item.wasChanged());
+    item.setValue("bla", "b");
+    REQUIRE(item.wasChanged());
 }

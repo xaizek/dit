@@ -17,6 +17,8 @@
 
 #include "Catch/catch.hpp"
 
+#include <boost/program_options/errors.hpp>
+
 #include <string>
 #include <vector>
 
@@ -292,11 +294,8 @@ TEST_CASE("Absent arguments are expanded to empty strings.",
 TEST_CASE("Completion stops after last argument is inserted.",
           "[invocation][aliases][completion]")
 {
-    auto aliasResolver = [](const std::string &name) -> std::string {
-        if (name == "alias") {
-            return "cmd ${2} ${3} ${1}";
-        }
-        return {};
+    auto aliasResolver = [](const std::string &name) {
+        return (name == "alias") ? "cmd ${2} ${3} ${1}" : std::string();
     };
 
     Invocation invocation;
@@ -313,7 +312,30 @@ TEST_CASE("Completion stops after last argument is inserted.",
     REQUIRE(args[1] == "arg3");
 }
 
-TEST_CASE("", "[invocation]")
+TEST_CASE("Wrong options.", "[invocation][completion]")
+{
+    auto aliasResolver = [](const std::string &) { return std::string(); };
+
+    Invocation invocation;
+    invocation.setCmdLine({ "--bla" });
+    invocation.setAliasResolver(aliasResolver);
+
+    SECTION("Ignored on completion")
+    {
+        invocation.parse(true);
+
+        std::vector<std::string> args = invocation.getCmdArgs();
+        REQUIRE(invocation.getCmdName() == std::string());
+        REQUIRE(args.empty());
+    }
+
+    SECTION("Error on running")
+    {
+        REQUIRE_THROWS_AS(invocation.parse(), boost::program_options::error);
+    }
+}
+
+TEST_CASE("Invocation throws if alias resolved isn't set.", "[invocation]")
 {
     Invocation invocation;
     invocation.setCmdLine({ "alias" });
@@ -434,6 +456,14 @@ TEST_CASE("Unnamed command is expanded as default one.",
 
     SECTION("Trailing unnamed command")
     {
+        invocation.setCmdLine({ "alias." });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "alias-expanded");
+    }
+
+    SECTION("Unnamed command and no default command-line")
+    {
+        invocation.setDefCmdLine("");
         invocation.setCmdLine({ "alias." });
         invocation.parse();
         REQUIRE(invocation.getCmdName() == "alias-expanded");
