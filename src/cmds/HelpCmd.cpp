@@ -80,7 +80,7 @@ HelpCmd::HelpCmd()
 boost::optional<int>
 HelpCmd::run(Dit &, const std::vector<std::string> &args)
 {
-    if (args.size() > 1) {
+    if (args.size() > 1U) {
         err() << "Expected at most one argument.\n";
         return EXIT_FAILURE;
     }
