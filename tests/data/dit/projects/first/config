@@ -1,0 +1,14 @@
+!ids
+{
+    sequences
+    {
+        alphabet abcdefghij
+        count 3
+        0 eafhjbcgid
+        1 hjgcidfbae
+        2 cdhjagbfei
+    }
+    next fhc
+    count 3
+    total 3
+}

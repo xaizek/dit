@@ -60,6 +60,10 @@ Item::isValidKeyName(const std::string &name, bool forWrite, std::string &error)
 Item::Item(Storage &storage, std::string id, bool exists, pk<Storage>)
     : StorageBacked<Item>(!exists), storage(storage), id(std::move(id))
 {
+    // Count item creation as a modification.
+    if (!exists) {
+        markModified();
+    }
 }
 
 Item::Item(Storage &storage, std::string id, pk<Tests>)
