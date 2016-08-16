@@ -26,6 +26,14 @@ Builds coverage in `coverage/` putting report in `coverage/data/`.  Requires
 Same as `coverage` plus invokes `$BROWSER` on index file of the coverage report.
 Requires `lcov` to be installed.
 
+* `upload-coverage`
+Gathers coverage data and sends it to coveralls.  Requires `cpp-coveralls` to be
+installed.  The assumed usege is like this:
+
+    make clean
+    make with-coverage
+    make upload-coverage TOKEN=<token-value>
+
 * `check`
 Builds and runs tests.  Combine with `debug` or `release` to build and run tests
 in that configuration.
