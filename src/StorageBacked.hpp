@@ -54,7 +54,7 @@ public:
     virtual void save()
     {
         assert(false &&
-               "Saving devired instance that doesn't implement saving.");
+               "Saving derived instance that doesn't implement saving.");
     }
 
 protected:
