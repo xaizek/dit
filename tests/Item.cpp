@@ -17,6 +17,8 @@
 
 #include "Catch/catch.hpp"
 
+#include <boost/filesystem/operations.hpp>
+
 #include <ctime>
 
 #include <sstream>
@@ -25,8 +27,12 @@
 
 #include "Change.hpp"
 #include "Item.hpp"
+#include "Project.hpp"
+#include "Storage.hpp"
 
 #include "Tests.hpp"
+
+namespace fs = boost::filesystem;
 
 TEST_CASE("_id pseudo field returns item id.", "[item][pseudo-field]")
 {
@@ -116,4 +122,87 @@ TEST_CASE("Setting field sets modified flag.", "[item]")
     REQUIRE(!item.wasChanged());
     item.setValue("bla", "b");
     REQUIRE(item.wasChanged());
+}
+
+TEST_CASE("Setting empty field to the same value doesn't count as change.",
+          "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    REQUIRE(!item.wasChanged());
+    item.setValue("title", "");
+    REQUIRE(!item.wasChanged());
+}
+
+TEST_CASE("Reverted change cancels out the wrong one for empty field", "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    item.setValue("title", "new title");
+    REQUIRE(item.getChanges().size() == 1U);
+    item.setValue("title", "");
+    REQUIRE(item.getChanges().size() == 0U);
+}
+
+TEST_CASE("Setting field to the same value doesn't count as change.", "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    item.setValue("title", "the title");
+    REQUIRE(item.getChanges().size() == 1U);
+    item.setValue("title", "the title");
+    REQUIRE(item.getChanges().size() == 1U);
+}
+
+TEST_CASE("Reverted change cancels out the wrong one", "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    {
+        // The first change should be an old one.
+        MockTimeSource timeMock([](){ return 0; });
+        item.setValue("title", "old title");
+        REQUIRE(item.getChanges().size() == 1U);
+    }
+
+    item.setValue("title", "new title");
+    REQUIRE(item.getChanges().size() == 2U);
+    item.setValue("title", "old title");
+    REQUIRE(item.getChanges().size() == 1U);
+}
+
+TEST_CASE("Items with broken timestamps fail to load.", "[item][load]")
+{
+    std::time_t t = std::time(nullptr);
+    MockTimeSource timeMock([&t](){ return t--; });
+
+    try {
+
+        Project::init("tests/data/dit/projects/tmp");
+        std::string id;
+
+        {
+            Project prj("tests/data/dit/projects/tmp");
+            Storage &storage = prj.getStorage();
+            REQUIRE(storage.list().size() == 0U);
+
+            Item &item = storage.create();
+            item.setValue("a", "b");
+            item.setValue("c", "d");
+            id = item.getId();
+            prj.save();
+        }
+
+        {
+            Project prj("tests/data/dit/projects/tmp");
+            Storage &storage = prj.getStorage();
+            REQUIRE_THROWS_AS(storage.get(id).getValue("c"), std::logic_error);
+        }
+
+    } catch (...) {
+        fs::remove_all("tests/data/dit/projects/tmp");
+        throw;
+    }
+
+    fs::remove_all("tests/data/dit/projects/tmp");
 }

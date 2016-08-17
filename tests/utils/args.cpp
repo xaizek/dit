@@ -25,6 +25,7 @@
 TEST_CASE("Empty input", "[utils][args]")
 {
     REQUIRE(breakIntoArgs(std::string()).empty());
+    REQUIRE(breakIntoArgs("        ").empty());
 }
 
 TEST_CASE("Benign input", "[utils][args]")
@@ -63,4 +64,16 @@ TEST_CASE("Throws exception on unclosed bracket", "[utils][args]")
     REQUIRE_THROWS_AS(breakIntoArgs("\"broken"), boost::escaped_list_error);
     REQUIRE_THROWS_AS(breakIntoArgs("broken'"), boost::escaped_list_error);
     REQUIRE_THROWS_AS(breakIntoArgs("broken\""), boost::escaped_list_error);
+}
+
+TEST_CASE("Escaping works", "[utils][args]")
+{
+    std::vector<std::string> args = breakIntoArgs(R"(  "\n"  " \" "  \\ )");
+    REQUIRE(args == (std::vector<std::string>{ "\n", " \" ", "\\" }));
+}
+
+TEST_CASE("Throws exception on wrong escaping", "[utils][args]")
+{
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\\"), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\\x"), boost::escaped_list_error);
 }

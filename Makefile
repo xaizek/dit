@@ -84,7 +84,7 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean man debug release
-.PHONY: with-coverage coverage show-coverage reset-coverage
+.PHONY: with-coverage coverage show-coverage reset-coverage upload-coverage
 .PHONY: install install-docs
 
 debug release: $(out_dir)/$(bin)
@@ -107,6 +107,11 @@ coverage: with-coverage
 	     --test-name unit_tests --quiet
 	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
 	     --config-file lcovrc --demangle-cpp --show-details
+
+upload-coverage:
+	gcov -p $(bin_objects)
+	coveralls --encoding iso-8859-1 --exclude tests --no-gcov -t $(TOKEN)
+	find -name '*.gc*' -delete
 
 with-coverage: check $(out_dir)/$(bin)
 
