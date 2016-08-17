@@ -18,6 +18,7 @@
 #include "Catch/catch.hpp"
 
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include "Change.hpp"
@@ -25,6 +26,13 @@
 #include "ItemTable.hpp"
 
 #include "Tests.hpp"
+
+TEST_CASE("Throws on wrong specification.", "[item-table][format]")
+{
+    REQUIRE_THROWS_AS(ItemTable(std::string(), "this is not valid",
+                                std::string(), 80),
+                      std::runtime_error);
+}
 
 TEST_CASE("No columns result in no output.", "[item-table][format]")
 {
@@ -38,6 +46,22 @@ TEST_CASE("No columns result in no output.", "[item-table][format]")
     table.print(oss);
 
     REQUIRE(oss.str() == std::string());
+}
+
+TEST_CASE("Invisible columns turn into dots.", "[item-table][sizing]")
+{
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+
+    ItemTable table("title", std::string(), std::string(), 2);
+    table.append(item);
+
+    std::ostringstream oss;
+    table.print(oss);
+
+    const std::string expected = "..\n"
+                                 "..\n";
+    REQUIRE(oss.str() == expected);
 }
 
 TEST_CASE("Longer column gets shortened first.", "[item-table][sizing]")
@@ -76,7 +100,7 @@ TEST_CASE("Sorting is performed.", "[item-table][sorting]")
     Item itemB = Tests::makeItem("bbb");
     Item itemC = Tests::makeItem("ccc");
 
-    ItemTable table("_id", std::string(), std::string("_id"), 80);
+    ItemTable table("_id", "inv _id==aaa", std::string("_id"), 80);
     table.append(itemC);
     table.append(itemA);
     table.append(itemB);
