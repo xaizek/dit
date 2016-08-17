@@ -117,3 +117,23 @@ TEST_CASE("Setting field sets modified flag.", "[item]")
     item.setValue("bla", "b");
     REQUIRE(item.wasChanged());
 }
+
+TEST_CASE("Setting empty field to the same value doesn't count as change.",
+          "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    REQUIRE(!item.wasChanged());
+    item.setValue("title", "");
+    REQUIRE(!item.wasChanged());
+}
+
+TEST_CASE("Reverted change cancels out the wrong one for empty field", "[item]")
+{
+    Item item = Tests::makeItem("id");
+
+    item.setValue("title", "new title");
+    REQUIRE(item.getChanges().size() == 1U);
+    item.setValue("title", "");
+    REQUIRE(item.getChanges().size() == 0U);
+}

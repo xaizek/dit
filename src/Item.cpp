@@ -162,11 +162,16 @@ Item::setValue(const std::string &key, const std::string &value)
                     // Remove the change that matches old value.
                     changes.erase(changes.begin() + (change - &changes[0]));
                 }
+            } else if (value.empty()) {
+                // Remove the change that matches old value.
+                changes.erase(changes.begin() + (change - &changes[0]));
             }
 
             markModified();
             return;
         }
+    } else if (value.empty()) {
+        return;
     }
 
     changes.emplace_back(timestamp, key, value);
