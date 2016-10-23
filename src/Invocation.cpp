@@ -45,7 +45,7 @@ static std::vector<std::string> applyAlias(
 void
 Invocation::setCmdLine(std::vector<std::string> args)
 {
-    if (!args.empty() && args[0].size() > 1U && args[0].front() == '.') {
+    if (!args.empty() && !args[0].empty() && args[0].front() == '.') {
         prjName = args[0].substr(1);
         args.erase(args.begin());
     }
@@ -91,17 +91,25 @@ Invocation::parse(bool completion)
         composition = cmdLine[0];
         cmdName = composition;
         cmdLine.erase(cmdLine.begin());
+
+        if (composition.empty()) {
+            // "." and "" are treated equivalently, but the former one can also
+            // be distinguished from missing composition.
+            composition = ".";
+        }
     }
 
-    // Break composition by a '.' and apply aliases from right to left, commands
-    // that are not aliases are just prepended to current command-line.
-    namespace adaptors = boost::adaptors;
-    std::vector<std::string> names = takeComposition && composition.empty()
-                                   ? std::vector<std::string>({ std::string() })
-                                   : split(composition, '.');
-    if (std::count_if(names.cbegin(), names.cend(),
-                      std::mem_fn(&std::string::empty)) > 1U) {
-        names.assign({ composition });
+    std::vector<std::string> names;
+
+    // Treat "." as an alias for "".
+    if (takeComposition && (composition.empty() || composition == ".")) {
+        names.assign({ std::string() });
+    } else {
+        names = split(composition, '.');
+        if (std::count_if(names.cbegin(), names.cend(),
+                        std::mem_fn(&std::string::empty)) > 1U) {
+            names.assign({ composition });
+        }
     }
 
     auto processAlias = [this, completion](const std::string &name) {
@@ -115,6 +123,9 @@ Invocation::parse(bool completion)
         setCmdLine(applyAlias(rhs, cmdLine, completion));
     };
 
+    // Break composition by a '.' and apply aliases from right to left, commands
+    // that are not aliases are just prepended to current command-line.
+    namespace adaptors = boost::adaptors;
     for (const std::string &name : adaptors::reverse(names)) {
         if (!name.empty()) {
             processAlias(name);

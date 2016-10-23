@@ -12,7 +12,7 @@ command      |      ---------- -----------       |     sub-command
  name        |                |                  |      arguments
          optional             |            sub-command
        project-name           |                name
-                        configuration
+       (. == defprj)    configuration
                           overrides
 ```
 

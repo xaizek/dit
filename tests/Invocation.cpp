@@ -415,11 +415,18 @@ TEST_CASE("At most one unnamed command is allowed.",
     invocation.setAliasResolver(aliasResolver);
     invocation.setDefCmdLine("defcmd");
 
-    SECTION("Just two unnamed commands")
+    SECTION("Single dot is treated specially")
     {
         invocation.setCmdLine({ ".proj", "." });
         invocation.parse();
-        REQUIRE(invocation.getCmdName() == ".");
+        REQUIRE(invocation.getCmdName() == "defcmd");
+    }
+
+    SECTION("Two leading unnamed commands")
+    {
+        invocation.setCmdLine({ ".proj", "..cmd" });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "..cmd");
     }
 
     SECTION("Two trailing unnamed commands")
