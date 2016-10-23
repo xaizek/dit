@@ -17,7 +17,7 @@ function _dit()
     fi
 
     # obtain completion from the application
-    local compl="$(dit $project complete ${args[@]})"
+    local compl="$(dit complete ${args[@]})"
     local OLDIFS="$IFS"
     IFS=$'\n'
     COMPREPLY=( $( compgen -W "$compl" -- "$cur" ) )
