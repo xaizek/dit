@@ -137,10 +137,14 @@ TEST_CASE("Global configuration is processed", "[cmds][config]")
 
     SECTION("Displayed")
     {
+        const std::string expectedOut =
+            "core.defcmd = rename\n"
+            "core.defprj = tests\n";
+
         boost::optional<int> exitCode = cmd->run(dit, { "--global" });
         REQUIRE(exitCode);
         REQUIRE(*exitCode == EXIT_SUCCESS);
-        REQUIRE(out.str() == "core.defprj = tests\n");
+        REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
 
@@ -278,6 +282,7 @@ TEST_CASE("Config completes global config", "[cmds][config][completion]")
         "--global\n"
         "-h\n"
         "-g\n"
+        "core.defcmd:\n"
         "core.defprj:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());
@@ -321,6 +326,7 @@ TEST_CASE("Matches omit present elements", "[cmds][config][completion]")
         "-h\n"
         "-g\n"
         "_e:\n"
+        "core.defcmd:\n"
         "core.defprj:\n";
     REQUIRE(out.str() == expectedOut);
     REQUIRE(err.str() == std::string());

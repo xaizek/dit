@@ -1,4 +1,5 @@
 core
 {
     defprj tests
+    defcmd rename
 }
