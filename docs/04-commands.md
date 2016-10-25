@@ -125,8 +125,10 @@ its components are mixed into current command-line as follows:
 
 One of the commands can be empty (as in `.cmd`, `cmd1..cmd2` or `cmd.`), in
 which case it designates default command line, which is expanded at that point
-of processing.  Note that leading dot can taken as indication of project name,
-and thus should be used with project specified explicitly.
+of processing.  Note that leading dot can be taken as indication of project
+name, and thus should be used with project specified explicitly.  As a special
+case single dot as a command (`.`) is expanded into default command line (this
+is the same as empty command name (`''`), but easier to type).
 
 For example, the following aliases:
 

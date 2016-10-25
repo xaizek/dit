@@ -49,16 +49,17 @@ TEST_CASE("Version request is detected.", "[invocation]")
     REQUIRE(invocation.shouldPrintVersion());
 }
 
-TEST_CASE("Project nae is extracted correctly.", "[invocation][project]")
+TEST_CASE("Project name can be empty.", "[invocation][project]")
 {
     auto aliasResolver = [](const std::string &) { return std::string(); };
 
     Invocation invocation;
+    invocation.setDefPrjName("defprj");
     invocation.setCmdLine({ "." });
     invocation.setAliasResolver(aliasResolver);
     invocation.parse();
 
-    REQUIRE(invocation.getPrjName() == "");
+    REQUIRE(invocation.getPrjName() == "defprj");
 }
 
 TEST_CASE("Project name is extracted correctly.", "[invocation][project]")
@@ -414,11 +415,18 @@ TEST_CASE("At most one unnamed command is allowed.",
     invocation.setAliasResolver(aliasResolver);
     invocation.setDefCmdLine("defcmd");
 
-    SECTION("Just two unnamed commands")
+    SECTION("Single dot is treated specially")
     {
         invocation.setCmdLine({ ".proj", "." });
         invocation.parse();
-        REQUIRE(invocation.getCmdName() == ".");
+        REQUIRE(invocation.getCmdName() == "defcmd");
+    }
+
+    SECTION("Two leading unnamed commands")
+    {
+        invocation.setCmdLine({ ".proj", "..cmd" });
+        invocation.parse();
+        REQUIRE(invocation.getCmdName() == "..cmd");
     }
 
     SECTION("Two trailing unnamed commands")

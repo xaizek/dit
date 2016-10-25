@@ -73,25 +73,13 @@ TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
 {
     StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
 
-    std::string projectName;
-
-    SECTION("Empty project name")
-    {
-        projectName = ".";
-    }
-
-    SECTION("Wrong project name")
-    {
-        projectName = ".wrong-proj-name";
-    }
-
     static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
     static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
 
-    Dit dit({ "app", projectName });
+    Dit dit({ "app", ".wrong-proj-name" });
 
     boost::optional<int> exitCode = dit.run();
     REQUIRE(exitCode);
@@ -101,28 +89,35 @@ TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
     REQUIRE(cerrCapture.get() != std::string());
 }
 
-TEST_CASE("Dit errors on invalid project name on completion",
+TEST_CASE("Empty project and command are allowed",
           "[app][invocation][completion]")
 {
     StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
 
     // Use wrong root directory to get empty global configuration.
-    static char xdg_env[] = "XDG_CONFIG_HOME=tests";
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
     static char home_env[] = "HOME=.";
 
     putenv(xdg_env);
     putenv(home_env);
 
     Dit dit({ "app" });
+    dit.getConfig().set("defcmd", "rename");
 
     std::ostringstream out;
     std::ostringstream err;
-    boost::optional<int> exitCode = dit.complete({ ".", "" }, out, err);
+    boost::optional<int> exitCode = dit.complete({ ".", "", "f::cursor::" },
+                                                 out, err);
     REQUIRE(exitCode);
-    REQUIRE(*exitCode == EXIT_FAILURE);
+    REQUIRE(*exitCode == EXIT_SUCCESS);
 
-    REQUIRE(coutCapture.get() == std::string());
-    REQUIRE(cerrCapture.get() != std::string());
+    const std::string expectedOut =
+        "first\n"
+        "second\n"
+        "tests\n"
+        "third\n";
+    REQUIRE(coutCapture.get() == expectedOut);
+    REQUIRE(cerrCapture.get() == std::string());
 }
 
 TEST_CASE("Running commands", "[app]")
@@ -293,21 +288,6 @@ TEST_CASE("Completion of commands", "[app][completion]")
             "complete\n"
             "config\n";
         REQUIRE(out.str().substr(0, expectedOut.length()) == expectedOut);
-        REQUIRE(err.str() == std::string());
-    }
-
-    SECTION("No prefix or cursor")
-    {
-        boost::optional<int> exitCode = dit.complete({ "" }, out, err);
-        REQUIRE(exitCode);
-        REQUIRE(*exitCode == EXIT_SUCCESS);
-
-        const std::string expectedOut =
-            "--help\n"
-            "--version\n"
-            "-h\n"
-            "-v\n";
-        REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
 
