@@ -124,7 +124,8 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
     };
     std::string error;
     if (!ItemFilter(breakIntoArgs(guard)).passes(accessor, error)) {
-        err() << "New item doesn't pass the guard: " << guard << error << '\n';
+        err() << "New item doesn't pass the guard: " << guard << '\n'
+              << error << '\n';
         return EXIT_FAILURE;
     }
 
