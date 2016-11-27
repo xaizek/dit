@@ -79,7 +79,7 @@ TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
     putenv(xdg_env);
     putenv(home_env);
 
-    Dit dit({ "app", ".wrong-proj-name" });
+    Dit dit({ "app", ".wrong-proj-name", "ls" });
 
     boost::optional<int> exitCode = dit.run();
     REQUIRE(exitCode);
