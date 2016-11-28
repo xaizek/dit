@@ -24,7 +24,10 @@
 #include <string>
 #include <vector>
 
+#include "utils/Passkey.hpp"
 #include "Command.hpp"
+
+class Tests;
 
 /**
  * @brief Keeps track of all sub-commands.
@@ -47,6 +50,12 @@ public:
      * @throws std::runtime_error On duplicated command name.
      */
     static void add(std::unique_ptr<Command> cmd);
+    /**
+     * @brief Removes command by its name.
+     *
+     * @param name Name of command to remove.
+     */
+    static void remove(const std::string &name, pk<Tests>);
     /**
      * @brief Retrieves command by its name.
      *

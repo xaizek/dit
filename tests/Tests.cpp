@@ -26,6 +26,7 @@
 #include "utils/memory.hpp"
 #include "Change.hpp"
 #include "Command.hpp"
+#include "Commands.hpp"
 #include "Item.hpp"
 #include "Project.hpp"
 #include "Storage.hpp"
@@ -81,4 +82,10 @@ bool
 Tests::configIsModified(Config &config)
 {
     return config.isModified({});
+}
+
+void
+Tests::removeCmd(const std::string &name)
+{
+    Commands::remove(name, {});
 }

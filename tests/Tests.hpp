@@ -137,6 +137,13 @@ public:
      */
     static bool configIsModified(Config &config);
 
+    /**
+     * @brief Removes command from command list.
+     *
+     * @param name Name of the command to remove.
+     */
+    static void removeCmd(const std::string &name);
+
 private:
     /**
      * @brief Sets timestamp provider for Item and Change objects.

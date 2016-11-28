@@ -23,6 +23,11 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <boost/scope_exit.hpp>
+
+#include "utils/memory.hpp"
+#include "Command.hpp"
+#include "Commands.hpp"
 #include "Config.hpp"
 #include "Dit.hpp"
 #include "Project.hpp"
@@ -121,6 +126,55 @@ TEST_CASE("Dit errors on empty project name", "[app][invocation][completion]")
     REQUIRE(coutCapture.get() == std::string());
     REQUIRE(cerrCapture.get() != std::string());
 }
+
+// Normally there is an assert, so the test should be run only when it's
+// disabled.
+#ifdef NDEBUG
+
+TEST_CASE("Broken commands cause errors", "[app][invocation][completion]")
+{
+    class Cmd : public Command {
+    public:
+        Cmd(std::string name, std::string descr, std::string help)
+            : Command(name, descr, help) { }
+    };
+    auto badCmd = make_unique<Cmd>("bad", std::string(), std::string());
+
+    Commands::add(std::move(badCmd));
+    BOOST_SCOPE_EXIT_ALL() { Tests::removeCmd("bad"); };
+
+    StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/data";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", ".", "bad" });
+
+    boost::optional<int> exitCode;
+
+    SECTION("Invocation")
+    {
+        exitCode = dit.run();
+    }
+
+    SECTION("Completion")
+    {
+        std::ostringstream out;
+        std::ostringstream err;
+        exitCode = dit.complete({ ".", "bad" }, out, err);
+    }
+
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(coutCapture.get() == std::string());
+    REQUIRE(cerrCapture.get() == std::string());
+}
+
+#endif
 
 TEST_CASE("Empty project and command are allowed",
           "[app][invocation][completion]")

@@ -44,6 +44,12 @@ Commands::add(std::unique_ptr<Command> cmd)
     cmds[cmdName] = std::move(cmd);
 }
 
+void
+Commands::remove(const std::string &name, pk<Tests>)
+{
+    cmds.erase(name);
+}
+
 Command *
 Commands::get(const std::string &name)
 {
