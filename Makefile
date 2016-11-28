@@ -53,7 +53,7 @@ else
         endif
 
         ifneq ($(with_cov),no)
-            EXTRA_CXXFLAGS += --coverage
+            EXTRA_CXXFLAGS += --coverage -DNDEBUG
             EXTRA_LDFLAGS  += --coverage
         endif
 

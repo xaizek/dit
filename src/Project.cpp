@@ -38,9 +38,7 @@ static std::string getSubRootPath(const fs::path &rootPath,
 void
 Project::init(const std::string &rootDir)
 {
-    if (!fs::create_directories(rootDir)) {
-        throw std::runtime_error("Directory already exists at: " + rootDir);
-    }
+    fs::create_directories(rootDir);
 
     Project prj(rootDir);
     Storage::init(prj);
