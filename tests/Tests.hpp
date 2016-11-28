@@ -131,6 +131,8 @@ public:
     /**
      * @brief Retrieves whether configuration has any unsaved changes.
      *
+     * @param config Configuration to check.
+     *
      * @returns @c true if so, otherwise @c false is returned.
      */
     static bool configIsModified(Config &config);
