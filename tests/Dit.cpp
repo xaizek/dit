@@ -89,6 +89,39 @@ TEST_CASE("Dit errors on invalid project name", "[app][invocation]")
     REQUIRE(cerrCapture.get() != std::string());
 }
 
+TEST_CASE("Dit errors on empty project name", "[app][invocation][completion]")
+{
+    StreamCapture coutCapture(std::cout), cerrCapture(std::cerr);
+
+    static char xdg_env[] = "XDG_CONFIG_HOME=tests/no-such-dir";
+    static char home_env[] = "HOME=.";
+
+    putenv(xdg_env);
+    putenv(home_env);
+
+    Dit dit({ "app", ".", "ls" });
+
+    boost::optional<int> exitCode;
+
+    SECTION("Invocation")
+    {
+        exitCode = dit.run();
+    }
+
+    SECTION("Completion")
+    {
+        std::ostringstream out;
+        std::ostringstream err;
+        exitCode = dit.complete({ ".", "ls" }, out, err);
+    }
+
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(coutCapture.get() == std::string());
+    REQUIRE(cerrCapture.get() != std::string());
+}
+
 TEST_CASE("Empty project and command are allowed",
           "[app][invocation][completion]")
 {
