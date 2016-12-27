@@ -110,10 +110,7 @@ ProjectsCmd::run(Dit &dit, const std::vector<std::string> &args)
     // Display.
     const std::string &prj = dit.getPrj();
     for (const std::pair<std::string, std::string> &info : infos) {
-        out() << decor::bold
-              << (info.first == prj ? '*' : ' ')
-              << info.first
-              << decor::def;
+        out() << (decor::bold << (info.first == prj ? '*' : ' ') << info.first);
         if (!info.second.empty()) {
             out() << " -- " << info.second;
         }
