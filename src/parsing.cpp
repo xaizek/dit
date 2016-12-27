@@ -56,7 +56,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 BOOST_FUSION_ADAPT_STRUCT(
     ColorRule,
-    (std::vector<ColorRule::decoration>, decors)
+    (std::vector<const decor::Decoration *>, decors)
     (std::vector<Cond>, conds)
 )
 
@@ -94,7 +94,7 @@ public:
 /**
  * @brief Symbol table of decorations.
  */
-static class dec_ : public qi::symbols<char, ColorRule::decoration>
+static class dec_ : public qi::symbols<char, const decor::Decoration *>
 {
 public:
     dec_()
