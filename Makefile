@@ -85,7 +85,7 @@ out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean man debug release
 .PHONY: with-coverage coverage show-coverage reset-coverage upload-coverage
-.PHONY: install install-docs
+.PHONY: install install-docs uninstall
 
 debug release: $(out_dir)/$(bin)
 
