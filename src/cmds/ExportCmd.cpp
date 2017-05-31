@@ -157,8 +157,9 @@ ExportCmd::complete(Project &project, const std::vector<std::string> &args)
 void
 ExportCmd::exportItem(const std::string &cmd, Item &item)
 {
-    /* Check for special value meaning "printing to stdout". */
+    // Check for special value meaning "printing to stdout".
     if (cmd == "-") {
+        out() << "_id=" << item.getValue("_id") << '\0';
         for (const std::string &key : item.listRecordNames()) {
             out() << key << '=' << item.getValue(key) << '\0';
         }
@@ -168,6 +169,7 @@ ExportCmd::exportItem(const std::string &cmd, Item &item)
 
     // Compose command-line.
     std::ostringstream cmdLine(cmd, std::ios::out | std::ios::ate);
+    cmdLine << " _id=" << shellEscape(item.getValue("_id"));
     for (const std::string &key : item.listRecordNames()) {
         cmdLine << ' ' << key << '=' << shellEscape(item.getValue(key));
     }
