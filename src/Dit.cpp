@@ -221,9 +221,9 @@ Dit::complete(std::vector<std::string> args, std::ostream &out, std::ostream &)
 }
 
 /**
- * @brief Completes command name performind dedupplication.
+ * @brief Completes command name performing deduplication.
  *
- * @param composition Command composition (might consist of single command).
+ * @param composition Command composition (might consist of a single command).
  * @param names List of all command names (including names of aliases).
  *
  * @returns List of completion matches.

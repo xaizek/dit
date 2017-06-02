@@ -63,6 +63,7 @@ Invokes external script passing item data via argument list.
 Invokes **cmd key1=value1 key2=value2** for each item that matches given list
 of conditions or prints out items to standard output with **key=value** fields
 terminated by null character and each item also finished by null character.
+Builtin key `_id` is also printed.
 
 help
 ----

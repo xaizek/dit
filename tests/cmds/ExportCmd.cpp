@@ -146,7 +146,7 @@ TEST_CASE("Stdout destination", "[cmds][export]")
     REQUIRE(*exitCode == EXIT_SUCCESS);
 
     // There must be two trailing zeroes.
-    const char expectedOut[] = "bug_number=22\0title=This's a title\0";
+    const char expectedOut[] = "_id=id\0bug_number=22\0title=This's a title\0";
     REQUIRE(out.str() == std::string(std::begin(expectedOut),
                                      std::end(expectedOut)));
     REQUIRE(err.str() == std::string());

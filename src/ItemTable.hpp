@@ -120,7 +120,7 @@ private:
      */
     std::vector<Column> cols;
     /**
-     * @brief List of items to sort.
+     * @brief List of items to display.
      */
     std::vector<std::reference_wrapper<Item>> items;
     /**

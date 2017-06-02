@@ -23,6 +23,10 @@
 #include <string>
 #include <vector>
 
+namespace decor {
+    class Decoration;
+}
+
 /**
  * @brief Enumerations of supported operations.
  */
@@ -51,11 +55,6 @@ struct Cond
 struct ColorRule
 {
     /**
-     * @brief Decorator prototype.
-     */
-    typedef std::ostream & (*decoration)(std::ostream &os);
-
-    /**
      * @brief Conditions by which rule is chosen.
      *
      * Rule is matched if any of these match.
@@ -64,7 +63,7 @@ struct ColorRule
     /**
      * @brief Decorations to apply according to this rule.
      */
-    std::vector<decoration> decors;
+    std::vector<const decor::Decoration *> decors;
 };
 
 /**

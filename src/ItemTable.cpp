@@ -38,7 +38,7 @@
 #include "parsing.hpp"
 
 static std::ostream & operator<<(std::ostream &os,
-                              const std::vector<ColorRule::decoration> &decors);
+                          const std::vector<const decor::Decoration *> &decors);
 
 /**
  * @brief Helper class that represents single column of a table.
@@ -368,10 +368,11 @@ ItemTable::decorate(std::ostream &os, Item *item)
  * @returns @p os
  */
 static std::ostream &
-operator<<(std::ostream &os, const std::vector<ColorRule::decoration> &decors)
+operator<<(std::ostream &os,
+           const std::vector<const decor::Decoration *> &decors)
 {
-    for (const ColorRule::decoration &decor : decors) {
-        os << decor;
+    for (const decor::Decoration *decor : decors) {
+        os << *decor;
     }
     return os;
 }

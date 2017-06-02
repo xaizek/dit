@@ -35,7 +35,7 @@
 void
 Tests::disableDecorations()
 {
-    decor::setEnabled(false, {});
+    decor::disableDecorations({});
 }
 
 void

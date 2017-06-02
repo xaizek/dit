@@ -85,7 +85,7 @@ out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean man debug release
 .PHONY: with-coverage coverage show-coverage reset-coverage upload-coverage
-.PHONY: install install-docs
+.PHONY: install install-docs uninstall
 
 debug release: $(out_dir)/$(bin)
 
@@ -136,7 +136,7 @@ install-docs: man
 
 uninstall:
 	$(RM) $(DESTDIR)/usr/bin/$(bin) $(DESTDIR)/usr/share/man/man1/dit.1 \
-	      $(DESTDIR)/usr/share/man/man1/dit.1
+	      $(DESTDIR)/usr/share/bash-completion/completions/dit
 
 # work around parenthesis warning in tests somehow caused by ccache
 $(out_dir)/tests/tests: EXTRA_CXXFLAGS += -Wno-error=parentheses -Itests/

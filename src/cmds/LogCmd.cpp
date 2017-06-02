@@ -131,17 +131,14 @@ LogCmd::run(Project &project, const std::vector<std::string> &args)
                              ? " (" + timeToString(change.getTimestamp()) + ')'
                              : std::string();
         if (value.empty()) {
-            out() << Key{key}
-                  << decor::red_fg << decor::bold << " deleted" << decor::def
+            out() << Key{key} << (decor::red_fg + decor::bold << " deleted")
                   << at << '\n';
         } else if (values[key].empty()) {
-            out() << Key{key}
-                  << decor::yellow_fg << decor::bold << " created" << decor::def
+            out() << Key{key} << (decor::yellow_fg + decor::bold << " created")
                   << at
                   << Value{value} << '\n';
         } else {
-            out() << Key{key}
-                  << decor::blue_fg << decor::bold << " changed" << decor::def
+            out() << Key{key} << (decor::blue_fg + decor::bold << " changed")
                   << at
                   << Value{diff(split(values[key], '\n'), split(value, '\n'))};
         }
@@ -227,12 +224,13 @@ diff(const std::vector<std::string> &f, const std::vector<std::string> &s)
     // Color results and turn them into a string.
     std::ostringstream oss;
     for (const std::string &line : result) {
+        decor::Decoration dec;
         switch (line[0]) {
-            case '+': oss << decor::green_fg; break;
-            case '-': oss << decor::red_fg;   break;
-            case '<': oss << decor::black_fg << decor::bold;   break;
+            case '+': dec = decor::green_fg; break;
+            case '-': dec = decor::red_fg;   break;
+            case '<': dec = decor::black_fg + decor::bold; break;
         }
-        oss << line << decor::def << '\n';
+        oss << (dec << line) << '\n';
     }
 
     return oss.str();

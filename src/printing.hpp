@@ -62,7 +62,7 @@ public:
 inline std::ostream &
 operator<<(std::ostream &os, const Cmd &cmd)
 {
-    return os << decor::bold << cmd.data << decor::def;
+    return os << (decor::bold << cmd.data);
 }
 
 /**
@@ -76,7 +76,7 @@ operator<<(std::ostream &os, const Cmd &cmd)
 inline std::ostream &
 operator<<(std::ostream &os, const Key &key)
 {
-    return os << decor::bold << key.data << decor::def;
+    return os << (decor::bold << key.data);
 }
 
 /**
