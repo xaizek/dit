@@ -34,15 +34,16 @@
 #include "Config.hpp"
 
 static int getIdx(int k, int b);
-template <typename C>
-inline C shuffle(const C &c);
+template <typename C, typename G = std::mt19937>
+inline C shuffle(C c, G &&g = std::mt19937(std::random_device{}()));
 
 void
 IdGenerator::init(Config &config, const std::string &alphabet)
 {
     // Initial number of sequences (width of an ID) is three.
+    std::mt19937 g(std::random_device{}());
     std::array<std::string, 3> sequences = {
-        { shuffle(alphabet), shuffle(alphabet), shuffle(alphabet) }
+        { shuffle(alphabet, g), shuffle(alphabet, g), shuffle(alphabet, g) }
     };
 
     config.set("!ids.sequences.alphabet", alphabet);
@@ -99,6 +100,9 @@ IdGenerator::advance(std::string id, int count)
 {
     const int i = getIdx(count + 1, sequences[0].size());
     if (static_cast<unsigned int>(i) == id.length()) {
+        // Theoretically we could pass in random number generator in the same
+        // state it was used last time (e.g. after initialization), but this
+        // step is so rare that it won't make any difference.
         sequences.push_back(shuffle(alphabet));
 
         // Make id from first characters of all sequences and reset count to
@@ -147,20 +151,18 @@ getIdx(int k, int b)
  * @brief Shuffles elements of the given container.
  *
  * @tparam C Type of the container.
+ * @tparam G Type of random number generator.
+ *
  * @param c Container itself.
+ * @param g Generator.
  *
  * @returns Copy of the container with shuffled items.
  */
-template <typename C>
-inline C shuffle(const C &c)
+template <typename C, typename G>
+inline C shuffle(C c, G &&g)
 {
-    C shuffled = c;
-
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(shuffled.begin(), shuffled.end(), g);
-
-    return shuffled;
+    std::shuffle(c.begin(), c.end(), g);
+    return std::move(c);
 }
 
 void

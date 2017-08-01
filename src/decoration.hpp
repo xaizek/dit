@@ -297,66 +297,34 @@ extern const Decoration def;
 
 /**
  * @brief Picks black as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration black_fg;
 /**
  * @brief Picks red as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration red_fg;
 /**
  * @brief Picks green as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration green_fg;
 /**
  * @brief Picks yellow as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration yellow_fg;
 /**
  * @brief Picks blue as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration blue_fg;
 /**
  * @brief Picks magenta as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration magenta_fg;
 /**
  * @brief Picks cyan as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration cyan_fg;
 /**
  * @brief Picks white as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
  */
 extern const Decoration white_fg;
 
@@ -368,67 +336,35 @@ extern const Decoration white_fg;
  */
 
 /**
- * @brief Picks black as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks black as background color.
  */
 extern const Decoration black_bg;
 /**
- * @brief Picks red as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks red as background color.
  */
 extern const Decoration red_bg;
 /**
- * @brief Picks green as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks green as background color.
  */
 extern const Decoration green_bg;
 /**
- * @brief Picks yellow as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks yellow as background color.
  */
 extern const Decoration yellow_bg;
 /**
- * @brief Picks blue as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks blue as background color.
  */
 extern const Decoration blue_bg;
 /**
- * @brief Picks magenta as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks magenta as background color.
  */
 extern const Decoration magenta_bg;
 /**
- * @brief Picks cyan as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks cyan as background color.
  */
 extern const Decoration cyan_bg;
 /**
- * @brief Picks white as foreground color.
- *
- * @param os Stream to operate on.
- *
- * @returns @p os
+ * @brief Picks white as background color.
  */
 extern const Decoration white_bg;
 
