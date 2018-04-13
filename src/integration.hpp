@@ -36,6 +36,13 @@ boost::optional<std::string> editValue(const std::string &key,
                                        const std::string &current);
 
 /**
+ * @brief Queries whether program output is connected to terminal.
+ *
+ * @returns @c true if so, otherwise @c false.
+ */
+bool isOutputToTerminal();
+
+/**
  * @brief Retrieves terminal width.
  *
  * @returns Actual terminal width, or maximum possible value allowed by type.

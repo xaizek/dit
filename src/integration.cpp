@@ -128,6 +128,12 @@ readEditedValue(const std::string &path)
     return value;
 }
 
+bool
+isOutputToTerminal()
+{
+    return isatty(fileno(stdout));
+}
+
 unsigned int
 getTerminalWidth()
 {
