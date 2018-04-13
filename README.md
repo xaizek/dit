@@ -1,11 +1,6 @@
-[![Coverage Status](https://coveralls.io/repos/github/xaizek/dit/badge.svg)](https://coveralls.io/github/xaizek/dit)
+**dit**, _v0.10_, _2015 - 2018_
 
-_dit_
-_2015 - 2016_
-
-**Last updated**: 04 August, 2016
-
-**Version**: 0.10
+_This file last updated on 14 April, 2018_
 
 ### Brief Description ###
 
@@ -25,8 +20,7 @@ oriented on GTD and similar techniques.
 ### Status ###
 
 This is quite close to 1.0 version, although it might see some changes for the
-sake of improvement, but the code itself is stable.  The application has been in
-development and use since summer 2015.
+sake of improvement, but the code itself is stable.
 
 ### Features ###
 
