@@ -1,4 +1,4 @@
-// Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
+// Copyright (C) 2015 xaizek <xaizek@posteo.net>
 //
 // This file is part of dit.
 //
