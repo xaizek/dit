@@ -1,5 +1,6 @@
 CXXFLAGS += -std=c++11 -Wall -Wextra -Werror -MMD -I$(abspath src)
-LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_system
+LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_iostreams
+LDFLAGS += -lboost_system
 
 INSTALL := install -D
 
