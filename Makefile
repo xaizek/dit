@@ -1,5 +1,6 @@
 CXXFLAGS += -std=c++11 -Wall -Wextra -Werror -MMD -I$(abspath src)
-LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_system
+LDFLAGS += -lboost_program_options -lboost_filesystem -lboost_iostreams
+LDFLAGS += -lboost_system
 
 INSTALL := install -D
 
@@ -95,7 +96,7 @@ $(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
 	       -V section=1 \
 	       -V app=dit \
 	       -V date="$$(date +'%B %d, %Y')" \
-	       -V author='xaizek <xaizek@openmailbox.org>' \
+	       -V author='xaizek <xaizek@posteo.net>' \
 	       -s -o $@ $(sort $^)
 
 show-coverage: coverage

@@ -1,4 +1,4 @@
-// Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
+// Copyright (C) 2015 xaizek <xaizek@posteo.net>
 //
 // This file is part of dit.
 //
@@ -45,6 +45,7 @@
 #include "Item.hpp"
 #include "Project.hpp"
 #include "completion.hpp"
+#include "integration.hpp"
 #include "parsing.hpp"
 #include "printing.hpp"
 
@@ -122,6 +123,12 @@ getDefaultConfig()
         defCfg.set("ui.ls.sort", "title,_id");
         defCfg.set("ui.ls.color", "fg-cyan inv bold !heading");
         defCfg.set("ui.show.order", "title");
+
+        std::string pager = "less -R";
+        if (const char *const pagerEnv = std::getenv("PAGER")) {
+            pager = pagerEnv;
+        }
+        defCfg.set("core.pager", pager);
     }
 
     return defCfg;
@@ -130,6 +137,8 @@ getDefaultConfig()
 int
 Dit::run()
 {
+    RedirectToPager redirectToPager(globalConfig->get("core.pager"));
+
     invocation.parse();
 
     if (invocation.shouldPrintHelp()) {

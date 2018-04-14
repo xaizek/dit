@@ -1,4 +1,4 @@
-// Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
+// Copyright (C) 2015 xaizek <xaizek@posteo.net>
 //
 // This file is part of dit.
 //
@@ -18,9 +18,43 @@
 #ifndef DIT__INTEGRATION_HPP__
 #define DIT__INTEGRATION_HPP__
 
+#include <memory>
 #include <string>
 
 #include <boost/optional.hpp>
+
+/**
+ * @brief A class that automatically spawns pager if output is large.
+ *
+ * Output must come to @c std::cout and is considered to be large when it
+ * doesn't fit screen height.
+ */
+class RedirectToPager
+{
+public:
+    class Impl;
+
+    /**
+     * @brief Can redirect @c std::cout until destruction.
+     *
+     * @param pagerCmd Command to invoke a pager.
+     */
+    explicit RedirectToPager(const std::string &pagerCmd);
+
+    //! No copy-constructor.
+    RedirectToPager(const RedirectToPager &rhs) = delete;
+    //! No copy-move.
+    RedirectToPager & operator=(const RedirectToPager &rhs) = delete;
+
+    /**
+     * @brief Restores previous state of @c std::cout.
+     */
+    ~RedirectToPager();
+
+private:
+    //! Implementation details.
+    std::unique_ptr<Impl> impl;
+};
 
 /**
  * @brief Edits value if user requested for it.
@@ -34,6 +68,13 @@
 boost::optional<std::string> editValue(const std::string &key,
                                        const std::string &value,
                                        const std::string &current);
+
+/**
+ * @brief Queries whether program output is connected to terminal.
+ *
+ * @returns @c true if so, otherwise @c false.
+ */
+bool isOutputToTerminal();
 
 /**
  * @brief Retrieves terminal width.

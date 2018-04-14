@@ -1,4 +1,4 @@
-// Copyright (C) 2015 xaizek <xaizek@openmailbox.org>
+// Copyright (C) 2015 xaizek <xaizek@posteo.net>
 //
 // This file is part of dit.
 //
@@ -17,11 +17,9 @@
 
 #include "decoration.hpp"
 
-#include <unistd.h>
-
-#include <cstdio>
-
 #include <ostream>
+
+#include "integration.hpp"
 
 namespace {
 
@@ -62,7 +60,7 @@ private:
     /**
      * @brief Whether outputting of ASCII escape sequences is enabled.
      */
-    bool isAscii = isatty(fileno(stdout));
+    bool isAscii = isOutputToTerminal();
 } C;
 
 }
