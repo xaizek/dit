@@ -162,7 +162,7 @@ template <typename C, typename G>
 inline C shuffle(C c, G &&g)
 {
     std::shuffle(c.begin(), c.end(), g);
-    return std::move(c);
+    return c;
 }
 
 void
