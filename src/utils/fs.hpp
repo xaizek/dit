@@ -43,6 +43,10 @@ public:
              /  fs::unique_path("dit-" + prefix + "-%%%%-%%%%")).string();
     }
 
+    // Make sure temporary file is deleted only once.
+    TempFile(const TempFile &rhs) = delete;
+    TempFile & operator=(const TempFile &rhs) = delete;
+
     /**
      * @brief Removes temporary file, if it still exists.
      */
