@@ -83,3 +83,15 @@ TEST_CASE("Accepts empty arguments", "[utils][args]")
     CHECK(breakIntoArgs(R"("" a '')") ==
           (std::vector<std::string>{ "", "a", "" }));
 }
+
+TEST_CASE("Allows quote nesting", "[utils][args]")
+{
+    CHECK(breakIntoArgs(R"("" a '')") ==
+          (std::vector<std::string>{ "", "a", "" }));
+    CHECK(breakIntoArgs(R"(" ' ")") == (std::vector<std::string>{ " ' " }));
+    CHECK(breakIntoArgs(R"(' " ')") == (std::vector<std::string>{ " \" " }));
+
+    CHECK(breakIntoArgs(R"("' a '")") == (std::vector<std::string>{ "' a '" }));
+    CHECK(breakIntoArgs(R"('" a "')") ==
+          (std::vector<std::string>{ "\" a \"" }));
+}

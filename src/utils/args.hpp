@@ -81,8 +81,8 @@ public:
     template <typename InputIterator, typename Token>
     bool operator()(InputIterator &next, InputIterator end, Token &tok)
     {
-        bool bInQuote = false;
-        bool wasInQuote = false;
+        Char inQuote = Char();
+        Char wasInQuote = Char();
         tok = Token();
 
         if (next == end) {
@@ -92,7 +92,7 @@ public:
             if (is_escape(*next)) {
                 do_escape(next, end, tok);
             } else if (is_c(*next)) {
-                if (!bInQuote) {
+                if (!inQuote) {
                     do {
                         ++next;
                     } while (next != end && is_c(*next));
@@ -108,9 +108,9 @@ public:
                 } else {
                     tok += *next;
                 }
-            } else if (is_quote(*next)) {
-                wasInQuote = bInQuote;
-                bInQuote = !bInQuote;
+            } else if (is_quote(*next) && (!inQuote || *next == inQuote)) {
+                wasInQuote = inQuote;
+                inQuote = (inQuote ? Char() : *next);
             } else {
                 tok += *next;
             }
@@ -118,13 +118,13 @@ public:
             ++next;
 
             if (wasInQuote) {
-                wasInQuote = false;
+                wasInQuote = Char();
                 if (is_c(*next)) {
                     return true;
                 }
             }
         }
-        if (bInQuote) {
+        if (inQuote) {
             throw boost::escaped_list_error(
                 std::string("incomplete quoted argument")
             );
