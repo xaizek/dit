@@ -82,6 +82,7 @@ public:
     bool operator()(InputIterator &next, InputIterator end, Token &tok)
     {
         bool bInQuote = false;
+        bool wasInQuote = false;
         tok = Token();
 
         if (next == end) {
@@ -108,12 +109,20 @@ public:
                     tok += *next;
                 }
             } else if (is_quote(*next)) {
+                wasInQuote = bInQuote;
                 bInQuote = !bInQuote;
             } else {
                 tok += *next;
             }
 
             ++next;
+
+            if (wasInQuote) {
+                wasInQuote = false;
+                if (is_c(*next)) {
+                    return true;
+                }
+            }
         }
         if (bInQuote) {
             throw boost::escaped_list_error(

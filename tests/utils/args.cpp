@@ -77,3 +77,9 @@ TEST_CASE("Throws exception on wrong escaping", "[utils][args]")
     REQUIRE_THROWS_AS(breakIntoArgs("broken\\"), boost::escaped_list_error);
     REQUIRE_THROWS_AS(breakIntoArgs("broken\\x"), boost::escaped_list_error);
 }
+
+TEST_CASE("Accepts empty arguments", "[utils][args]")
+{
+    CHECK(breakIntoArgs(R"("" a '')") ==
+          (std::vector<std::string>{ "", "a", "" }));
+}
