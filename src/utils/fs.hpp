@@ -53,7 +53,7 @@ public:
 
 public:
     /**
-     * @brief Provides implicit convertion to a file path string.
+     * @brief Provides implicit conversion to a file path string.
      *
      * @returns The path.
      */
