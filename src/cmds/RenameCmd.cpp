@@ -112,8 +112,7 @@ RenameCmd::run(Dit &dit, const std::vector<std::string> &args)
 }
 
 boost::optional<int>
-RenameCmd::complete(Dit &dit,
-                    const std::vector<std::string> &args)
+RenameCmd::complete(Dit &dit, const std::vector<std::string> &args)
 {
     if (args.size() > 2) {
         return EXIT_FAILURE;

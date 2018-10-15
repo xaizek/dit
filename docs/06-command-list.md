@@ -23,7 +23,7 @@ if something is wrong and exits with non-zero exit code.
 complete
 --------
 
-Command-line completion helper for shells.
+Provides command-line completion helper for shells.
 
 **Usage: complete \<regular args\>**
 
@@ -81,7 +81,7 @@ log
 
 Displays item changes.
 
-**Usage: log [--help|-h] [--timestamps|-t] \<item id\> [key...]**
+**Usage: log [--help|-h] [--timestamps|-t] \<item id\> [\<key\>...]**
 
 **--help (-h)** causes option summary to be printed.
 
@@ -104,7 +104,7 @@ Affected by: **ui.ls.fmt**, **ui.ls.sort**, **ui.ls.color**.
 new
 ---
 
-Create new project.
+Creates new project.
 
 **Usage: new \<project name\>**
 
@@ -123,7 +123,7 @@ marked with a star (\*).
 rename
 ------
 
-Rename project.
+Renames a project.
 
 **Usage: rename \<old name\> \<new name\>**
 
@@ -143,9 +143,19 @@ show
 
 Displays items.
 
-**Usage: show \<item id\> [key...]**
+**Usage: show \<item id\> [\<key\>...]**
 
 Prints entries of specified item, either all fields (if only item id is
 specified) or just for the specified ones.
 
 Affected by: **ui.show.order**.
+
+values
+------
+
+Displays values of a key.
+
+**Usage: values \<key\>**
+
+Prints all values that appear associated with the given key to at least one
+item.
