@@ -15,24 +15,9 @@ Builds release version in `release/`.
 * `man`
 Builds manual page in `<out>/docs/dit.1`, requires `pandoc`.
 
-* `with-coverage`
-Builds with coverage in current directory and generates no report.
-
 * `coverage`
 Builds coverage in `coverage/` putting report in `coverage/data/`.  Requires
-`lcov` to be installed.
-
-* `show-coverage`
-Same as `coverage` plus invokes `$BROWSER` on index file of the coverage report.
-Requires `lcov` to be installed.
-
-* `upload-coverage`
-Gathers coverage data and sends it to coveralls.  Requires `cpp-coveralls` to be
-installed.  The assumed usege is like this:
-
-    make clean
-    make with-coverage
-    make upload-coverage TOKEN=<token-value>
+`uncov` to be installed.
 
 * `check`
 Builds and runs tests.  Combine with `debug` or `release` to build and run tests

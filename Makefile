@@ -42,24 +42,15 @@ else
     ifneq ($(call pos,debug,$(MAKECMDGOALS)),-1)
         out_dir := debug
     else
-        with_cov := no
-        ifneq ($(call pos,with-coverage,$(MAKECMDGOALS)),-1)
-            with_cov := data
-        endif
+        with_cov := 0
         ifneq ($(call pos,coverage,$(MAKECMDGOALS)),-1)
-            with_cov := report
-        endif
-        ifneq ($(call pos,show-coverage,$(MAKECMDGOALS)),-1)
-            with_cov := report
+            with_cov := 1
         endif
 
-        ifneq ($(with_cov),no)
+        ifeq ($(with_cov),1)
+            out_dir := coverage
             EXTRA_CXXFLAGS += --coverage -DNDEBUG
             EXTRA_LDFLAGS  += --coverage
-        endif
-
-        ifeq ($(with_cov),report)
-            out_dir := coverage
         else
             out_dir := .
         endif
@@ -85,7 +76,7 @@ tests_depends := $(tests_sources:%.cpp=$(out_dir)/%.d)
 out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean man debug release
-.PHONY: with-coverage coverage show-coverage reset-coverage upload-coverage
+.PHONY: coverage reset-coverage
 .PHONY: install install-docs uninstall
 
 debug release: $(out_dir)/$(bin)
@@ -99,26 +90,16 @@ $(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
 	       -V author='xaizek <xaizek@posteo.net>' \
 	       -s -o $@ $(sort $^)
 
-show-coverage: coverage
-	$$BROWSER coverage/data/index.html
-
-coverage: with-coverage
-	lcov --directory $(out_dir)/ --base-directory src/ --capture \
-	     --output-file $(out_dir)/lcov.info --config-file lcovrc \
-	     --test-name unit_tests --quiet
-	genhtml --output-directory $(out_dir)/data/ $(out_dir)/lcov.info \
-	     --config-file lcovrc --demangle-cpp --show-details
-
-upload-coverage:
-	gcov -p $(bin_objects)
-	coveralls --encoding iso-8859-1 --exclude tests --no-gcov -t $(TOKEN)
-	find -name '*.gc*' -delete
-
-with-coverage: check $(out_dir)/$(bin)
+coverage:
+	gcov -p $(bin_objects) > /dev/null
+	# find $(out_dir)/ -name '*.o' -exec gcov -p {} +
+	uncov-gcov --root . --build-root . --no-gcov --capture-worktree \
+	           --exclude tests | uncov new
+	find . -name '*.gcov' -delete
 
 reset-coverage:
-ifeq ($(with_cov),report)
-	lcov --directory $(out_dir)/ --zerocounters
+ifeq ($(with_cov),1)
+	find $(out_dir)/ -name '*.gcda' -delete
 endif
 
 $(out_dir)/$(bin): $(bin_objects) | $(out_dirs)
