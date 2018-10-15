@@ -149,3 +149,13 @@ Prints entries of specified item, either all fields (if only item id is
 specified) or just for the specified ones.
 
 Affected by: **ui.show.order**.
+
+values
+------
+
+Displays values of a key.
+
+**Usage: values \<key\>**
+
+Prints all values that appear associated with the given key to at least one
+item.

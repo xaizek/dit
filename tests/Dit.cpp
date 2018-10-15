@@ -475,4 +475,29 @@ TEST_CASE("Completion of sub-commands", "[app][completion]")
         REQUIRE(out.str() == expectedOut);
         REQUIRE(err.str() == std::string());
     }
+
+    SECTION("Values subcommand")
+    {
+        boost::optional<int> exitCode = dit.complete({ ".first", "values" },
+                                                     out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_SUCCESS);
+
+        const std::string expectedOut = "status\ntitle\n";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
+
+    SECTION("Values subcommand with too much arguments")
+    {
+        boost::optional<int> exitCode = dit.complete({ ".first", "values", "s",
+                                                       "t" },
+                                                     out, err);
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+
+        const std::string expectedOut = "";
+        REQUIRE(out.str() == expectedOut);
+        REQUIRE(err.str() == std::string());
+    }
 }
