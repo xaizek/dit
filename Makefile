@@ -90,9 +90,8 @@ $(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
 	       -V author='xaizek <xaizek@posteo.net>' \
 	       -s -o $@ $(sort $^)
 
-coverage:
+coverage: check
 	gcov -p $(bin_objects) > /dev/null
-	# find $(out_dir)/ -name '*.o' -exec gcov -p {} +
 	uncov-gcov --root . --build-root . --no-gcov --capture-worktree \
 	           --exclude tests | uncov new
 	find . -name '*.gcov' -delete
