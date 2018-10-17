@@ -148,6 +148,22 @@ TEST_CASE("Addition on new item", "[cmds][add]")
         REQUIRE(out.str() == "Created item: fYP\n");
         REQUIRE(err.str() == std::string());
     }
+
+    SECTION("Item is not created on failed external editing")
+    {
+        static char editor_env[] = "EDITOR=wrong-command >>";
+        putenv(editor_env);
+
+        boost::optional<int> exitCode = cmd->run(*prj,
+                                                 { "title:",  "title",
+                                                   "status:", "-",
+                                                   "author:", "me" });
+        REQUIRE(exitCode);
+        REQUIRE(*exitCode == EXIT_FAILURE);
+
+        REQUIRE(out.str() == std::string());
+        REQUIRE(err.str() != std::string());
+    }
 }
 
 TEST_CASE("Completion of first key name on addition", "[cmds][add][completion]")

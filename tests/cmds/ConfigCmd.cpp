@@ -120,6 +120,38 @@ TEST_CASE("Config allows external editing", "[cmds][config][integration]")
     REQUIRE(prj->getConfig(true).get("value") == "new-value");
 }
 
+TEST_CASE("Config is not updated on failed external editing",
+          "[cmds][config][integration]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    static char editor_env[] = "EDITOR=wrong-command >>";
+    putenv(editor_env);
+
+    Config &cfg = prj->getConfig(true);
+
+    cfg.set("a", "olda");
+    cfg.set("b", "oldb");
+    cfg.set("c", "oldc");
+
+    Command *const cmd = Commands::get("config");
+    boost::optional<int> exitCode = cmd->run(*prj, { "a:", "newa",
+                                                     "b:", "-",
+                                                     "c:", "newc" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(out.str() == std::string());
+    REQUIRE(err.str() != std::string());
+
+    REQUIRE(cfg.get("a") == "olda");
+    REQUIRE(cfg.get("b") == "oldb");
+    REQUIRE(cfg.get("c") == "oldc");
+}
+
 TEST_CASE("Global configuration is processed", "[cmds][config]")
 {
     Command *const cmd = Commands::get("config");

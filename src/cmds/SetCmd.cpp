@@ -121,7 +121,13 @@ SetCmd::run(Project &project, const std::vector<std::string> &args)
         }
 
         const std::string current = append ? std::string() : fields[key];
-        if (boost::optional<std::string> v = editValue(key, value, current)) {
+        if (value == "-") {
+            boost::optional<std::string> v = editValue(key, current);
+            if (!v) {
+                err() << "Failed to prompt for value of key \""
+                      << key << "\"\n";
+                return EXIT_FAILURE;
+            }
             value = std::move(*v);
         }
 

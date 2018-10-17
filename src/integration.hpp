@@ -60,13 +60,11 @@ private:
  * @brief Edits value if user requested for it.
  *
  * @param key Key (name of the value).
- * @param value New value (can be special value, which means "edit").
  * @param current Current value to be edited.
  *
  * @returns Nothing if @p value can be used as is, otherwise new value.
  */
 boost::optional<std::string> editValue(const std::string &key,
-                                       const std::string &value,
                                        const std::string &current);
 
 /**

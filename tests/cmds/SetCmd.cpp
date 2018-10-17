@@ -104,6 +104,40 @@ TEST_CASE("Set allows external editing", "[cmds][set][integration]")
     REQUIRE(storage.get("id").getValue("bug_number") == "22new-value");
 }
 
+TEST_CASE("Nothing is set on failed external editing",
+          "[cmds][set][integration]")
+{
+    std::unique_ptr<Project> prj = Tests::makeProject();
+    Storage &storage = prj->getStorage();
+
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "oldtitle");
+    item.setValue("author", "someone");
+
+    Tests::storeItem(storage, std::move(item));
+
+    std::ostringstream out, err;
+    Tests::setStreams(out, err);
+
+    static char editor_env[] = "EDITOR=wrong-command >>";
+    putenv(editor_env);
+
+    Command *const cmd = Commands::get("set");
+    boost::optional<int> exitCode = cmd->run(*prj, { "id",
+                                                     "title:",  "title",
+                                                     "status:", "-",
+                                                     "author:", "me" });
+    REQUIRE(exitCode);
+    REQUIRE(*exitCode == EXIT_FAILURE);
+
+    REQUIRE(out.str() == std::string());
+    REQUIRE(err.str() != std::string());
+
+    REQUIRE(storage.get("id").getValue("title") == "oldtitle");
+    REQUIRE(storage.get("id").getValue("status") == std::string());
+    REQUIRE(storage.get("id").getValue("author") == "someone");
+}
+
 TEST_CASE("Item is changed successfully", "[cmds][set]")
 {
     std::unique_ptr<Project> prj = Tests::makeProject();

@@ -296,19 +296,14 @@ getTerminalSize()
 }
 
 boost::optional<std::string>
-editValue(const std::string &key, const std::string &value,
-          const std::string &current)
+editValue(const std::string &key, const std::string &current)
 {
-    if (value != "-") {
-        return {};
-    }
-
-    // Create name for temporary file name and the file itself.
+    // Generate name of a temporary file and write the file.
     TempFile tmpFile("buf");
     writeBufferFile(tmpFile, key, current);
 
     if (!editBufferFile(tmpFile)) {
-        return current;
+        return {};
     }
 
     return readEditedValue(tmpFile);

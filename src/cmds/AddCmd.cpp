@@ -103,7 +103,13 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
             return EXIT_FAILURE;
         }
 
-        if (boost::optional<std::string> v = editValue(key, value, {})) {
+        if (value == "-") {
+            boost::optional<std::string> v = editValue(key, {});
+            if (!v) {
+                err() << "Failed to prompt for value of key \""
+                      << key << "\"\n";
+                return EXIT_FAILURE;
+            }
             value = std::move(*v);
         }
         fields[key] = value;

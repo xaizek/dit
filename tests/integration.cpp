@@ -26,7 +26,6 @@ TEST_CASE("On failure curent value is returned.", "[integration]")
     static char editor_env[] = "EDITOR=wrong-command >>";
     putenv(editor_env);
 
-    boost::optional<std::string> val = editValue("key", "-", "current");
-    REQUIRE(val);
-    REQUIRE(*val == "current");
+    boost::optional<std::string> val = editValue("key", "current");
+    REQUIRE_FALSE(val);
 }

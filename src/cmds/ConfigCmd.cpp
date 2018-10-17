@@ -197,8 +197,14 @@ ConfigCmd::run(Config &config, const std::vector<std::string> &args)
             continue;
         }
 
-        if (boost::optional<std::string> v = editValue(key, value,
-                                                       config.get(key, {}))) {
+        if (value == "-") {
+            boost::optional<std::string> v = editValue(key,
+                                                       config.get(key, {}));
+            if (!v) {
+                err() << "Failed to prompt for value of key \""
+                      << key << "\"\n";
+                return EXIT_FAILURE;
+            }
             value = std::move(*v);
         }
         config.set(key, value);
