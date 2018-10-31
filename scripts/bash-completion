@@ -10,6 +10,9 @@ function _dit()
     local cur="${args[-1]}"
     cur="${cur:0:-10}"
 
+    # do not innsert trailing space
+    compopt -o nospace
+
     if [ "${COMP_LINE:$(( $COMP_POINT - 1 ))}" = '=' ]; then
         # try to fix issues related to use of = as a word separator (this is
         # a readline setting, which we can't control per command completion)
