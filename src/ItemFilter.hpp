@@ -34,6 +34,14 @@ class Item;
  */
 class ItemFilter
 {
+    /**
+     * @brief Type of function that is used to query field value.
+     *
+     * A field can be expanded to zero, one or multiple values and each value
+     * will be matched individually.
+     */
+    using accessor_f = std::vector<std::string>(const std::string &key);
+
 public:
     /**
      * @brief Constructs the filter out of conditions in textual form.
@@ -72,7 +80,7 @@ public:
      *
      * @returns @c true if it passes, and @c false otherwise.
      */
-    bool passes(std::function<std::string(const std::string &)> accessor) const;
+    bool passes(std::function<accessor_f> accessor) const;
 
     /**
      * @brief Checks whether item represented by its fields passes the filter.
@@ -82,8 +90,7 @@ public:
      *
      * @returns @c true if it passes, and @c false otherwise.
      */
-    bool passes(std::function<std::string(const std::string &)> accessor,
-                std::string &error) const;
+    bool passes(std::function<accessor_f> accessor, std::string &error) const;
 
 private:
     /**

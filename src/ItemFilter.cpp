@@ -53,20 +53,20 @@ ItemFilter::~ItemFilter()
 bool
 ItemFilter::passes(Item &item) const
 {
-    return passes([&item](const std::string &f) { return item.getValue(f); });
+    return passes([&item](const std::string &f) {
+        return std::vector<std::string>{ item.getValue(f) };
+    });
 }
 
 bool
-ItemFilter::passes(std::function<std::string(const std::string &)> accessor)
-    const
+ItemFilter::passes(std::function<accessor_f> accessor) const
 {
     std::string error;
     return passes(accessor, error);
 }
 
 bool
-ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
-                   std::string &error) const
+ItemFilter::passes(std::function<accessor_f> accessor, std::string &error) const
 {
     error.clear();
 
@@ -89,7 +89,14 @@ ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
     };
 
     for (const Cond &cond : conds) {
-        if (!test(cond, accessor(cond.key))) {
+        bool matched = false;
+        for (const std::string &val : accessor(cond.key)) {
+            if (test(cond, val)) {
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
             err(cond);
         }
     }
