@@ -70,6 +70,17 @@ ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
 {
     error.clear();
 
+    auto test = [](const Cond &cond, const std::string &val) {
+        switch (cond.op) {
+            case Op::eq:           return (val == cond.value);
+            case Op::ne:           return (val != cond.value);
+            case Op::iccontains:   return boost::icontains(val, cond.value);
+            case Op::icnotcontain: return !boost::icontains(val, cond.value);
+        }
+        assert(false && "Unhandled operation type.");
+        return false;
+    };
+
     auto err = [&error](const Cond &cond) {
         if (!error.empty()) {
             error += '\n';
@@ -78,30 +89,9 @@ ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
     };
 
     for (const Cond &cond : conds) {
-        const std::string &val = accessor(cond.key);
-        switch (cond.op) {
-            case Op::eq:
-                if (val != cond.value) {
-                    err(cond);
-                }
-                continue;
-            case Op::ne:
-                if (val == cond.value) {
-                    err(cond);
-                }
-                continue;
-            case Op::iccontains:
-                if (!boost::icontains(val, cond.value)) {
-                    err(cond);
-                }
-                continue;
-            case Op::icnotcontain:
-                if (boost::icontains(val, cond.value)) {
-                    err(cond);
-                }
-                continue;
+        if (!test(cond, accessor(cond.key))) {
+            err(cond);
         }
-        assert(false && "Unhandled operation type.");
     }
 
     return error.empty();
