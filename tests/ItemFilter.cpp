@@ -37,7 +37,7 @@ TEST_CASE("Error messages add up", "[item-filter]")
     Item item = Tests::makeItem("id");
     item.setValue("title", "title");
 
-    ItemFilter filter({ "_id==notid", "title!=title", "_id!/id", "title/xy" });
+    ItemFilter filter({ "_id==notid", "title!=title", "_id!/ID", "title/xy" });
 
     std::string error;
     auto accessor = [&item](const std::string &f) { return item.getValue(f); };

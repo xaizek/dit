@@ -96,7 +96,7 @@ ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
                 }
                 continue;
             case Op::icnotcontain:
-                if (boost::contains(val, cond.value)) {
+                if (boost::icontains(val, cond.value)) {
                     err(cond);
                 }
                 continue;
