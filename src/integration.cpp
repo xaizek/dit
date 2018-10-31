@@ -186,7 +186,7 @@ using ScreenPageBuffer = PagerRedirect::ScreenPageBuffer;
 ScreenPageBuffer::ScreenPageBuffer(const std::string &pagerCmd,
                                    unsigned int screenHeight,
                                io::stream_buffer<io::file_descriptor_sink> *out)
-    : pagerCmd(pagerCmd), screenHeight(screenHeight), out(out)
+    : pagerCmd(pagerCmd), screenHeight(screenHeight - 1U), out(out)
 {
 }
 
