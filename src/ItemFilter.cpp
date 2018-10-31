@@ -53,8 +53,16 @@ ItemFilter::~ItemFilter()
 bool
 ItemFilter::passes(Item &item) const
 {
-    return passes([&item](const std::string &f) {
-        return std::vector<std::string>{ item.getValue(f) };
+    return passes([&item](const std::string &key) {
+        std::vector<std::string> values;
+        if (key == "_any") {
+            for (const std::string &key : item.listRecordNames()) {
+                values.push_back(item.getValue(key));
+            }
+        } else {
+            values.push_back(item.getValue(key));
+        }
+        return values;
     });
 }
 

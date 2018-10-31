@@ -47,3 +47,12 @@ TEST_CASE("Error messages add up", "[item-filter]")
 
     REQUIRE(split(error, '\n').size() == 4);
 }
+
+TEST_CASE("_any pseudo field", "[item-filter]")
+{
+    Item item = Tests::makeItem("id");
+    item.setValue("title", "title");
+
+    ItemFilter filter({ "_any==title" });
+    REQUIRE(filter.passes(item));
+}
