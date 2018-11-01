@@ -80,7 +80,7 @@ public:
      *
      * @returns @c true if it passes, and @c false otherwise.
      */
-    bool passes(std::function<accessor_f> accessor) const;
+    bool passes(const std::function<accessor_f> &accessor) const;
 
     /**
      * @brief Checks whether item represented by its fields passes the filter.
@@ -90,7 +90,8 @@ public:
      *
      * @returns @c true if it passes, and @c false otherwise.
      */
-    bool passes(std::function<accessor_f> accessor, std::string &error) const;
+    bool passes(const std::function<accessor_f> &accessor,
+                std::string &error) const;
 
 private:
     /**

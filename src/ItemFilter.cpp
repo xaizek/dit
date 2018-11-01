@@ -67,14 +67,15 @@ ItemFilter::passes(Item &item) const
 }
 
 bool
-ItemFilter::passes(std::function<accessor_f> accessor) const
+ItemFilter::passes(const std::function<accessor_f> &accessor) const
 {
     std::string error;
     return passes(accessor, error);
 }
 
 bool
-ItemFilter::passes(std::function<accessor_f> accessor, std::string &error) const
+ItemFilter::passes(const std::function<accessor_f> &accessor,
+                   std::string &error) const
 {
     error.clear();
 
