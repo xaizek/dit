@@ -105,6 +105,9 @@ key op value
 
 Extra spaces are allowed, but don't forget to escape them (with \\ or quotes).
 
+Key in a condition can be a pseudo value "\_any" which matches with any existing
+field of an item.
+
 Command composition
 -------------------
 

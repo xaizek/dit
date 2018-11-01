@@ -125,8 +125,9 @@ AddCmd::run(Project &project, const std::vector<std::string> &args)
 
     std::string guard = cfg.get("guards.newitem", std::string());
     auto accessor = [&fields](const std::string &f) {
+        using return_t = std::vector<std::string>;
         auto it = fields.find(f);
-        return (it == fields.cend()) ? std::string() : it->second;
+        return (it == fields.cend()) ? return_t{} : return_t{ it->second };
     };
     std::string error;
     if (!ItemFilter(breakIntoArgs(guard)).passes(accessor, error)) {

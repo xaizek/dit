@@ -53,22 +53,42 @@ ItemFilter::~ItemFilter()
 bool
 ItemFilter::passes(Item &item) const
 {
-    return passes([&item](const std::string &f) { return item.getValue(f); });
+    return passes([&item](const std::string &key) {
+        std::vector<std::string> values;
+        if (key == "_any") {
+            for (const std::string &key : item.listRecordNames()) {
+                values.push_back(item.getValue(key));
+            }
+        } else {
+            values.push_back(item.getValue(key));
+        }
+        return values;
+    });
 }
 
 bool
-ItemFilter::passes(std::function<std::string(const std::string &)> accessor)
-    const
+ItemFilter::passes(const std::function<accessor_f> &accessor) const
 {
     std::string error;
     return passes(accessor, error);
 }
 
 bool
-ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
+ItemFilter::passes(const std::function<accessor_f> &accessor,
                    std::string &error) const
 {
     error.clear();
+
+    auto test = [](const Cond &cond, const std::string &val) {
+        switch (cond.op) {
+            case Op::eq:           return (val == cond.value);
+            case Op::ne:           return (val != cond.value);
+            case Op::iccontains:   return boost::icontains(val, cond.value);
+            case Op::icnotcontain: return !boost::icontains(val, cond.value);
+        }
+        assert(false && "Unhandled operation type.");
+        return false;
+    };
 
     auto err = [&error](const Cond &cond) {
         if (!error.empty()) {
@@ -78,30 +98,16 @@ ItemFilter::passes(std::function<std::string(const std::string &)> accessor,
     };
 
     for (const Cond &cond : conds) {
-        const std::string &val = accessor(cond.key);
-        switch (cond.op) {
-            case Op::eq:
-                if (val != cond.value) {
-                    err(cond);
-                }
-                continue;
-            case Op::ne:
-                if (val == cond.value) {
-                    err(cond);
-                }
-                continue;
-            case Op::iccontains:
-                if (!boost::icontains(val, cond.value)) {
-                    err(cond);
-                }
-                continue;
-            case Op::icnotcontain:
-                if (boost::icontains(val, cond.value)) {
-                    err(cond);
-                }
-                continue;
+        bool matched = false;
+        for (const std::string &val : accessor(cond.key)) {
+            if (test(cond, val)) {
+                matched = true;
+                break;
+            }
         }
-        assert(false && "Unhandled operation type.");
+        if (!matched) {
+            err(cond);
+        }
     }
 
     return error.empty();
