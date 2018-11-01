@@ -154,7 +154,7 @@ Dit::run()
     }
 
     if (invocation.shouldPrintVersion()) {
-        std::cout << "0.10\n";
+        std::cout << "0.11\n";
         return EXIT_SUCCESS;
     }
 

@@ -1,6 +1,6 @@
-**dit**, _v0.10_, _2015 - 2018_
+**dit**, _v0.11_, _2015 - 2018_
 
-_This file last updated on 14 April, 2018_
+_This file last updated on 1 November, 2018_
 
 ### Brief Description ###
 
