@@ -1,6 +1,6 @@
-**dit**, _v0.11_, _2015 - 2018_
+**dit**, _v0.11_, _2015 - 2019_
 
-_This file last updated on 1 November, 2018_
+_This file last updated on 9 January, 2019_
 
 ### Brief Description ###
 
@@ -56,10 +56,10 @@ Expected to work in \*nix like environments.
 
 ### Prerequisites ###
 
-* GNU Make;
+* [GNU Make][3];
 * C++11 compatible compiler (e.g. GCC 4.9.3);
-* [Boost][3], tested with 1.54, 1.58 and 1.59;
-* (optional) pandoc for building man page.
+* [Boost][4], tested with 1.54, 1.58 and 1.59;
+* (optional) [pandoc][5] for building man page.
 
 ### Interaction with Environment ###
 
@@ -72,6 +72,8 @@ Expected to work in \*nix like environments.
 GNU General Public License, version 3 or later.
 
 
-[1]: http://taskwarrior.org/
+[1]: https://taskwarrior.org/
 [2]: https://en.wikipedia.org/wiki/Grey_code
-[3]: http://www.boost.org/
+[3]: https://www.gnu.org/software/make/
+[4]: https://www.boost.org/
+[5]: https://pandoc.org/
