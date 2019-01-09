@@ -59,7 +59,7 @@ Expected to work in \*nix like environments.
 * [GNU Make][3];
 * C++11 compatible compiler (e.g. GCC 4.9.3);
 * [Boost][4], tested with 1.54, 1.58 and 1.59;
-* (optional) [pandoc][5] for building man page.
+* (optional) [pandoc][5] for regenerating man page.
 
 ### Interaction with Environment ###
 

@@ -13,7 +13,7 @@ Builds debug version in `debug/`.
 Builds release version in `release/`.
 
 * `man`
-Builds manual page in `<out>/docs/dit.1`, requires `pandoc`.
+Builds manual page in `docs/dit.1`, requires `pandoc`.
 
 * `coverage`
 Builds coverage in `coverage/` putting report in `coverage/data/`.  Requires
@@ -30,30 +30,26 @@ Removes build artifacts for all configurations.
 Builds the application in release mode (`release` target) and installs it.
 `DESTDIR` can be set to point to root of the installation directory.
 
-* `install-docs`
-Builds man page (`man` target) and installs it.
-`DESTDIR` can be set to point to root of the installation directory.
-
 * `uninstall`
 Removes files installed by the `install` target.  Make sure to specify the same
 `DESTDIR` as for installation.
 
 #### Documentation ####
 
-Building a man-page requires `pandoc` to be installed.
+Rebuilding a man-page requires `pandoc` to be installed.
 
 ### Installation ###
 
 A regular installation under `/usr/bin` can be done like this:
 
 ```
-make install install-docs
+make install
 ```
 
 Installation into custom directory (e.g. to make a package):
 
 ```
-make DESTDIR=$PWD/build install install-docs
+make DESTDIR=$PWD/build install
 ```
 
 ### Uninstallation ###

@@ -77,12 +77,12 @@ out_dirs := $(sort $(dir $(bin_objects) $(tests_objects)))
 
 .PHONY: check clean man debug release
 .PHONY: coverage reset-coverage
-.PHONY: install install-docs uninstall
+.PHONY: install uninstall
 
 debug release: $(out_dir)/$(bin)
 
-man: $(out_dir)/docs/dit.1
-$(out_dir)/docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
+man: docs/dit.1
+docs/dit.1: $(wildcard docs/*.md) | $(out_dir)/docs
 	pandoc -V title=dit \
 	       -V section=1 \
 	       -V app=dit \
@@ -111,9 +111,7 @@ install: release
 	$(INSTALL) $(out_dir)/$(bin) $(DESTDIR)/usr/bin/$(bin)
 	$(INSTALL) -m 644 scripts/bash-completion \
 	                  $(DESTDIR)/usr/share/bash-completion/completions/dit
-
-install-docs: man
-	$(INSTALL) -m 644 $(out_dir)/docs/dit.1 $(DESTDIR)/usr/share/man/man1/dit.1
+	$(INSTALL) -m 644 docs/dit.1 $(DESTDIR)/usr/share/man/man1/dit.1
 
 uninstall:
 	$(RM) $(DESTDIR)/usr/bin/$(bin) $(DESTDIR)/usr/share/man/man1/dit.1 \
@@ -136,6 +134,6 @@ $(out_dirs) $(out_dir)/docs:
 clean:
 	-$(RM) -r coverage/ debug/ release/
 	-$(RM) $(bin_objects) $(bin_depends) $(tests_objects) $(tests_depends) \
-           $(out_dir)/$(bin) $(out_dir)/tests/tests $(out_dir)/docs/dit.1
+           $(out_dir)/$(bin) $(out_dir)/tests/tests
 
 include $(wildcard $(bin_depends) $(tests_depends))
