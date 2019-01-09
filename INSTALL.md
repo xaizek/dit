@@ -35,7 +35,8 @@ Builds man page (`man` target) and installs it.
 `DESTDIR` can be set to point to root of the installation directory.
 
 * `uninstall`
-Removes executable and man page.
+Removes files installed by the `install` target.  Make sure to specify the same
+`DESTDIR` as for installation.
 
 #### Documentation ####
 
