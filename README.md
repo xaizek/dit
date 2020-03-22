@@ -1,6 +1,6 @@
 **dit**, _v0.11_, _2015 - 2019_
 
-_This file last updated on 9 January, 2019_
+_This file last updated on 23 March, 2020_
 
 ### Brief Description ###
 
@@ -69,7 +69,7 @@ Expected to work in \*nix like environments.
 
 ### License ###
 
-GNU General Public License, version 3 or later.
+Version 3 of the GNU General Public License.
 
 
 [1]: https://taskwarrior.org/
