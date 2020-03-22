@@ -43,7 +43,7 @@ Config::get(const std::string &key)
     std::string val;
     try {
         val = props.get<std::string>(key);
-    } catch (boost::property_tree::ptree_bad_path &) {
+    } catch (pt::ptree_bad_path &) {
         if (parent == nullptr) {
             throw;
         }
@@ -71,8 +71,7 @@ Config::list(const std::string &path)
 {
     ensureLoaded();
 
-    boost::optional<boost::property_tree::ptree &> subtree =
-        props.get_child_optional(path);
+    boost::optional<pt::ptree &> subtree = props.get_child_optional(path);
     if (!subtree) {
         return (parent == nullptr)
              ? std::vector<std::string>()
