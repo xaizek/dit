@@ -101,7 +101,8 @@ TEST_CASE("Storage throws on save if project removed", "[storage]")
             Item &item = storage.get(id);
             fs::remove_all("tests/data/dit/projects/tmp");
 
-            REQUIRE_THROWS_AS(item.getValue("title"), std::runtime_error);
+            REQUIRE_THROWS_AS(item.getValue("title"),
+                              const std::runtime_error &);
         }
 
     } catch (...) {

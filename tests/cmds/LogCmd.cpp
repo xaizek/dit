@@ -53,7 +53,8 @@ TEST_CASE("Log fails on wrong invocation", "[cmds][log][invocation]")
 
     SECTION("Wrong id")
     {
-        REQUIRE_THROWS_AS(cmd->run(*prj, { "asdf" }), std::runtime_error);
+        REQUIRE_THROWS_AS(cmd->run(*prj, { "asdf" }),
+                          const std::runtime_error &);
     }
 }
 

@@ -28,7 +28,7 @@
 
 TEST_CASE("Throws on wrong syntax", "[item-filter]")
 {
-    REQUIRE_THROWS_AS(ItemFilter({ "wrong expr" }), std::runtime_error);
+    REQUIRE_THROWS_AS(ItemFilter({ "wrong expr" }), const std::runtime_error &);
 }
 
 TEST_CASE("Error messages add up", "[item-filter]")

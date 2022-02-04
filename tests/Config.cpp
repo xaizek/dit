@@ -92,5 +92,6 @@ TEST_CASE("Loading file of wrong format throws exception", "[config]")
     Config child("tests/main.cpp");
 
     namespace pt = boost::property_tree;
-    REQUIRE_THROWS_AS(child.get("key", "v") == "value", pt::info_parser_error);
+    REQUIRE_THROWS_AS(child.get("key", "v") == "value",
+                      const pt::info_parser_error &);
 }

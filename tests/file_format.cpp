@@ -44,7 +44,7 @@ TEST_CASE("Deserialization of broken stream errors.", "[file-format]")
     std::stringstream ss;
     ss << "bla=bla\n";
 
-    REQUIRE_THROWS_AS(ss >> d, std::runtime_error);
+    REQUIRE_THROWS_AS(ss >> d, const std::runtime_error &);
 }
 
 TEST_CASE("Deserialized objects are identical to original", "[file-format]")
@@ -71,7 +71,7 @@ TEST_CASE("Deserialization throws on empty string", "[file-format]")
 
     std::stringstream ss;
     ss << '\n' << o;
-    REQUIRE_THROWS_AS(ss >> d, std::runtime_error);
+    REQUIRE_THROWS_AS(ss >> d, const std::runtime_error &);
 }
 
 static inline bool

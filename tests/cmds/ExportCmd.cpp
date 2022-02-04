@@ -117,7 +117,7 @@ TEST_CASE("Item exporting", "[cmds][export]")
     SECTION("Failed run")
     {
         REQUIRE_THROWS_AS(cmd->run(*prj, { "no-such-cmd" }),
-                          std::runtime_error);
+                          const std::runtime_error &);
     }
 
     REQUIRE(out.str() == std::string());

@@ -331,7 +331,8 @@ TEST_CASE("Wrong options.", "[invocation][completion]")
 
     SECTION("Error on running")
     {
-        REQUIRE_THROWS_AS(invocation.parse(), boost::program_options::error);
+        REQUIRE_THROWS_AS(invocation.parse(),
+                          const boost::program_options::error &);
     }
 }
 
@@ -340,7 +341,7 @@ TEST_CASE("Invocation throws if alias resolved isn't set.", "[invocation]")
     Invocation invocation;
     invocation.setCmdLine({ "alias" });
 
-    REQUIRE_THROWS_AS(invocation.parse(), std::bad_function_call);
+    REQUIRE_THROWS_AS(invocation.parse(), const std::bad_function_call &);
 }
 
 TEST_CASE("Aliases are decomposed.", "[invocation][alias][composition]")

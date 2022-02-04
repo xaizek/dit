@@ -35,7 +35,7 @@
 
 TEST_CASE("Dit throws exception on empty args", "[app][invocation]")
 {
-    REQUIRE_THROWS_AS(Dit({}), std::runtime_error);
+    REQUIRE_THROWS_AS(Dit({}), const std::runtime_error &);
 }
 
 TEST_CASE("Dit throws exception on absent $HOME", "[app][invocation]")
@@ -43,7 +43,7 @@ TEST_CASE("Dit throws exception on absent $HOME", "[app][invocation]")
     std::string home = std::getenv("HOME");
 
     unsetenv("HOME");
-    REQUIRE_THROWS_AS(Dit({ "dit" }), std::runtime_error);
+    REQUIRE_THROWS_AS(Dit({ "dit" }), const std::runtime_error &);
 
     static std::string homeSet = "HOME=" + home;
     putenv(&homeSet[0]);

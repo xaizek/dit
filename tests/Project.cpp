@@ -21,5 +21,5 @@
 TEST_CASE("Project::init fails on failure to create directory", "[project]")
 {
     REQUIRE_THROWS_AS(Project::init("tests/data/dit/config"),
-                      std::runtime_error);
+                      const std::runtime_error &);
 }

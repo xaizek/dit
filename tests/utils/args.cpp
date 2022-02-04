@@ -59,10 +59,14 @@ TEST_CASE("Whitespace everywhere", "[utils][args]")
 
 TEST_CASE("Throws exception on unclosed bracket", "[utils][args]")
 {
-    REQUIRE_THROWS_AS(breakIntoArgs("'broken"), boost::escaped_list_error);
-    REQUIRE_THROWS_AS(breakIntoArgs("\"broken"), boost::escaped_list_error);
-    REQUIRE_THROWS_AS(breakIntoArgs("broken'"), boost::escaped_list_error);
-    REQUIRE_THROWS_AS(breakIntoArgs("broken\""), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("'broken"),
+                      const boost::escaped_list_error &);
+    REQUIRE_THROWS_AS(breakIntoArgs("\"broken"),
+                      const boost::escaped_list_error &);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken'"),
+                      const boost::escaped_list_error &);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\""),
+                      const boost::escaped_list_error &);
 }
 
 TEST_CASE("Escaping works", "[utils][args]")
@@ -73,8 +77,10 @@ TEST_CASE("Escaping works", "[utils][args]")
 
 TEST_CASE("Throws exception on wrong escaping", "[utils][args]")
 {
-    REQUIRE_THROWS_AS(breakIntoArgs("broken\\"), boost::escaped_list_error);
-    REQUIRE_THROWS_AS(breakIntoArgs("broken\\x"), boost::escaped_list_error);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\\"),
+                      const boost::escaped_list_error &);
+    REQUIRE_THROWS_AS(breakIntoArgs("broken\\x"),
+                      const boost::escaped_list_error &);
 }
 
 TEST_CASE("Accepts empty arguments", "[utils][args]")

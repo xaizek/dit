@@ -30,7 +30,7 @@ TEST_CASE("Throws on wrong specification.", "[item-table][format]")
 {
     REQUIRE_THROWS_AS(ItemTable(std::string(), "this is not valid",
                                 std::string(), 80),
-                      std::runtime_error);
+                      const std::runtime_error &);
 }
 
 TEST_CASE("No columns result in no output.", "[item-table][format]")

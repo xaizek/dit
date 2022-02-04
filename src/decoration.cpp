@@ -141,7 +141,7 @@ std::ostream &
 ScopedDecoration::decorate(std::ostream &os) const
 {
     os << decoration;
-    for (const auto app : apps) {
+    for (const auto &app : apps) {
         app(os);
     }
     os << def;

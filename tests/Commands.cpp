@@ -46,5 +46,6 @@ TEST_CASE("Commands must have unique names", "[commands]")
     REQUIRE(cmd != nullptr);
 
     auto fakeCmd = make_unique<Cmd>("log", std::string(), std::string());
-    REQUIRE_THROWS_AS(Commands::add(std::move(fakeCmd)), std::runtime_error);
+    REQUIRE_THROWS_AS(Commands::add(std::move(fakeCmd)),
+                      const std::runtime_error &);
 }

@@ -105,12 +105,13 @@ TEST_CASE("Wrongly named keys cause error.", "[item]")
 
     SECTION("On get().")
     {
-        REQUIRE_THROWS_AS(item.getValue("!@@#$%^"), std::runtime_error);
+        REQUIRE_THROWS_AS(item.getValue("!@@#$%^"), const std::runtime_error &);
     }
 
     SECTION("On set().")
     {
-        REQUIRE_THROWS_AS(item.setValue("!@@#$%^", "b"), std::runtime_error);
+        REQUIRE_THROWS_AS(item.setValue("!@@#$%^", "b"),
+                          const std::runtime_error &);
     }
 }
 
@@ -195,7 +196,8 @@ TEST_CASE("Items with broken timestamps fail to load.", "[item][load]")
         {
             Project prj("tests/data/dit/projects/tmp");
             Storage &storage = prj.getStorage();
-            REQUIRE_THROWS_AS(storage.get(id).getValue("c"), std::logic_error);
+            REQUIRE_THROWS_AS(storage.get(id).getValue("c"),
+                              const std::logic_error &);
         }
 
     } catch (...) {
