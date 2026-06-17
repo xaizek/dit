@@ -1,6 +1,6 @@
 **dit**, _v0.11_, _2015 - 2019_
 
-_This file last updated on 23 March, 2020_
+_This file last updated on 17 June, 2026_
 
 ### Brief Description ###
 
@@ -57,8 +57,8 @@ Expected to work in \*nix like environments.
 ### Prerequisites ###
 
 * [GNU Make][3];
-* C++11 compatible compiler (e.g. GCC 4.9.3);
-* [Boost][4], tested with 1.54, 1.58 and 1.59;
+* C++11 compatible compiler (e.g., GCC v4.9.3);
+* [Boost][4], tested with v1.91;
 * (optional) [pandoc][5] for regenerating man page.
 
 ### Interaction with Environment ###

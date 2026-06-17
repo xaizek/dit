@@ -93,7 +93,7 @@ TEST_CASE("All IDs are distinct", "[ids]")
     }
 
     std::sort(ids.begin(), ids.end());
-    std::unique(ids.begin(), ids.end());
+    ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
 
     REQUIRE(ids.size() == 10*10*10*10*10);
 }
