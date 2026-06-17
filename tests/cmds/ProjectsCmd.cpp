@@ -81,7 +81,7 @@ TEST_CASE("Projects does nothing if there are no projects",
 
     fs::create_directories("tests/tmp-data/dit/projects");
     fs::copy_file("tests/main.cpp", "tests/tmp-data/dit/projects/main.cpp",
-                  fs::copy_option::none);
+                  fs::copy_options::none);
 
     putenv(xdg_env);
     putenv(home_env);
