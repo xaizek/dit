@@ -1,6 +1,6 @@
 **dit**, _v0.11_, _2015 - 2019_
 
-_This file last updated on 17 June, 2026_
+_This file last updated on 2 August 2026_
 
 ### Brief Description ###
 
@@ -24,7 +24,7 @@ sake of improvement, but the code itself is stable.
 
 ### Features ###
 
-* Non-numeric identifiers (non-decimal [Grey code][2]);
+* Non-numeric identifiers (non-decimal [Gray code][2]);
 * Never forgets data (new values override the old ones, items are not removed);
 * Isolated projects with local configuration;
 * Aliases with argument substitution;
@@ -73,7 +73,7 @@ Version 3 of the GNU General Public License.
 
 
 [1]: https://taskwarrior.org/
-[2]: https://en.wikipedia.org/wiki/Grey_code
+[2]: https://encycloreader.org/r/encyclopediaofmath.php?q=Gray_code
 [3]: https://www.gnu.org/software/make/
 [4]: https://www.boost.org/
 [5]: https://pandoc.org/
