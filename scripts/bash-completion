@@ -10,7 +10,7 @@ function _dit()
     local cur="${args[-1]}"
     cur="${cur:0:-10}"
 
-    # do not innsert trailing space
+    # do not insert trailing space
     compopt -o nospace
 
     if [ "${COMP_LINE:$(( $COMP_POINT - 1 ))}" = '=' ]; then
